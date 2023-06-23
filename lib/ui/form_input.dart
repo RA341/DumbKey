@@ -130,7 +130,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
                         email: email,
                         username: username,
                         description: description,
-                        docId: DateTime.now().millisecondsSinceEpoch.toString(),
+                        docId: '',
                       );
 
                       setState(() => isLoading = true);
@@ -148,7 +148,9 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
                       Navigator.of(context).pop();
                     }
                   },
-                  child: isLoading ? const CircularProgressIndicator() : const Text('Submit'),
+                  child: isLoading ?
+                      const CircularProgressIndicator()
+                      : const Text('Submit'),
                 ),
               ],
             ),
