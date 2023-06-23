@@ -4,6 +4,7 @@ import 'package:dumbkey/ui/widgets/email_input.dart';
 import 'package:dumbkey/ui/widgets/org_input.dart';
 import 'package:dumbkey/ui/widgets/password_input.dart';
 import 'package:dumbkey/ui/widgets/username_input.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class DetailsInputScreen extends StatefulWidget {
@@ -113,11 +114,19 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
 
                     if (_formKey.currentState!.validate()) {
                       // Form is valid, do something with the input values
-                      final org = orgController.text;
                       final passKey = passkeyController.text;
-                      final email = emailController.text;
-                      final username = usernameController.text;
-                      final description = descriptionController.text;
+                      final org = orgController.text.isEmpty
+                          ? Constants.defaultOrgName
+                          : orgController.text;
+                      final email = emailController.text.isEmpty
+                          ? null
+                          : emailController.text;
+                      final username = usernameController.text.isEmpty
+                          ? null
+                          : usernameController.text;
+                      final description = descriptionController.text.isEmpty
+                          ? null
+                          : descriptionController.text;
 
                       final data = PassKey(
                         org: org,
