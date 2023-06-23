@@ -1,3 +1,4 @@
+import 'package:dumbkey/ui/details_screen.dart';
 import 'package:dumbkey/ui/form_input.dart';
 import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:flutter/material.dart';
@@ -20,26 +21,82 @@ class PasskeyTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(15),
-      child: InkWell(
-        onLongPress: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DetailsInputScreen(
-              addOrUpdateKeyFunc: updateKeyFunc,
-              savedKey: passkey,
+      child: Dismissible(
+        key: ValueKey(passkey.docId),
+        background: const ColoredBox(
+          color: Colors.red,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            copyButton(context, isUserName: true),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: Text(passkey.username ?? passkey.email ?? passkey.org),
+        secondaryBackground: const ColoredBox(
+          color: Colors.blue,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Icon(
+                Icons.archive,
+                color: Colors.white,
+              ),
             ),
-            copyButton(context, isUserName: false),
-          ],
+          ),
+        ),
+        onDismissed: (direction) async => await deleteKeyFunc(passkey),
+        confirmDismiss: (direction) => showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Are you sure?'),
+            content: const Text(
+              'This will permanently delete the passkey.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () async => Navigator.of(context).pop(true),
+                child: const Text('Yes'),
+              ),
+            ],
+          ),
+        ),
+        child: InkWell(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => DetailsScreen(
+                deleteKeyFunc: deleteKeyFunc,
+                updateKeyFunc: updateKeyFunc,
+              ),
+            ),
+          ),
+          onLongPress: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => DetailsInputScreen(
+                addOrUpdateKeyFunc: updateKeyFunc,
+                savedKey: passkey,
+              ),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              copyButton(context, isUserName: true),
+              Padding(
+                padding: const EdgeInsets.all(5),
+                child: Text(passkey.username ?? passkey.email ?? passkey.org),
+              ),
+              copyButton(context, isUserName: false),
+            ],
+          ),
         ),
       ),
     );
