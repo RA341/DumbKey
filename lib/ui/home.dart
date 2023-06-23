@@ -1,4 +1,5 @@
 import 'package:dumbkey/logic/firestore_funcs.dart';
+import 'package:dumbkey/ui/widgets/home/passkey_listview.dart';
 import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:dumbkey/ui/form_input.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,11 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           Expanded(
-            child: ListViewStreamBuilder(passkeyStream: passkeyStream),
+            child: ListViewStreamBuilder(
+              passkeyStream: passkeyStream,
+              deleteKeyFunc: deleteKey,
+              updateKeyFunc: updateKey,
+            ),
           ),
         ],
       ),
@@ -50,22 +55,16 @@ class _HomePageState extends State<HomePage> {
   Future<void> updateKey(PassKey data) async => database.updatePassKey(data);
 }
 
-class PasskeyView extends StatelessWidget {
-  const PasskeyView({required this.passkey, super.key});
-
-  final PassKey passkey;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(passkey.passKey),
-    );
-  }
-}
-
 class ListViewStreamBuilder extends StatelessWidget {
-  const ListViewStreamBuilder({required this.passkeyStream, super.key});
+  const ListViewStreamBuilder({
+    required this.passkeyStream,
+    required this.updateKeyFunc,
+    required this.deleteKeyFunc,
+    super.key,
+  });
 
+  final Future<void> Function(PassKey) updateKeyFunc;
+  final Future<void> Function(PassKey) deleteKeyFunc;
   final Stream<List<PassKey>> passkeyStream;
 
   @override
@@ -76,8 +75,10 @@ class ListViewStreamBuilder extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final data = snapshot.data ?? [];
-          return ListView(
-            children: data.map((e) => PasskeyView(passkey: e)).toList(),
+          return PasskeyListView(
+            passkeyList: data,
+            deleteKeyFunc: deleteKeyFunc,
+            updateKeyFunc: updateKeyFunc,
           );
         } else if (snapshot.hasError) {
           print(snapshot.error);
