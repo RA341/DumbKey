@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dumbkey/logic/encryptor.dart';
-import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:flutter/cupertino.dart';
 
 class FireStore {
@@ -39,12 +39,6 @@ class FireStore {
       debugPrint(e.toString());
     }
   }
-
-  // Future<void> displayKeys() async {
-  //   final data = await database.collection(Constants.mainCollection).;
-  //
-  //   print(data.data());
-  // }
 
   Stream<List<PassKey>> fetchAllPassKeys() {
     return database.collection(Constants.mainCollection).snapshots().map(

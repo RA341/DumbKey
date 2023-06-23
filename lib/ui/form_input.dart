@@ -130,7 +130,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
                         email: email,
                         username: username,
                         description: description,
-                        docId: '',
+                        docId: widget.savedKey?.docId ?? '',
                       );
 
                       setState(() => isLoading = true);
