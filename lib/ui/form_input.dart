@@ -118,15 +118,11 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
                       final org = orgController.text.isEmpty
                           ? Constants.defaultOrgName
                           : orgController.text;
-                      final email = emailController.text.isEmpty
-                          ? null
-                          : emailController.text;
-                      final username = usernameController.text.isEmpty
-                          ? null
-                          : usernameController.text;
-                      final description = descriptionController.text.isEmpty
-                          ? null
-                          : descriptionController.text;
+                      final email = emailController.text.isEmpty ? null : emailController.text;
+                      final username =
+                          usernameController.text.isEmpty ? null : usernameController.text;
+                      final description =
+                          descriptionController.text.isEmpty ? null : descriptionController.text;
 
                       final data = PassKey(
                         org: org,
@@ -136,7 +132,8 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
                         description: description,
                         docId: DateTime.now().millisecondsSinceEpoch.toString(),
                       );
-                      isLoading = true;
+
+                      setState(() => isLoading = true);
                       try {
                         await widget.addOrUpdateKeyFunc(data);
                       } catch (e) {
@@ -146,12 +143,12 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
                           ),
                         );
                       }
-                      isLoading = false;
+                      setState(() => isLoading = false);
                       if (!context.mounted) return;
                       Navigator.of(context).pop();
                     }
                   },
-                  child: const Text('Submit'),
+                  child: isLoading ? const CircularProgressIndicator() : const Text('Submit'),
                 ),
               ],
             ),
