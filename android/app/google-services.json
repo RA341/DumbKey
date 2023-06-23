@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "324040577965",
+    "project_id": "dumbkey-e6601",
+    "storage_bucket": "dumbkey-e6601.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:324040577965:android:d0841a1f5f63ffa1a18724",
+        "android_client_info": {
+          "package_name": "app.dumbapps.dumbkey"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "324040577965-jqdbqh7ls48giukae5jvubohsbsohdgo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYDoqxJWqVPCdZk59bWyciXQHM_-xxONM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "324040577965-jqdbqh7ls48giukae5jvubohsbsohdgo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
