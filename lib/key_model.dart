@@ -30,6 +30,15 @@ class PassKey {
     return m;
   }
 
+  void crypt(String Function(String data) cryptFunc) {
+    this
+      ..passKey = cryptFunc(passKey)
+      ..org = cryptFunc(org)
+      ..email = email != null ? cryptFunc(email!) : null
+      ..username = username != null ? cryptFunc(username!) : null
+      ..description = description != null ? cryptFunc(description!) : null;
+  }
+
   String docId;
   String org;
   String? email;

@@ -1,26 +1,49 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dumbkey/encryptor.dart';
 import 'package:dumbkey/key_model.dart';
+import 'package:dumbkey/utils/constants.dart';
+import 'package:flutter/cupertino.dart';
 
 class FireStore {
   FireStore() {
     database = FirebaseFirestore.instance;
+    encryptor = AESEncryption();
   }
 
   late final FirebaseFirestore database;
+  late final AESEncryption encryptor;
 
-  Future<void> addPassKey(PassKey passkey) async {
-    await database.collection(passkey.org).add(passkey.toJSON());
-  }
-
-  Future<void> updatePassKey(PassKey passkey) async {
-    await database.collection(passkey.org)
-        .doc(passkey.passKey)
-        .update(passkey.toJSON());
+  Future<void> createPassKey(PassKey passkey) async {
+    passkey.crypt(encryptor.encrypt);
+    await database.collection(Constants.mainCollection).doc(passkey.docId).set(passkey.toJSON());
   }
 
   Future<void> deletePassKey(PassKey passkey) async {
-    await database.collection(passkey.org)
-        .doc(passkey.passKey)
-        .delete();
+    try {
+      await database.collection(Constants.mainCollection).doc(passkey.docId).delete();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> updatePassKey(PassKey passkey) async {
+    try {
+      passkey.crypt(encryptor.encrypt);
+      await database
+          .collection(Constants.mainCollection)
+          .doc(passkey.docId)
+          .update(passkey.toJSON());
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Stream<List<PassKey>> fetchAllPassKeys() {
+    return database.collection(Constants.mainCollection).snapshots().map(
+          (snapshots) => snapshots.docs
+              .map((doc) => PassKey
+              .fromJson(doc.data())..crypt(encryptor.decrypt))
+              .toList(),
+        );
   }
 }
