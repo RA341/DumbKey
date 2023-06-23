@@ -11,8 +11,8 @@ class PassKey {
   });
 
   factory PassKey.fromJson(Map<String, dynamic> json) => PassKey(
-        passKey: json['passKey']! as String,
-        org: json['org']! as String,
+        passKey: json['passKey'] as String,
+        org: json['org'] as String,
         description: json['description'] as String?,
         email: json['email'] as String?,
         username: json['username'] as String?,
@@ -41,8 +41,8 @@ class PassKey {
 
   String docId;
   String org;
+  String passKey;
   String? email;
   String? username;
-  String passKey;
   String? description;
 }

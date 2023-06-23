@@ -38,11 +38,16 @@ class FireStore {
     }
   }
 
+  // Future<void> displayKeys() async {
+  //   final data = await database.collection(Constants.mainCollection).;
+  //
+  //   print(data.data());
+  // }
+
   Stream<List<PassKey>> fetchAllPassKeys() {
     return database.collection(Constants.mainCollection).snapshots().map(
           (snapshots) => snapshots.docs
-              .map((doc) => PassKey
-              .fromJson(doc.data())..crypt(encryptor.decrypt))
+              .map((doc) => PassKey.fromJson(doc.data())..crypt(encryptor.decrypt))
               .toList(),
         );
   }
