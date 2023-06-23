@@ -1,3 +1,4 @@
+import 'package:dumbkey/home.dart';
 import 'package:dumbkey/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -28,14 +29,5 @@ class MyApp extends StatelessWidget {
       ),
       home: const HomePage(),
     );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }

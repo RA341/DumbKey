@@ -1,4 +1,4 @@
-import 'package:dumbkey/constants.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
