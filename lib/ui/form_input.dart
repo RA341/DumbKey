@@ -1,5 +1,9 @@
 import 'package:dumbkey/key_model.dart';
-import 'package:dumbkey/ui/widgets/form_input_widgets.dart';
+import 'package:dumbkey/ui/widgets/description_input.dart';
+import 'package:dumbkey/ui/widgets/email_input.dart';
+import 'package:dumbkey/ui/widgets/org_input.dart';
+import 'package:dumbkey/ui/widgets/password_input.dart';
+import 'package:dumbkey/ui/widgets/username_input.dart';
 import 'package:flutter/material.dart';
 
 class DetailsInputScreen extends StatefulWidget {
@@ -24,6 +28,12 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
   final usernameController = TextEditingController();
   final descriptionController = TextEditingController();
 
+  final FocusNode _orgFocusNode = FocusNode();
+  final FocusNode _passkeyFocusNode = FocusNode();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _usernameFocusNode = FocusNode();
+  final FocusNode _descriptionFocusNode = FocusNode();
+
   bool isLoading = false;
 
   @override
@@ -45,6 +55,11 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
     emailController.dispose();
     usernameController.dispose();
     descriptionController.dispose();
+    _orgFocusNode.dispose();
+    _passkeyFocusNode.dispose();
+    _emailFocusNode.dispose();
+    _usernameFocusNode.dispose();
+    _descriptionFocusNode.dispose();
     super.dispose();
   }
 
@@ -63,15 +78,34 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                OrganizationField(controller: orgController),
+                EmailField(
+                  controller: emailController,
+                  currFocusNode: _emailFocusNode,
+                  nextFocusNode: _usernameFocusNode,
+                ),
                 const SizedBox(height: 16),
-                PasskeyField(controller: passkeyController),
+                UsernameField(
+                  controller: usernameController,
+                  currFocusNode: _usernameFocusNode,
+                  nextFocusNode: _passkeyFocusNode,
+                ),
                 const SizedBox(height: 16),
-                EmailField(controller: emailController),
+                PasskeyField(
+                  controller: passkeyController,
+                  currFocusNode: _passkeyFocusNode,
+                  nextFocusNode: _orgFocusNode,
+                ),
                 const SizedBox(height: 16),
-                UsernameField(controller: usernameController),
+                OrganizationField(
+                  controller: orgController,
+                  currFocusNode: _orgFocusNode,
+                  nextFocusNode: _descriptionFocusNode,
+                ),
                 const SizedBox(height: 16),
-                DescriptionField(controller: descriptionController),
+                DescriptionField(
+                  controller: descriptionController,
+                  currFocusNode: _descriptionFocusNode,
+                ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () async {
