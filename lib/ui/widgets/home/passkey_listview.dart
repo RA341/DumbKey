@@ -17,7 +17,15 @@ class PasskeyListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: passkeyList.map((e) => PasskeyTitle(passkey: e)).toList(),
+      children: passkeyList
+          .map(
+            (e) => PasskeyTitle(
+              passkey: e,
+              deleteKeyFunc: deleteKeyFunc,
+              updateKeyFunc: updateKeyFunc,
+            ),
+          )
+          .toList(),
     );
   }
 }
