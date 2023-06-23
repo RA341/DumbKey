@@ -2,6 +2,7 @@
 class PassKey {
   /// constructor
   PassKey({
+    required this.docId,
     required this.passKey,
     this.org = 'any',
     this.email,
@@ -15,6 +16,7 @@ class PassKey {
         description: json['description'] as String?,
         email: json['email'] as String?,
         username: json['username'] as String?,
+        docId: json['docId'] as String,
       );
 
   Map<String, dynamic> toJSON() {
@@ -24,10 +26,11 @@ class PassKey {
     m['username'] = username;
     m['passKey'] = passKey;
     m['description'] = description;
+    m['docId'] = docId;
     return m;
   }
 
-  String get docId => passKey.hashCode.toString();
+  String docId;
   String org;
   String? email;
   String? username;
