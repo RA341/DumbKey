@@ -1,4 +1,4 @@
-import 'package:dumbkey/firebase_options.dart';
+import 'package:dumbkey/utils/firebase_options.dart';
 import 'package:dumbkey/ui/home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

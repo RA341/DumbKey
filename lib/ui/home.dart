@@ -1,5 +1,5 @@
-import 'package:dumbkey/firestore_funcs.dart';
-import 'package:dumbkey/key_model.dart';
+import 'package:dumbkey/logic/firestore_funcs.dart';
+import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:dumbkey/ui/form_input.dart';
 import 'package:flutter/material.dart';
 
@@ -13,16 +13,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FireStore database = FireStore();
   late final Stream<List<PassKey>> passkeyStream;
-
-  final data = PassKey(
-    description: 'This a description \n mowiiashdoiasjd\n fuck me',
-    docId: DateTime.now().millisecondsSinceEpoch.toString(),
-    // '1687536208853',
-    passKey: 'pooop',
-    org: 'nunya',
-    email: 'topasd.lasjkd@gmoasl.com',
-    username: 'poaspdlkaskld',
-  );
 
   @override
   void initState() {

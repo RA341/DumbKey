@@ -1,10 +1,10 @@
-import 'package:dumbkey/key_model.dart';
-import 'package:dumbkey/ui/widgets/description_input.dart';
-import 'package:dumbkey/ui/widgets/email_input.dart';
-import 'package:dumbkey/ui/widgets/org_input.dart';
-import 'package:dumbkey/ui/widgets/password_input.dart';
-import 'package:dumbkey/ui/widgets/username_input.dart';
+import 'package:dumbkey/ui/widgets/edit_buttons/description_input.dart';
+import 'package:dumbkey/ui/widgets/edit_buttons/email_input.dart';
+import 'package:dumbkey/ui/widgets/edit_buttons/org_input.dart';
+import 'package:dumbkey/ui/widgets/edit_buttons/password_input.dart';
+import 'package:dumbkey/ui/widgets/edit_buttons/username_input.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:flutter/material.dart';
 
 class DetailsInputScreen extends StatefulWidget {

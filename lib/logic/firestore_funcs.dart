@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dumbkey/encryptor.dart';
-import 'package:dumbkey/key_model.dart';
+import 'package:dumbkey/logic/encryptor.dart';
+import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 
