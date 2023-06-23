@@ -47,30 +47,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAYDoqxJWqVPCdZk59bWyciXQHM_-xxONM',
-    appId: '1:324040577965:android:d0841a1f5f63ffa1a18724',
-    messagingSenderId: '324040577965',
-    projectId: 'dumbkey-e6601',
-    storageBucket: 'dumbkey-e6601.appspot.com',
+    apiKey: 'AIzaSyDrBx0s-xHf0hBCJ2b_DEkfFl3emmF6B10',
+    appId: '1:636357630680:android:f177b0a09d8a0f680755ad',
+    messagingSenderId: '636357630680',
+    projectId: 'dumbkey-1ecf8',
+    storageBucket: 'dumbkey-1ecf8.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCb5x4r6jsnYQSSlL3cm5zI7AdVbVWKbdY',
-    appId: '1:324040577965:ios:17acacfe98ad1ba7a18724',
-    messagingSenderId: '324040577965',
-    projectId: 'dumbkey-e6601',
-    storageBucket: 'dumbkey-e6601.appspot.com',
-    iosClientId: '324040577965-ts9hf2s4i3bagak3g67pebqksc5lsrfb.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDJcKBLJ56Kk-pfzIFq1glmhPaEmn45UC8',
+    appId: '1:636357630680:ios:5ecdcbcd9bad37aa0755ad',
+    messagingSenderId: '636357630680',
+    projectId: 'dumbkey-1ecf8',
+    storageBucket: 'dumbkey-1ecf8.appspot.com',
+    iosClientId: '636357630680-paeu2q3a44s5p1v2n4roi039kfretec1.apps.googleusercontent.com',
     iosBundleId: 'app.dumbapps.dumbkey',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCb5x4r6jsnYQSSlL3cm5zI7AdVbVWKbdY',
-    appId: '1:324040577965:ios:2344bff33942239da18724',
-    messagingSenderId: '324040577965',
-    projectId: 'dumbkey-e6601',
-    storageBucket: 'dumbkey-e6601.appspot.com',
-    iosClientId: '324040577965-ce9j3u9sektlsrqisot0jgp91c1rellr.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDJcKBLJ56Kk-pfzIFq1glmhPaEmn45UC8',
+    appId: '1:636357630680:ios:d504f9a8d501716d0755ad',
+    messagingSenderId: '636357630680',
+    projectId: 'dumbkey-1ecf8',
+    storageBucket: 'dumbkey-1ecf8.appspot.com',
+    iosClientId: '636357630680-1esvaq50fbg961qj8m64otil3gm34ral.apps.googleusercontent.com',
     iosBundleId: 'app.dumbapps.dumbkey.RunnerTests',
   );
 }
