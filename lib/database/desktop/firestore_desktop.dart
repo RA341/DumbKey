@@ -1,5 +1,3 @@
-import 'dart:math';
-import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/logic/encryptor.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/utils/constants.dart';
@@ -29,7 +27,6 @@ class DesktopFirestore {
   late final Firestore database;
   late final AESEncryption encryptor;
 
-  @override
   Future<void> createPassKey(PassKey passkey) async {
     final docId = idGenerator();
     passkey
@@ -41,15 +38,13 @@ class DesktopFirestore {
         .document(docId.toString()).set(passkey.toJSON());
   }
 
-  @override
   Future<void> deletePassKey(PassKey passkey) async {
-    return database
+    await database
         .collection(Constants.mainCollection)
         .document(passkey.docId.toString())
         .delete();
   }
 
-  @override
   Future<void> updatePassKey(String docId, Map<String, dynamic> updateData) async{
     for (final key in updateData.keys) {
       updateData[key] = encryptor.encrypt(updateData[key] as String);
@@ -57,7 +52,6 @@ class DesktopFirestore {
     await database.collection(Constants.mainCollection).document(docId).update(updateData);
   }
 
-  @override
   Stream<List<PassKey>> fetchAllPassKeys() {
     return database.collection('main').stream.map(
           (docs) => docs.map((doc) => PassKey.fromJson(doc.map)..crypt(encryptor.decrypt)).toList(),
