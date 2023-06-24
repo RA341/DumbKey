@@ -1,6 +1,8 @@
-import '../utils/constants.dart';
+import 'package:dumbkey/utils/constants.dart';
+import 'package:isar/isar.dart';
 
 /// Used to store/retrieve passkey data from firebase
+@collection
 class PassKey {
   /// constructor
   PassKey({
@@ -41,6 +43,7 @@ class PassKey {
       ..description = description != null ? cryptFunc(description!) : null;
   }
 
+  // Id? id = docId;
   String docId;
   String org;
   String passKey;

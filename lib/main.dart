@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:dumbkey/logic/firestore_stub.dart';
-import 'package:dumbkey/logic/firestore_desktop.dart';
-import 'package:dumbkey/logic/firestore_mobile.dart';
+import 'package:dumbkey/database/firestore_desktop.dart';
+import 'package:dumbkey/database/firestore_mobile.dart';
+import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/ui/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

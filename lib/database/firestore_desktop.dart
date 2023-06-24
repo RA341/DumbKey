@@ -1,9 +1,8 @@
 import 'dart:math';
-
-import 'package:dumbkey/logic/firestore_stub.dart';
+import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/logic/encryptor.dart';
-import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/model/passkey_model.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
