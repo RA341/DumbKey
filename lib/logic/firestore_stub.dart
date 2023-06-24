@@ -1,4 +1,4 @@
-import 'package:dumbkey/utils/passkey_model.dart';
+import 'package:dumbkey/model/passkey_model.dart';
 
 abstract class FireStoreBase {
   Future<void> createPassKey(PassKey passkey);

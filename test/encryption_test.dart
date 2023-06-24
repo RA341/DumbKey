@@ -1,5 +1,5 @@
 import 'package:dumbkey/logic/encryptor.dart';
-import 'package:dumbkey/utils/passkey_model.dart';
+import 'package:dumbkey/model/passkey_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 

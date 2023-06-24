@@ -1,7 +1,7 @@
 import 'package:dumbkey/logic/firestore_stub.dart';
 import 'package:dumbkey/ui/form_input.dart';
 import 'package:dumbkey/ui/widgets/home/passkey_listview.dart';
-import 'package:dumbkey/utils/passkey_model.dart';
+import 'package:dumbkey/model/passkey_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 

@@ -1,4 +1,4 @@
-import 'constants.dart';
+import '../utils/constants.dart';
 
 /// Used to store/retrieve passkey data from firebase
 class PassKey {

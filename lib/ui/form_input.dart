@@ -5,7 +5,7 @@ import 'package:dumbkey/ui/widgets/edit_buttons/org_input.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/password_input.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/username_input.dart';
 import 'package:dumbkey/utils/constants.dart';
-import 'package:dumbkey/utils/passkey_model.dart';
+import 'package:dumbkey/model/passkey_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
