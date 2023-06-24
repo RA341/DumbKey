@@ -1,5 +1,6 @@
 import 'package:dumbkey/logic/encryptor.dart';
 import 'package:dumbkey/model/passkey_model.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,5 +22,9 @@ void main() {
       data2.crypt(encryptor.decrypt);
       expect(data2.passKey, data.passKey);
     });
+  });
+
+  test('test random generator',() {
+   idGenerator();
   });
 }

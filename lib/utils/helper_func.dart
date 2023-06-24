@@ -1,14 +1,12 @@
 import 'dart:math';
 
-int idGenerator({int length = 20}) {
+int idGenerator() {
   final rnd = Random();
-  final g = Iterable.generate(
-    length,
-    (_) => rnd.nextInt(
-      rnd.nextInt(1000000000),
-    ),
-  ).join();
+  final randomString =
+      rnd.nextInt(999999).toString() +
+      rnd.nextInt(999999).toString() +
+      rnd.nextInt(99999).toString();
 
-  return int.tryParse(g)!;
+  return int.parse(randomString);
   //get a number from the list
 }

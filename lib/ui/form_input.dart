@@ -11,14 +11,10 @@ import 'package:get_it/get_it.dart';
 
 class DetailsInputScreen extends StatefulWidget {
   const DetailsInputScreen({
-    this.createFunc,
-    this.updateKeyFunc,
     super.key,
     this.savedKey,
   });
 
-  final Future<void> Function(PassKey)? createFunc;
-  final Future<void> Function(String docId, Map<String, dynamic> map)? updateKeyFunc;
   final PassKey? savedKey;
 
   @override
@@ -167,8 +163,8 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
       description: data[Constants.description] as String?,
     );
 
+    await GetIt.I<FireStoreBase>().createPassKey(newPasskey);
     try {
-      await GetIt.I<FireStoreBase>().createPassKey(newPasskey);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
