@@ -8,6 +8,8 @@ add logging
 
 setup ci/cd
 
+https://github.com/vykes-mac/flutter_env/blob/dev/.github/workflows/ci.yml
+
 desktop ui
 
 # Roadmap
