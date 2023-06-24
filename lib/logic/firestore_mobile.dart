@@ -7,20 +7,18 @@ import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 
+/// used this way because async constructors are not allowed
+/// we initialize firebase here as it
+/// removes dependency from main helps in tree shaking
+Future<MobileFireStore> initMobileFirestore() async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  return MobileFireStore();
+}
+
 class MobileFireStore implements FireStoreBase {
-  MobileFireStore._create() {
+  MobileFireStore() {
     database = FirebaseFirestore.instance;
     encryptor = AESEncryption();
-  }
-
-  /// used this way because async constructors are not allowed
-  /// we initialize firebase here as it
-  /// removes dependency from main helps in tree shaking
-  static Future<MobileFireStore> init() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    return MobileFireStore._create();
   }
 
   late final FirebaseFirestore database;
@@ -44,16 +42,13 @@ class MobileFireStore implements FireStoreBase {
   }
 
   @override
-  Future<void> updatePassKey(String docId,Map<String,dynamic> updateData) async {
+  Future<void> updatePassKey(String docId, Map<String, dynamic> updateData) async {
     try {
       for (final key in updateData.keys) {
         updateData[key] = encryptor.encrypt(updateData[key] as String);
       }
 
-      await database
-          .collection(Constants.mainCollection)
-          .doc(docId)
-          .update(updateData);
+      await database.collection(Constants.mainCollection).doc(docId).update(updateData);
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -62,12 +57,11 @@ class MobileFireStore implements FireStoreBase {
   @override
   Stream<List<PassKey>> fetchAllPassKeys() {
     return database.collection(Constants.mainCollection).snapshots().map(
-          (snapshots) =>
-          snapshots.docs
-              .map((doc) =>
-          PassKey.fromJson(doc.data())
-            ..crypt(encryptor.decrypt),)
+          (snapshots) => snapshots.docs
+              .map(
+                (doc) => PassKey.fromJson(doc.data())..crypt(encryptor.decrypt),
+              )
               .toList(),
-    );
+        );
   }
 }
