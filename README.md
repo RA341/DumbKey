@@ -14,6 +14,8 @@ desktop ui
 
 # Roadmap
 
+add connectivity checks and insert into a persistence queue through isar disable buttons if offline
+
 improving ui
 
 add tags to sort by movies/banks/etc or categories
@@ -23,6 +25,8 @@ may be add a date field to model and remind user to update password in a set int
 # done
 
 ~~add desktop grpc/rest api for firestore interface~~
+~~add persistence layer for desktop not supported by firedart~~
+
 
 # Bugs
 
