@@ -49,6 +49,7 @@ dev_dependencies:
   # rules and activating additional ones.
   very_good_analysis: ^5.0.0+1
   flutter_lints: ^2.0.0
+  msix: ^3.14.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -90,3 +91,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+msix_config:
+  display_name: DumbKey
+  msix_version: 1.0.0.0
+  capabilities: internetClient
