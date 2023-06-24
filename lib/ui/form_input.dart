@@ -153,7 +153,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
       Constants.email: email,
       Constants.username: username,
       Constants.description: description,
-      Constants.docId: widget.savedKey?.docId ?? '',
+      Constants.docId: widget.savedKey?.docId ?? 0, // possible bug originating
     };
   }
 
@@ -161,7 +161,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
     final newPasskey = PassKey(
       org: data[Constants.org] as String,
       passKey: data[Constants.passKey] as String,
-      docId: data[Constants.docId] as String,
+      docId: data[Constants.docId] as int,
       email: data[Constants.email] as String?,
       username: data[Constants.username] as String?,
       description: data[Constants.description] as String?,

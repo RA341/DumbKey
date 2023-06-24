@@ -20,7 +20,7 @@ class PassKey {
         description: json[Constants.description] as String?,
         email: json[Constants.email] as String?,
         username: json[Constants.username] as String?,
-        docId: json[Constants.docId] as String,
+        docId: json[Constants.docId] as int,
       );
 
   Map<String, dynamic> toJSON() {
@@ -43,8 +43,7 @@ class PassKey {
       ..description = description != null ? cryptFunc(description!) : null;
   }
 
-  // Id? id = docId;
-  String docId;
+  Id docId;
   String org;
   String passKey;
   String? email;

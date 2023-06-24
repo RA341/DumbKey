@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/logic/encryptor.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/firebase_options.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -28,14 +31,14 @@ class MobileFireStore implements FireStoreBase {
   Future<void> createPassKey(PassKey passkey) async {
     passkey.crypt(encryptor.encrypt);
     final doc = database.collection(Constants.mainCollection).doc();
-    passkey.docId = doc.id;
+    passkey.docId = idGenerator();
     await doc.set(passkey.toJSON());
   }
 
   @override
   Future<void> deletePassKey(PassKey passkey) async {
     try {
-      await database.collection(Constants.mainCollection).doc(passkey.docId).delete();
+      await database.collection(Constants.mainCollection).doc(passkey.docId.toString()).delete();
     } catch (e) {
       debugPrint(e.toString());
     }

@@ -10,7 +10,7 @@ void main() {
       final encryptor = AESEncryption();
       final data = PassKey(
         description: 'This a description \n mowiiashdoiasjd\n fuck me',
-        docId: DateTime.now().hashCode.toString(),
+        docId: DateTime.now().hashCode,
         passKey: 'pooop',
         org: 'nunya',
         email: 'topasd.lasjkd@gmoasl.com',

@@ -3,6 +3,7 @@ import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/logic/encryptor.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -30,27 +31,26 @@ class DesktopFirestore implements FireStoreBase {
 
   @override
   Future<void> createPassKey(PassKey passkey) async {
-    const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    final docId = String.fromCharCodes(
-      Iterable.generate(
-        20,
-        (_) => chars.codeUnitAt(Random().nextInt(chars.length)),
-      ),
-    );
+    final docId = idGenerator();
     passkey
       ..docId = docId
       ..crypt(encryptor.encrypt);
 
-    await database.collection(Constants.mainCollection).document(docId).set(passkey.toJSON());
+    await database
+        .collection(Constants.mainCollection)
+        .document(docId.toString()).set(passkey.toJSON());
   }
 
   @override
   Future<void> deletePassKey(PassKey passkey) async {
-    return database.collection(Constants.mainCollection).document(passkey.docId).delete();
+    return database
+        .collection(Constants.mainCollection)
+        .document(passkey.docId.toString())
+        .delete();
   }
 
   @override
-  Future<void> updatePassKey(String docId, Map<String, dynamic> updateData) async {
+  Future<void> updatePassKey(String docId, Map<String, dynamic> updateData) async{
     for (final key in updateData.keys) {
       updateData[key] = encryptor.encrypt(updateData[key] as String);
     }
