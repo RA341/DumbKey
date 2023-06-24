@@ -9,12 +9,14 @@ import 'package:flutter/material.dart';
 
 class DetailsInputScreen extends StatefulWidget {
   const DetailsInputScreen({
-    required this.addOrUpdateKeyFunc,
+    this.createFunc,
+    this.updateKeyFunc,
     super.key,
     this.savedKey,
   });
 
-  final Future<void> Function(PassKey) addOrUpdateKeyFunc;
+  final Future<void> Function(PassKey)? createFunc;
+  final Future<void> Function(String docId, Map<String, dynamic> map)? updateKeyFunc;
   final PassKey? savedKey;
 
   @override
@@ -111,46 +113,22 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     if (isLoading) return;
+                    setState(() => isLoading = true);
 
                     if (_formKey.currentState!.validate()) {
-                      // Form is valid, do something with the input values
-                      final passKey = passkeyController.text;
-                      final org = orgController.text.isEmpty
-                          ? Constants.defaultOrgName
-                          : orgController.text;
-                      final email = emailController.text.isEmpty ? null : emailController.text;
-                      final username =
-                          usernameController.text.isEmpty ? null : usernameController.text;
-                      final description =
-                          descriptionController.text.isEmpty ? null : descriptionController.text;
-
-                      final data = PassKey(
-                        org: org,
-                        passKey: passKey,
-                        email: email,
-                        username: username,
-                        description: description,
-                        docId: widget.savedKey?.docId ?? '',
-                      );
-
-                      setState(() => isLoading = true);
-                      try {
-                        await widget.addOrUpdateKeyFunc(data);
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Could not add $e'),
-                          ),
-                        );
+                      final data = convertInputToList();
+                      if (widget.savedKey != null) {
+                        await updateKeyFunc(data);
+                      } else {
+                        await createFunc(data);
                       }
-                      setState(() => isLoading = false);
-                      if (!context.mounted) return;
-                      Navigator.of(context).pop();
                     }
+
+                    setState(() => isLoading = false);
+                    if (!context.mounted) return;
+                    Navigator.of(context).pop();
                   },
-                  child: isLoading ?
-                      const CircularProgressIndicator()
-                      : const Text('Submit'),
+                  child: isLoading ? const CircularProgressIndicator() : const Text('Submit'),
                 ),
               ],
             ),
@@ -158,5 +136,59 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
         ),
       ),
     );
+  }
+
+  Map<String, dynamic> convertInputToList() {
+    final passKey = passkeyController.text;
+    final org = orgController.text.isEmpty ? Constants.defaultOrgName : orgController.text;
+    final email = emailController.text.isEmpty ? null : emailController.text;
+    final username = usernameController.text.isEmpty ? null : usernameController.text;
+    final description = descriptionController.text.isEmpty ? null : descriptionController.text;
+
+    return {
+      Constants.passKey: passKey,
+      Constants.org: org,
+      Constants.email: email,
+      Constants.username: username,
+      Constants.description: description,
+      Constants.docId: widget.savedKey?.docId ?? '',
+    };
+  }
+
+  Future<void> createFunc(Map<String, dynamic> data) async {
+    final newPasskey = PassKey(
+      org: data[Constants.org] as String,
+      passKey: data[Constants.passKey] as String,
+      docId: data[Constants.docId] as String,
+      email: data[Constants.email] as String?,
+      username: data[Constants.username] as String?,
+      description: data[Constants.description] as String?,
+    );
+
+    try {
+      await widget.createFunc!(newPasskey);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not add $e'),
+        ),
+      );
+    }
+  }
+
+  Future<void> updateKeyFunc(Map<String, dynamic> updateData) async {
+    assert(updateData[Constants.docId] != null, 'docId cannot be null');
+    final docId = updateData[Constants.docId] as String;
+    updateData.removeWhere((key, value) => value == null || value == '' || key == Constants.docId);
+
+    try {
+      await widget.updateKeyFunc!(docId, updateData);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not update $e'),
+        ),
+      );
+    }
   }
 }

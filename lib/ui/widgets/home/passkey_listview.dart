@@ -10,7 +10,7 @@ class PasskeyListView extends StatelessWidget {
     super.key,
   });
 
-  final Future<void> Function(PassKey) updateKeyFunc;
+  final Future<void> Function(String docId, Map<String,dynamic> map) updateKeyFunc;
   final Future<void> Function(PassKey) deleteKeyFunc;
   final List<PassKey> passkeyList;
 

@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => DetailsInputScreen(
-              addOrUpdateKeyFunc: createKey,
+              createFunc: createKey,
             ),
           ),
         ),
@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> deleteKey(PassKey data) async => database.deletePassKey(data);
 
-  Future<void> updateKey(PassKey data) async => database.updatePassKey(data);
+  Future<void> updateKey(String docId, Map<String,dynamic> map) async => database.updatePassKey(docId, map);
 }
 
 class ListViewStreamBuilder extends StatelessWidget {
@@ -64,7 +64,7 @@ class ListViewStreamBuilder extends StatelessWidget {
     super.key,
   });
 
-  final Future<void> Function(PassKey) updateKeyFunc;
+  final Future<void> Function(String docId, Map<String,dynamic> map) updateKeyFunc;
   final Future<void> Function(PassKey) deleteKeyFunc;
   final Stream<List<PassKey>> passkeyStream;
 

@@ -12,7 +12,7 @@ class PasskeyTitle extends StatelessWidget {
     super.key,
   });
 
-  final Future<void> Function(PassKey) updateKeyFunc;
+  final Future<void> Function(String docId, Map<String,dynamic> map) updateKeyFunc;
   final Future<void> Function(PassKey) deleteKeyFunc;
 
   final PassKey passkey;
@@ -81,7 +81,7 @@ class PasskeyTitle extends StatelessWidget {
           onLongPress: () => Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => DetailsInputScreen(
-                addOrUpdateKeyFunc: updateKeyFunc,
+                updateKeyFunc: updateKeyFunc,
                 savedKey: passkey,
               ),
             ),

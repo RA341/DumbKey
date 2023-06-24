@@ -31,13 +31,16 @@ class MobileFireStore implements FireStoreBase {
   }
 
   @override
-  Future<void> updatePassKey(PassKey passkey) async {
+  Future<void> updatePassKey(String docId,Map<String,dynamic> updateData) async {
     try {
-      passkey.crypt(encryptor.encrypt);
+      for (final key in updateData.keys) {
+        updateData[key] = encryptor.encrypt(updateData[key] as String);
+      }
+
       await database
           .collection(Constants.mainCollection)
-          .doc(passkey.docId)
-          .update(passkey.toJSON());
+          .doc(docId)
+          .update(updateData);
     } catch (e) {
       debugPrint(e.toString());
     }
