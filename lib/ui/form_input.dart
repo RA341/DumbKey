@@ -1,3 +1,4 @@
+import 'package:dumbkey/logic/abstract_firestore.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/description_input.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/email_input.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/org_input.dart';
@@ -6,6 +7,7 @@ import 'package:dumbkey/ui/widgets/edit_buttons/username_input.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class DetailsInputScreen extends StatefulWidget {
   const DetailsInputScreen({
@@ -166,7 +168,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
     );
 
     try {
-      await widget.createFunc!(newPasskey);
+      await GetIt.I<FireStoreBase>().createPassKey(newPasskey);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -182,7 +184,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
     updateData.removeWhere((key, value) => value == null || value == '' || key == Constants.docId);
 
     try {
-      await widget.updateKeyFunc!(docId, updateData);
+      await GetIt.I<FireStoreBase>().updatePassKey(docId, updateData);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

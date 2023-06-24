@@ -1,15 +1,7 @@
-import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:flutter/material.dart';
 
 class DetailsScreen extends StatelessWidget {
-  const DetailsScreen({
-    required this.updateKeyFunc,
-    required this.deleteKeyFunc,
-    super.key,
-  });
-
-  final Future<void> Function(String docId, Map<String,dynamic> map) updateKeyFunc;
-  final Future<void> Function(PassKey) deleteKeyFunc;
+  const DetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

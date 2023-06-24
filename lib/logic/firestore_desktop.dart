@@ -5,11 +5,25 @@ import 'package:dumbkey/logic/encryptor.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:firedart/firedart.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DesktopFirestore implements FireStoreBase {
   DesktopFirestore() {
-    database = Firestore.instance;
+    initFireDart();
     encryptor = AESEncryption();
+  }
+
+  void initFireDart() {
+    final projId = dotenv.get(
+      Constants.firebaseProjID,
+      fallback: Constants.noKey,
+    );
+
+    if (projId == Constants.noKey) {
+      throw Exception('Firebase project ID not found in .env file');
+    }
+    Firestore.initialize(projId);
+    database = Firestore.instance;
   }
 
   late final Firestore database;

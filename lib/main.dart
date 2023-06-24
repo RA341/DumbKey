@@ -1,34 +1,28 @@
 import 'dart:io';
-
+import 'package:dumbkey/logic/abstract_firestore.dart';
+import 'package:dumbkey/logic/firestore_desktop.dart';
+import 'package:dumbkey/logic/firestore_mobile.dart';
 import 'package:dumbkey/ui/home.dart';
 import 'package:dumbkey/utils/constants.dart';
-import 'package:dumbkey/utils/firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await dotenv.load();
-
+  final getIt = GetIt.instance;
   if (Platform.isWindows || Platform.isLinux) {
-    final projId = dotenv.get(
-      Constants.firebaseProjID,
-      fallback: Constants.noKey,
+    getIt.registerLazySingleton<FireStoreBase>(
+      DesktopFirestore.new,
+      instanceName: Constants.database,
     );
-
-    if (projId == Constants.noKey) {
-      throw Exception('Firebase project ID not found in .env file');
-    }
-    Firestore.initialize(projId);
   } else {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+    getIt.registerLazySingletonAsync<FireStoreBase>(
+      () async => await MobileFireStore.init(),
+      instanceName: Constants.database,
     );
   }
-
   runApp(const MyApp());
 }
 

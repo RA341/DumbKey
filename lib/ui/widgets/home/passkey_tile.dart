@@ -1,19 +1,16 @@
+import 'package:dumbkey/logic/abstract_firestore.dart';
 import 'package:dumbkey/ui/details_screen.dart';
 import 'package:dumbkey/ui/form_input.dart';
 import 'package:dumbkey/utils/passkey_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 
 class PasskeyTitle extends StatelessWidget {
   const PasskeyTitle({
     required this.passkey,
-    required this.updateKeyFunc,
-    required this.deleteKeyFunc,
     super.key,
   });
-
-  final Future<void> Function(String docId, Map<String,dynamic> map) updateKeyFunc;
-  final Future<void> Function(PassKey) deleteKeyFunc;
 
   final PassKey passkey;
 
@@ -49,7 +46,7 @@ class PasskeyTitle extends StatelessWidget {
             ),
           ),
         ),
-        onDismissed: (direction) async => await deleteKeyFunc(passkey),
+        onDismissed: (direction) async => await GetIt.I.get<FireStoreBase>().deletePassKey(passkey),
         confirmDismiss: (direction) => showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -72,16 +69,12 @@ class PasskeyTitle extends StatelessWidget {
         child: InkWell(
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => DetailsScreen(
-                deleteKeyFunc: deleteKeyFunc,
-                updateKeyFunc: updateKeyFunc,
-              ),
+              builder: (context) => const DetailsScreen(),
             ),
           ),
           onLongPress: () => Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => DetailsInputScreen(
-                updateKeyFunc: updateKeyFunc,
                 savedKey: passkey,
               ),
             ),
