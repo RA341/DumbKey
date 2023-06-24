@@ -29,7 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   cupertino_icons: ^1.0.2
-
+  get_it: ^7.6.0
   cloud_firestore: ^4.8.1
   firedart: ^0.9.5
   flutter:
