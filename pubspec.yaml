@@ -39,7 +39,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
-
+  path_provider:
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dumbkey/database/desktop/firestore_desktop.dart';
+import 'package:dumbkey/database/desktop/isar_firestore.dart';
 import 'package:dumbkey/database/firestore_mobile.dart';
 import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/ui/home.dart';
@@ -12,7 +13,7 @@ Future<void> main() async {
   await dotenv.load();
   final getIt = GetIt.instance;
   if (Platform.isWindows || Platform.isLinux) {
-    getIt.registerLazySingleton<FireStoreBase>(DesktopFirestore.new);
+    getIt.registerSingleton<FireStoreBase>(await initDesktopFirestore());
   } else {
     getIt.registerSingleton<FireStoreBase>(await initMobileFirestore());
   }

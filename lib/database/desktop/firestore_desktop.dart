@@ -7,7 +7,7 @@ import 'package:dumbkey/utils/helper_func.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class DesktopFirestore implements FireStoreBase {
+class DesktopFirestore {
   DesktopFirestore() {
     initFireDart();
     encryptor = AESEncryption();
