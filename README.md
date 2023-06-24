@@ -4,9 +4,6 @@ A dumb password manger
 
 
 # Currently working
-
-add database persistence
-
 add logging
 
 setup ci/cd
