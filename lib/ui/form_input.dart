@@ -1,4 +1,4 @@
-import 'package:dumbkey/logic/abstract_firestore.dart';
+import 'package:dumbkey/logic/firestore_stub.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/description_input.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/email_input.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/org_input.dart';

@@ -1,4 +1,4 @@
-import 'package:dumbkey/logic/abstract_firestore.dart';
+import 'package:dumbkey/logic/firestore_stub.dart';
 import 'package:dumbkey/ui/details_screen.dart';
 import 'package:dumbkey/ui/form_input.dart';
 import 'package:dumbkey/utils/passkey_model.dart';

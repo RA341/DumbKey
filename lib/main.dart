@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:dumbkey/logic/abstract_firestore.dart';
+import 'package:dumbkey/logic/firestore_stub.dart';
 import 'package:dumbkey/logic/firestore_desktop.dart';
 import 'package:dumbkey/logic/firestore_mobile.dart';
 import 'package:dumbkey/ui/home.dart';

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:dumbkey/logic/abstract_firestore.dart';
+import 'package:dumbkey/logic/firestore_stub.dart';
 import 'package:dumbkey/logic/encryptor.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/passkey_model.dart';
