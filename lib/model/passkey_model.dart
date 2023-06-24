@@ -1,6 +1,8 @@
 import 'package:dumbkey/utils/constants.dart';
 import 'package:isar/isar.dart';
 
+part 'passkey_model.g.dart';
+
 /// Used to store/retrieve passkey data from firebase
 @collection
 class PassKey {
