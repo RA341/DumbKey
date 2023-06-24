@@ -1,16 +1,24 @@
-# dumbkey
+# Dumbkey
 
-dumb password manger
+A dumb password manger
 
-# bugs
-bug in emulator that prevents firestore from working version 33
 
-# currently working
-improving ui
-add desktop api interface
+# Currently working
 
-# roadmap
+add desktop grpc/rest api for firestore interface
+
 desktop ui
-add tags to sort by movies/banks/etc or catagories
+
+setup ci/cd
+
+# Roadmap
+
+improving ui
+
+add tags to sort by movies/banks/etc or categories
+
 may be add a date field to model and remind user to update password in a set interval
-also add a field to store url to change password
+
+# Bugs
+
+bug in emulator that prevents firestore from working version 33
