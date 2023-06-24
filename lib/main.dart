@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:dumbkey/database/firestore_desktop.dart';
+import 'package:dumbkey/database/desktop/firestore_desktop.dart';
 import 'package:dumbkey/database/firestore_mobile.dart';
 import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/ui/home.dart';
