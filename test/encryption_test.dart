@@ -17,14 +17,8 @@ void main() {
         username: 'poaspdlkaskld',
       );
       final data2 = data;
-
       data2.crypt(encryptor.encrypt);
-      print(data2.passKey);
       data2.crypt(encryptor.decrypt);
-
-      print(data.passKey);
-      print(data2.passKey);
-
       expect(data2.passKey, data.passKey);
     });
   });
