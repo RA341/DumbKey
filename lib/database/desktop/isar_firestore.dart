@@ -28,6 +28,7 @@ class IsarFireStore implements FireStoreBase {
   @override
   Future<void> createPassKey(PassKey passkey) async {
     await firestore.createPassKey(passkey);
+    await isarCreateOrUpdate([passkey]);
   }
 
   @override
@@ -39,6 +40,7 @@ class IsarFireStore implements FireStoreBase {
   @override
   Future<void> updatePassKey(String docId, Map<String, dynamic> updateData) async {
     await firestore.updatePassKey(docId, updateData);
+    await isarCreateOrUpdate([PassKey.fromJson(updateData)]);
   }
 
   @override
