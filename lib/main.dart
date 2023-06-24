@@ -1,6 +1,10 @@
-import 'package:dumbkey/utils/firebase_options.dart';
+import 'dart:io';
+
 import 'package:dumbkey/ui/home.dart';
+import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -8,9 +12,22 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
+  if (Platform.isWindows || Platform.isLinux) {
+    final projId = dotenv.get(
+      Constants.firebaseProjID,
+      fallback: Constants.noKey,
+    );
+
+    if (projId == Constants.noKey) {
+      throw Exception('Firebase project ID not found in .env file');
+    }
+    Firestore.initialize(projId);
+  } else {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
 
   runApp(const MyApp());
 }
