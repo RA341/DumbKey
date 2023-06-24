@@ -1,7 +1,8 @@
-import 'package:dumbkey/logic/firestore_funcs.dart';
+import 'package:dumbkey/logic/abstract_firestore.dart';
+import 'package:dumbkey/logic/firestore_mobile.dart';
+import 'package:dumbkey/ui/form_input.dart';
 import 'package:dumbkey/ui/widgets/home/passkey_listview.dart';
 import 'package:dumbkey/utils/passkey_model.dart';
-import 'package:dumbkey/ui/form_input.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,7 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final FireStore database = FireStore();
+  final FireStoreBase database = MobileFireStore();
   late final Stream<List<PassKey>> passkeyStream;
 
   @override
