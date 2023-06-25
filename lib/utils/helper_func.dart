@@ -1,6 +1,6 @@
 import 'dart:math';
 
-int idGenerator({int length = 20}) {
+int idGenerator({int length = 15}) {
   final rnd = Random();
 
   var randomNum = 0;
