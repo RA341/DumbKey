@@ -176,11 +176,11 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
 
   Future<void> updateKeyFunc(Map<String, dynamic> updateData) async {
     assert(updateData[Constants.docId] != null, 'docId cannot be null');
-    final docId = updateData[Constants.docId] as String;
+    final docId = updateData[Constants.docId] as int;
     updateData.removeWhere((key, value) => value == null || value == '' || key == Constants.docId);
 
+    await GetIt.I<FireStoreBase>().updatePassKey(docId.toString(), updateData);
     try {
-      await GetIt.I<FireStoreBase>().updatePassKey(docId, updateData);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
