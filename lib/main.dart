@@ -1,25 +1,42 @@
 import 'dart:io';
+
 import 'package:dumbkey/database/desktop/isar_firestore.dart';
 import 'package:dumbkey/database/firestore_mobile.dart';
 import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/logic/settings_handler.dart';
+import 'package:dumbkey/model/passkey_model.dart';
+import 'package:dumbkey/model/settings.dart';
 import 'package:dumbkey/ui/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
+
+Future<void> initDatabase() async {
+  final dir = await getApplicationDocumentsDirectory();
+  final isar = await Isar.open(
+    [SettingsSchema, PassKeySchema],
+    directory: dir.path,
+  );
+  final getIt = GetIt.instance;
+  // ignore: cascade_invocations
+  getIt.registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar));
+
+  if (Platform.isWindows || Platform.isLinux) {
+    getIt.registerSingleton<FireStoreBase>(DesktopFireStore(isar));
+  } else {
+    getIt.registerSingleton<FireStoreBase>(await initMobileFirestore(isar));
+  }
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final getIt = GetIt.instance;
   // ignore: cascade_invocations
-  getIt.registerSingleton<SettingsHandler>(await SettingsHandler.initSettings());
+
   await dotenv.load();
-  if (Platform.isWindows || Platform.isLinux) {
-    getIt.registerSingleton<FireStoreBase>(await initDesktopFirestore());
-  } else {
-    getIt.registerSingleton<FireStoreBase>(await initMobileFirestore());
-  }
+  await initDatabase();
   runApp(const MyApp());
 }
 

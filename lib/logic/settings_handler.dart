@@ -1,26 +1,28 @@
 import 'package:dumbkey/model/settings.dart';
 import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
 
-class SettingsHandler{
+class SettingsHandler {
 
-  SettingsHandler._create({required Isar settings}){
+  SettingsHandler._create({required Isar settings, required Settings settingsInst,}){
     settingsDb = settings;
+    settingsInst = settingsInst;
   }
 
+  late final Settings settingsInst;
   late final Isar settingsDb;
 
-  static Future<SettingsHandler> initSettings() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final isar = await Isar.open(
-      [SettingsSchema],
-      directory: dir.path,
-    );
-    return SettingsHandler._create(settings: isar);
+  static Future<SettingsHandler> initSettings(Isar isar) async {
+    var config = await isar.settings.get(0);
+
+    if (config == null) {
+      config = Settings(id: 0);
+      await isar.writeTxn(() async => await isar.settings.put(config!));
+    }
+    return SettingsHandler._create(settings: isar,settingsInst: config);
   }
 
 
-  void addToOffline(int id){
-    
+  void addToOffline(int id) {
+
   }
 }

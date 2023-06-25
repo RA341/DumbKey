@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/logic/encryptor.dart';
@@ -9,17 +7,18 @@ import 'package:dumbkey/utils/firebase_options.dart';
 import 'package:dumbkey/utils/helper_func.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:isar/isar.dart';
 
 /// used this way because async constructors are not allowed
 /// we initialize firebase here as it
 /// removes dependency from main helps in tree shaking
-Future<MobileFireStore> initMobileFirestore() async {
+Future<MobileFireStore> initMobileFirestore(Isar isar) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  return MobileFireStore();
+  return MobileFireStore(isar);
 }
 
-class MobileFireStore implements FireStoreBase {
-  MobileFireStore() {
+class MobileFireStore extends FireStoreBase {
+  MobileFireStore(super.isar) {
     database = FirebaseFirestore.instance;
     encryptor = AESEncryption();
   }
@@ -29,9 +28,9 @@ class MobileFireStore implements FireStoreBase {
 
   @override
   Future<void> createPassKey(PassKey passkey) async {
-    passkey.crypt(encryptor.encrypt);
-    final doc = database.collection(Constants.mainCollection).doc();
-    passkey.docId = idGenerator();
+    passkey..crypt(encryptor.encrypt)
+    ..docId = idGenerator();
+    final doc = database.collection(Constants.mainCollection).doc(passkey.docId.toString());
     await doc.set(passkey.toJSON());
   }
 
