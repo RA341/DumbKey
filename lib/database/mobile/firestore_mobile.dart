@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/database/mobile/firestore_native.dart';
 import 'package:dumbkey/model/passkey_model.dart';
@@ -10,6 +11,7 @@ import 'package:isar/isar.dart';
 /// removes dependency from main helps in tree shaking
 Future<MobileFireStore> initMobileFirestore(Isar isar) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
   return MobileFireStore(isar);
 }
 
