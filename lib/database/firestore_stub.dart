@@ -22,9 +22,16 @@ abstract class FireStoreBase {
     });
   }
 
-  Future<void> isarCreateOrUpdate(List<PassKey> passkey) async {
+  Future<void> isarCreateOrUpdateAll(List<PassKey> passkey) async {
     await isarDb.writeTxn(() async {
       await isarDb.passKeys.putAll(passkey);
     });
   }
+
+  Future<void> isarCreateOrUpdate(PassKey passkey) async {
+    await isarDb.writeTxn(() async {
+      await isarDb.passKeys.put(passkey);
+    });
+  }
+
 }
