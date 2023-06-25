@@ -28,17 +28,18 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  cupertino_icons: ^1.0.2
-  get_it: ^7.6.0
-  cloud_firestore: ^4.8.1
-  firedart: ^0.9.5
   flutter:
     sdk: flutter
-  firebase_core: ^2.14.0
+  cupertino_icons: ^1.0.2
+
+  get_it: ^7.6.0
   encrypt: ^5.0.1
   flutter_dotenv: ^5.1.0
+
+  firedart: ^0.9.5
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
+
   path_provider:
 dev_dependencies:
   flutter_test:
