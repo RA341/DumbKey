@@ -1,8 +1,5 @@
-import 'dart:io';
-
-import 'package:dumbkey/database/desktop/firestore_dekstop.dart';
+import 'package:dumbkey/database/firestore_dekstop.dart';
 import 'package:dumbkey/database/firestore_stub.dart';
-import 'package:dumbkey/database/mobile/firestore_mobile.dart';
 import 'package:dumbkey/logic/settings_handler.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/model/settings.dart';
@@ -19,15 +16,10 @@ Future<void> initDatabase() async {
     [SettingsSchema, PassKeySchema],
     directory: dir.path,
   );
-  final getIt = GetIt.instance;
-  // ignore: cascade_invocations
-  getIt.registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar));
 
-  if (Platform.isWindows || Platform.isLinux) {
-    getIt.registerSingleton<FireStoreBase>(DesktopFireStore(isar));
-  } else {
-    getIt.registerSingleton<FireStoreBase>(await initMobileFirestore(isar));
-  }
+  GetIt.I
+    ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar))
+    ..registerSingleton<FireStoreBase>(DesktopFireStore(isar));
 }
 
 Future<void> main() async {
