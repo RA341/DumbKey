@@ -87,7 +87,7 @@ class PasskeyTitle extends StatelessWidget {
               copyButton(context, isUserName: true),
               Padding(
                 padding: const EdgeInsets.all(5),
-                child: Text(passkey.username ?? passkey.email ?? passkey.org),
+                child: Text(passkey.username ?? passkey.email ?? passkey.org ?? 'No username'),
               ),
               copyButton(context, isUserName: false),
             ],
@@ -104,7 +104,7 @@ class PasskeyTitle extends StatelessWidget {
       onPressed: () {
         Clipboard.setData(
           ClipboardData(
-            text: isUserName ? (passkey.username ?? passkey.email ?? '') : passkey.passKey,
+            text: isUserName ? (passkey.username ?? passkey.email ?? '') : passkey.passKey ?? '',
           ),
         );
         ScaffoldMessenger.of(ctx).showSnackBar(

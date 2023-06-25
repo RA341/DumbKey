@@ -75,8 +75,18 @@ int _passKeyEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.org.length * 3;
-  bytesCount += 3 + object.passKey.length * 3;
+  {
+    final value = object.org;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.passKey;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   {
     final value = object.username;
     if (value != null) {
@@ -109,8 +119,8 @@ PassKey _passKeyDeserialize(
     description: reader.readStringOrNull(offsets[0]),
     docId: id,
     email: reader.readStringOrNull(offsets[1]),
-    org: reader.readStringOrNull(offsets[2]) ?? 'any',
-    passKey: reader.readString(offsets[3]),
+    org: reader.readStringOrNull(offsets[2]),
+    passKey: reader.readStringOrNull(offsets[3]),
     username: reader.readStringOrNull(offsets[4]),
   );
   return object;
@@ -128,9 +138,9 @@ P _passKeyDeserializeProp<P>(
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
-      return (reader.readStringOrNull(offset) ?? 'any') as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
@@ -572,8 +582,24 @@ extension PassKeyQueryFilter
     });
   }
 
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> orgIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'org',
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> orgIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'org',
+      ));
+    });
+  }
+
   QueryBuilder<PassKey, PassKey, QAfterFilterCondition> orgEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -586,7 +612,7 @@ extension PassKeyQueryFilter
   }
 
   QueryBuilder<PassKey, PassKey, QAfterFilterCondition> orgGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -601,7 +627,7 @@ extension PassKeyQueryFilter
   }
 
   QueryBuilder<PassKey, PassKey, QAfterFilterCondition> orgLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -616,8 +642,8 @@ extension PassKeyQueryFilter
   }
 
   QueryBuilder<PassKey, PassKey, QAfterFilterCondition> orgBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -702,8 +728,24 @@ extension PassKeyQueryFilter
     });
   }
 
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> passKeyIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'passKey',
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> passKeyIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'passKey',
+      ));
+    });
+  }
+
   QueryBuilder<PassKey, PassKey, QAfterFilterCondition> passKeyEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -716,7 +758,7 @@ extension PassKeyQueryFilter
   }
 
   QueryBuilder<PassKey, PassKey, QAfterFilterCondition> passKeyGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -731,7 +773,7 @@ extension PassKeyQueryFilter
   }
 
   QueryBuilder<PassKey, PassKey, QAfterFilterCondition> passKeyLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -746,8 +788,8 @@ extension PassKeyQueryFilter
   }
 
   QueryBuilder<PassKey, PassKey, QAfterFilterCondition> passKeyBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -1180,13 +1222,13 @@ extension PassKeyQueryProperty
     });
   }
 
-  QueryBuilder<PassKey, String, QQueryOperations> orgProperty() {
+  QueryBuilder<PassKey, String?, QQueryOperations> orgProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'org');
     });
   }
 
-  QueryBuilder<PassKey, String, QQueryOperations> passKeyProperty() {
+  QueryBuilder<PassKey, String?, QQueryOperations> passKeyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'passKey');
     });

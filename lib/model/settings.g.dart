@@ -97,12 +97,13 @@ Settings _settingsDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Settings();
-  object.backupFileName = reader.readStringOrNull(offsets[0]);
-  object.backupPath = reader.readStringOrNull(offsets[1]);
-  object.id = id;
-  object.lastBackupDate = reader.readDateTimeOrNull(offsets[2]);
-  object.offlineQueue = reader.readLongList(offsets[3]);
+  final object = Settings(
+    backupFileName: reader.readStringOrNull(offsets[0]),
+    backupPath: reader.readStringOrNull(offsets[1]),
+    id: id,
+    lastBackupDate: reader.readDateTimeOrNull(offsets[2]),
+    offlineQueue: reader.readLongList(offsets[3]),
+  );
   return object;
 }
 

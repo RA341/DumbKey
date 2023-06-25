@@ -38,16 +38,16 @@ class PassKey {
 
   void crypt(String Function(String data) cryptFunc) {
     this
-      ..passKey = cryptFunc(passKey)
-      ..org = cryptFunc(org)
+      ..passKey = passKey != null ? cryptFunc(passKey!) : null
+      ..org = org != null ? cryptFunc(org!) : null
       ..email = email != null ? cryptFunc(email!) : null
       ..username = username != null ? cryptFunc(username!) : null
       ..description = description != null ? cryptFunc(description!) : null;
   }
 
   Id docId;
-  String org;
-  String passKey;
+  String? org;
+  String? passKey;
   String? email;
   String? username;
   String? description;

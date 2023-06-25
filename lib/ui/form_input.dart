@@ -40,8 +40,8 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
   @override
   void initState() {
     if (widget.savedKey != null) {
-      orgController.text = widget.savedKey!.org;
-      passkeyController.text = widget.savedKey!.passKey;
+      orgController.text = widget.savedKey!.org ?? '';
+      passkeyController.text = widget.savedKey!.passKey ?? '';
       emailController.text = widget.savedKey!.email ?? '';
       usernameController.text = widget.savedKey!.username ?? '';
       descriptionController.text = widget.savedKey!.description ?? '';
