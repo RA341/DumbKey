@@ -1,4 +1,4 @@
-import 'package:dumbkey/database/desktop/firestore_desktop.dart';
+import 'package:dumbkey/database/desktop/dart_firestore.dart';
 import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:isar/isar.dart';
