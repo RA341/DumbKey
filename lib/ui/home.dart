@@ -64,7 +64,8 @@ class _ListViewStreamBuilderState extends State<ListViewStreamBuilder> {
         } else if (snapshot.data == null) {
           return const Text('Stream returned is null');
         } else {
-          return const CircularProgressIndicator();
+          final data = snapshot.data ?? [];
+          return PasskeyListView(passkeyList: data);
         }
       },
     );
