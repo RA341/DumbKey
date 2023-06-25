@@ -16,7 +16,7 @@ class DesktopFireStore extends FireStoreBase {
   @override
   Future<void> createPassKey(PassKey passkey) async {
     await firestore.createPassKey(passkey);
-    await isarCreateOrUpdate([passkey]);
+    await isarCreateOrUpdate(passkey);
   }
 
   @override
@@ -27,8 +27,17 @@ class DesktopFireStore extends FireStoreBase {
 
   @override
   Future<void> updatePassKey(String docId, Map<String, dynamic> updateData) async {
+    assert(
+    updateData.containsKey('docId'),
+    'update data does not contain ID,$updateData',
+    );
+    assert(
+    updateData.containsValue(null),
+    'update data contains null,$updateData',
+    );
+
     await firestore.updatePassKey(docId, updateData);
-    await isarCreateOrUpdate([PassKey.fromJson(updateData)]);
+    await isarCreateOrUpdate(PassKey.fromJson(updateData));
   }
 
   @override
@@ -38,7 +47,7 @@ class DesktopFireStore extends FireStoreBase {
 
   void _listenToChangesFromFireBase() {
     firestore.fetchAllPassKeys().listen((documents) async {
-      await isarCreateOrUpdate(documents);
+      await isarCreateOrUpdateAll(documents);
     });
   }
 
