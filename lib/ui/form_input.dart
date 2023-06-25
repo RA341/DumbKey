@@ -1,4 +1,4 @@
-import 'package:dumbkey/database/firestore_dekstop.dart';
+import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/description_input.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/email_input.dart';
@@ -163,7 +163,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
       description: data[Constants.description] as String?,
     );
 
-    await GetIt.I<DesktopFireStore>().createPassKey(newPasskey);
+    await GetIt.I<DatabaseHandler>().createPassKey(newPasskey);
     try {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -179,7 +179,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
     final docId = updateData[Constants.docId] as int;
     updateData.removeWhere((key, value) => value == null || value == '' || key == Constants.docId);
 
-    await GetIt.I<DesktopFireStore>().updatePassKey(docId.toString(), updateData);
+    await GetIt.I<DatabaseHandler>().updatePassKey(docId.toString(), updateData);
     try {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

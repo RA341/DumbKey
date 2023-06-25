@@ -1,4 +1,4 @@
-import 'package:dumbkey/database/firestore_dekstop.dart';
+import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/logic/settings_handler.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/model/settings.dart';
@@ -19,7 +19,7 @@ Future<void> initDatabase() async {
   GetIt.I
     ..registerLazySingleton<Isar>(() => isar)
     ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar))
-    ..registerSingleton<DesktopFireStore>(DesktopFireStore());
+    ..registerSingleton<DatabaseHandler>(DatabaseHandler());
 }
 
 Future<void> main() async {

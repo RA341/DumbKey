@@ -1,10 +1,10 @@
 import 'package:dumbkey/database/dart_firestore.dart';
-import 'package:dumbkey/database/firestore_stub.dart';
+import 'package:dumbkey/database/isar_mixin.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:isar/isar.dart';
 
-class DesktopFireStore with IsarDbMixin {
-  DesktopFireStore() {
+class DatabaseHandler with IsarDbMixin {
+  DatabaseHandler() {
     firestore = DartFireStore();
     _listenToChangesFromFireBase();
   }
@@ -38,7 +38,7 @@ class DesktopFireStore with IsarDbMixin {
       updateData.containsKey('docId'),
       'update data does not contain ID,$updateData',
     );
-
+    print(updateData); /// possible bug here isar not updating
     await isarCreateOrUpdate(PassKey.fromJson(updateData));
   }
 
@@ -49,6 +49,16 @@ class DesktopFireStore with IsarDbMixin {
 
   void _listenToChangesFromFireBase() {
     firestore.fetchAllPassKeys().listen((documents) async {
+      final allPassKeys = await isarDb.passKeys.where().findAll();
+
+      for (final passKey in allPassKeys) {
+        // remove the passkey locally if not present in firebase
+        // used here because other devices can delete the passkey
+        if (documents.contains(passKey) == false) {
+          await isarDelete(passKey.docId);
+        }
+      }
+
       await isarCreateOrUpdateAll(documents);
     });
   }
