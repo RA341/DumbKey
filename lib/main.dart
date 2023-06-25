@@ -1,5 +1,4 @@
 import 'package:dumbkey/database/firestore_dekstop.dart';
-import 'package:dumbkey/database/firestore_stub.dart';
 import 'package:dumbkey/logic/settings_handler.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/model/settings.dart';
@@ -18,14 +17,13 @@ Future<void> initDatabase() async {
   );
 
   GetIt.I
+    ..registerLazySingleton<Isar>(() => isar)
     ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar))
-    ..registerSingleton<FireStoreBase>(DesktopFireStore(isar));
+    ..registerSingleton<DesktopFireStore>(DesktopFireStore());
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // ignore: cascade_invocations
 
   await dotenv.load();
   await initDatabase();

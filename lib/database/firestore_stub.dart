@@ -1,20 +1,10 @@
 import 'package:dumbkey/model/passkey_model.dart';
+import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 
-abstract class FireStoreBase {
-  FireStoreBase(Isar isar) {
-    isarDb = isar;
-  }
+mixin IsarDbMixin {
 
-  late final Isar isarDb;
-
-  Future<void> createPassKey(PassKey passkey);
-
-  Future<void> deletePassKey(PassKey passkey);
-
-  Future<void> updatePassKey(String docId, Map<String, dynamic> updateData);
-
-  Stream<List<PassKey>> fetchAllPassKeys();
+  final Isar isarDb = GetIt.I.get<Isar>();
 
   Future<void> isarDelete(int id) async {
     await isarDb.writeTxn(() async {
@@ -33,5 +23,4 @@ abstract class FireStoreBase {
       await isarDb.passKeys.put(passkey);
     });
   }
-
 }

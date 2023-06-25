@@ -1,6 +1,6 @@
 // ignore_for_file: inference_failure_on_instance_creation
 
-import 'package:dumbkey/database/firestore_stub.dart';
+import 'package:dumbkey/database/firestore_dekstop.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/ui/details_screen.dart';
 import 'package:dumbkey/ui/form_input.dart';
@@ -48,7 +48,8 @@ class PasskeyTitle extends StatelessWidget {
             ),
           ),
         ),
-        onDismissed: (direction) async => await GetIt.I.get<FireStoreBase>().deletePassKey(passkey),
+        onDismissed: (direction) async =>
+            await GetIt.I.get<DesktopFireStore>().deletePassKey(passkey),
         confirmDismiss: (direction) => showDialog(
           context: context,
           builder: (context) => AlertDialog(

@@ -1,4 +1,4 @@
-import 'package:dumbkey/database/firestore_stub.dart';
+import 'package:dumbkey/database/firestore_dekstop.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/ui/form_input.dart';
 import 'package:dumbkey/ui/widgets/home/passkey_listview.dart';
@@ -45,7 +45,7 @@ class _ListViewStreamBuilderState extends State<ListViewStreamBuilder> {
 
   @override
   void initState() {
-    passkeyStream = GetIt.I.get<FireStoreBase>().fetchAllPassKeys();
+    passkeyStream = GetIt.I.get<DesktopFireStore>().fetchAllPassKeys();
     super.initState();
   }
 
