@@ -4,6 +4,9 @@ A dumb password manger
 
 
 # Currently working
+
+add offline queue that syncs with firestore
+
 add logging
 
 setup ci/cd

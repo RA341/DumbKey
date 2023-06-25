@@ -35,7 +35,7 @@ dependencies:
   get_it: ^7.6.0
   encrypt: ^5.0.1
   flutter_dotenv: ^5.1.0
-
+  logger: 1.4.0
   firedart: ^0.9.5
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1

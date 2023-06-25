@@ -7,9 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<void> initDatabase() async {
+  final log = Logger(
+    printer: PrettyPrinter(
+      methodCount: 0,
+      errorMethodCount: 3,
+      lineLength: 80,
+    ),
+  );
   final dir = await getApplicationDocumentsDirectory();
   final isar = await Isar.open(
     [SettingsSchema, PassKeySchema],
@@ -17,6 +25,7 @@ Future<void> initDatabase() async {
   );
 
   GetIt.I
+    ..registerSingleton<Logger>(log)
     ..registerLazySingleton<Isar>(() => isar)
     ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar))
     ..registerSingleton<DatabaseHandler>(DatabaseHandler());
