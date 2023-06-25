@@ -24,7 +24,13 @@ void main() {
     });
   });
 
-  test('test random generator',() {
-   idGenerator();
+  test('test random generator', () {
+    const length = 5;
+    final da = idGenerator(length: length);
+    expect(da.runtimeType, int);
+    expect(
+      da.toString().length,
+      length,
+    );
   });
 }
