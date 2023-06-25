@@ -7,20 +7,19 @@ A dumb password manger
 
 add offline queue that syncs with firestore
 
-
-setup ci/cd
-
-https://github.com/vykes-mac/flutter_env/blob/dev/.github/workflows/ci.yml
-
-desktop ui
-
-# Roadmap
-
 add connectivity checks and insert into a persistence queue through isar disable buttons if offline
+
+add filtering, sorting, and searching, tagging
 
 improving ui
 
 add tags to sort by movies/banks/etc or categories
+
+desktop ui
+
+
+# Roadmap
+[setup ci/cd](https://github.com/vykes-mac/flutter_env/blob/dev/.github/workflows/ci.yml)
 
 may be add a date field to model and remind user to update password in a set interval
 
