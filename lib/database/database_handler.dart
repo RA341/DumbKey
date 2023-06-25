@@ -7,7 +7,7 @@ import 'package:logger/logger.dart';
 
 class DatabaseHandler with IsarDbMixin {
   DatabaseHandler() {
-    firestore = DartFireStore();
+    firestore = GetIt.I.get<DartFireStore>();
     _listenToChangesFromFireBase();
   }
 
