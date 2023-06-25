@@ -137,7 +137,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
   }
 
   Map<String, dynamic> convertInputToList() {
-    final passKey = passkeyController.text;
+    final passKey = passkeyController.text.isEmpty ? null : passkeyController.text;
     final org = orgController.text.isEmpty ? Constants.defaultOrgName : orgController.text;
     final email = emailController.text.isEmpty ? null : emailController.text;
     final username = usernameController.text.isEmpty ? null : usernameController.text;
@@ -155,16 +155,16 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
 
   Future<void> createFunc(Map<String, dynamic> data) async {
     final newPasskey = PassKey(
-      org: data[Constants.org] as String,
-      passKey: data[Constants.passKey] as String,
+      org: data[Constants.org] as String?,
+      passKey: data[Constants.passKey] as String?,
       docId: data[Constants.docId] as int,
       email: data[Constants.email] as String?,
       username: data[Constants.username] as String?,
       description: data[Constants.description] as String?,
     );
 
-    await GetIt.I<DatabaseHandler>().createPassKey(newPasskey);
     try {
+      await GetIt.I<DatabaseHandler>().createPassKey(newPasskey);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -180,8 +180,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
     updateData.removeWhere((key, value) => value == null || value == '' || key == Constants.docId);
 
     await GetIt.I<DatabaseHandler>().updatePassKey(docId.toString(), updateData);
-    try {
-    } catch (e) {
+    try {} catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Could not update $e'),
