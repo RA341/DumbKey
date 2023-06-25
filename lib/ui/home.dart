@@ -4,6 +4,7 @@ import 'package:dumbkey/ui/form_input.dart';
 import 'package:dumbkey/ui/widgets/home/passkey_listview.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -59,7 +60,7 @@ class _ListViewStreamBuilderState extends State<ListViewStreamBuilder> {
           final data = snapshot.data ?? [];
           return PasskeyListView(passkeyList: data);
         } else if (snapshot.hasError) {
-          print(snapshot.error);
+          GetIt.I.get<Logger>().e('Stream builder returned error',[snapshot.error]);
           return Text(snapshot.error.toString());
         } else if (snapshot.data == null) {
           return const Text('Stream returned is null');

@@ -7,7 +7,6 @@ A dumb password manger
 
 add offline queue that syncs with firestore
 
-add logging
 
 setup ci/cd
 
@@ -27,7 +26,10 @@ may be add a date field to model and remind user to update password in a set int
 
 # done
 
+~~add logging~~
+
 ~~add desktop grpc/rest api for firestore interface~~
+
 ~~add persistence layer for desktop not supported by firedart~~
 
 

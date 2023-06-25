@@ -1,7 +1,9 @@
 import 'package:dumbkey/database/dart_firestore.dart';
 import 'package:dumbkey/database/isar_mixin.dart';
 import 'package:dumbkey/model/passkey_model.dart';
+import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
+import 'package:logger/logger.dart';
 
 class DatabaseHandler with IsarDbMixin {
   DatabaseHandler() {
@@ -13,12 +15,14 @@ class DatabaseHandler with IsarDbMixin {
 
   
   Future<void> createPassKey(PassKey passkey) async {
+    GetIt.I.get<Logger>().d('Creating Data',passkey.toJSON());
     await firestore.createPassKey(passkey);
     await isarCreateOrUpdate(passkey);
   }
 
   
   Future<void> deletePassKey(PassKey passkey) async {
+    GetIt.I.get<Logger>().d('Deleting Data',passkey.toJSON());
     await firestore.deletePassKey(passkey);
     await isarDelete(passkey.docId); // let the fire store complete first
   }
@@ -38,10 +42,9 @@ class DatabaseHandler with IsarDbMixin {
       updateData.containsKey('docId'),
       'update data does not contain ID,$updateData',
     );
-    print(updateData); /// possible bug here isar not updating
+    GetIt.I.get<Logger>().d('Update Data',[updateData]);
     await isarCreateOrUpdate(PassKey.fromJson(updateData));
   }
-
   
   Stream<List<PassKey>> fetchAllPassKeys() {
     return isarDb.passKeys.where().build().watch(fireImmediately: true);
