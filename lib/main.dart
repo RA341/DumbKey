@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'package:dumbkey/database/desktop/firestore_desktop.dart';
 import 'package:dumbkey/database/desktop/isar_firestore.dart';
 import 'package:dumbkey/database/firestore_mobile.dart';
 import 'package:dumbkey/database/firestore_stub.dart';
+import 'package:dumbkey/logic/settings_handler.dart';
 import 'package:dumbkey/ui/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,8 +10,11 @@ import 'package:get_it/get_it.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load();
+
   final getIt = GetIt.instance;
+  // ignore: cascade_invocations
+  getIt.registerSingleton<SettingsHandler>(await SettingsHandler.initSettings());
+  await dotenv.load();
   if (Platform.isWindows || Platform.isLinux) {
     getIt.registerSingleton<FireStoreBase>(await initDesktopFirestore());
   } else {
