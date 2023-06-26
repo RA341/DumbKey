@@ -6,6 +6,7 @@ import 'package:dumbkey/ui/widgets/edit_buttons/org_input.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/password_input.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/username_input.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -149,7 +150,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
       Constants.email: email,
       Constants.username: username,
       Constants.description: description,
-      Constants.docId: widget.savedKey?.docId ?? 0,// possible bug originating
+      Constants.docId: widget.savedKey?.docId ?? idGenerator(),
       Constants.syncStatus: widget.savedKey?.syncStatus ?? true,
     };
   }
