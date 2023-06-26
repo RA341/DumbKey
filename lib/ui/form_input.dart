@@ -149,18 +149,20 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
       Constants.email: email,
       Constants.username: username,
       Constants.description: description,
-      Constants.docId: widget.savedKey?.docId ?? 0, // possible bug originating
+      Constants.docId: widget.savedKey?.docId ?? 0,// possible bug originating
+      Constants.syncStatus: widget.savedKey?.syncStatus ?? true,
     };
   }
 
   Future<void> createFunc(Map<String, dynamic> data) async {
     final newPasskey = PassKey(
+      docId: data[Constants.docId] as int,
+      syncStatus: data[Constants.syncStatus] as bool,
       org: data[Constants.org] as String?,
       passKey: data[Constants.passKey] as String?,
-      docId: data[Constants.docId] as int,
       email: data[Constants.email] as String?,
       username: data[Constants.username] as String?,
-      description: data[Constants.description] as String?, syncStatus: true,
+      description: data[Constants.description] as String?,
     );
 
     try {
@@ -176,10 +178,9 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
 
   Future<void> updateKeyFunc(Map<String, dynamic> updateData) async {
     assert(updateData[Constants.docId] != null, 'docId cannot be null');
-    final docId = updateData[Constants.docId] as int;
-    updateData.removeWhere((key, value) => value == null || value == '' || key == Constants.docId);
+    updateData.removeWhere((key, value) => value == null || value == '');
 
-    await GetIt.I<DatabaseHandler>().updatePassKey(docId.toString(), updateData);
+    await GetIt.I<DatabaseHandler>().updatePassKey(updateData);
     try {} catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

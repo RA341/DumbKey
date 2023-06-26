@@ -18,8 +18,8 @@ class PassKey {
   });
 
   factory PassKey.fromJson(Map<String, dynamic> json) => PassKey(
-        passKey: json[Constants.passKey] as String,
-        org: json[Constants.org] as String,
+        passKey: json[Constants.passKey] as String?,
+        org: json[Constants.org] as String?,
         description: json[Constants.description] as String?,
         email: json[Constants.email] as String?,
         username: json[Constants.username] as String?,
