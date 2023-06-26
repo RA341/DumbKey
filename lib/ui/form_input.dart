@@ -160,7 +160,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
       docId: data[Constants.docId] as int,
       email: data[Constants.email] as String?,
       username: data[Constants.username] as String?,
-      description: data[Constants.description] as String?,
+      description: data[Constants.description] as String?, syncStatus: true,
     );
 
     try {

@@ -37,8 +37,13 @@ const PassKeySchema = CollectionSchema(
       name: r'passKey',
       type: IsarType.string,
     ),
-    r'username': PropertySchema(
+    r'syncStatus': PropertySchema(
       id: 4,
+      name: r'syncStatus',
+      type: IsarType.bool,
+    ),
+    r'username': PropertySchema(
+      id: 5,
       name: r'username',
       type: IsarType.string,
     )
@@ -106,7 +111,8 @@ void _passKeySerialize(
   writer.writeString(offsets[1], object.email);
   writer.writeString(offsets[2], object.org);
   writer.writeString(offsets[3], object.passKey);
-  writer.writeString(offsets[4], object.username);
+  writer.writeBool(offsets[4], object.syncStatus);
+  writer.writeString(offsets[5], object.username);
 }
 
 PassKey _passKeyDeserialize(
@@ -121,7 +127,8 @@ PassKey _passKeyDeserialize(
     email: reader.readStringOrNull(offsets[1]),
     org: reader.readStringOrNull(offsets[2]),
     passKey: reader.readStringOrNull(offsets[3]),
-    username: reader.readStringOrNull(offsets[4]),
+    syncStatus: reader.readBool(offsets[4]),
+    username: reader.readStringOrNull(offsets[5]),
   );
   return object;
 }
@@ -142,6 +149,8 @@ P _passKeyDeserializeProp<P>(
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
+      return (reader.readBool(offset)) as P;
+    case 5:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -874,6 +883,16 @@ extension PassKeyQueryFilter
     });
   }
 
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> syncStatusEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'syncStatus',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<PassKey, PassKey, QAfterFilterCondition> usernameIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1076,6 +1095,18 @@ extension PassKeyQuerySortBy on QueryBuilder<PassKey, PassKey, QSortBy> {
     });
   }
 
+  QueryBuilder<PassKey, PassKey, QAfterSortBy> sortBySyncStatus() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncStatus', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterSortBy> sortBySyncStatusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncStatus', Sort.desc);
+    });
+  }
+
   QueryBuilder<PassKey, PassKey, QAfterSortBy> sortByUsername() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'username', Sort.asc);
@@ -1151,6 +1182,18 @@ extension PassKeyQuerySortThenBy
     });
   }
 
+  QueryBuilder<PassKey, PassKey, QAfterSortBy> thenBySyncStatus() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncStatus', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterSortBy> thenBySyncStatusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'syncStatus', Sort.desc);
+    });
+  }
+
   QueryBuilder<PassKey, PassKey, QAfterSortBy> thenByUsername() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'username', Sort.asc);
@@ -1194,6 +1237,12 @@ extension PassKeyQueryWhereDistinct
     });
   }
 
+  QueryBuilder<PassKey, PassKey, QDistinct> distinctBySyncStatus() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'syncStatus');
+    });
+  }
+
   QueryBuilder<PassKey, PassKey, QDistinct> distinctByUsername(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1231,6 +1280,12 @@ extension PassKeyQueryProperty
   QueryBuilder<PassKey, String?, QQueryOperations> passKeyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'passKey');
+    });
+  }
+
+  QueryBuilder<PassKey, bool, QQueryOperations> syncStatusProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'syncStatus');
     });
   }
 
