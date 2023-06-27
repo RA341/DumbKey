@@ -29,10 +29,14 @@ class AESEncryption {
   }
 
   Map<String, dynamic> encryptMap(Map<String, dynamic> data) {
-    for (final key in data.keys) {
-      if (key == Constants.syncStatus || key == Constants.docId) continue;
-      data[key] = data[key] == null ? data[key] : encrypt(data[key] as String);
+    try {
+      for (final key in data.keys) {
+        if (key == Constants.syncStatus || key == Constants.docId) continue;
+        data[key] = data[key] == null ? data[key] : encrypt(data[key] as String);
+      }
+      return data;
+    } catch (e) {
+      throw Exception('Error encrypting map($data}): $e');
     }
-    return data;
   }
 }

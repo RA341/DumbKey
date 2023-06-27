@@ -15,7 +15,7 @@ void main() {
         passKey: 'pooop',
         org: 'nunya',
         email: 'topasd.lasjkd@gmoasl.com',
-        username: 'poaspdlkaskld', syncStatus: true,
+        username: 'poaspdlkaskld', syncStatus: SyncStatus.synced,
       );
       final data2 = data;
       data2.crypt(encryptor.encrypt);

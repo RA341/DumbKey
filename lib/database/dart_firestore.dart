@@ -27,28 +27,46 @@ class DartFireStore {
   late final AESEncryption encryptor;
 
   Future<void> createPassKey(Map<String,dynamic> data) async {
-    final encrypted = encryptor.encryptMap(data);
+    try {
+      final encrypted = encryptor.encryptMap(data);
 
-    await database
-        .collection(Constants.mainCollection)
-        .document((encrypted[Constants.docId] as int).toString()).set(encrypted);
+      await database
+          .collection(Constants.mainCollection)
+          .document((encrypted[Constants.docId] as int).toString())
+          .set(encrypted);
+    } catch (e) {
+      throw Exception('Error creating passkey($data): $e');
+    }
   }
 
   Future<void> deletePassKey(int docId) async {
-    await database
-        .collection(Constants.mainCollection)
-        .document(docId.toString())
-        .delete();
+    try {
+      await database.collection(Constants.mainCollection).document(docId.toString()).delete();
+    } catch (e) {
+      throw Exception('Error deleting passkey(docid:$docId): $e');
+    }
   }
 
   Future<void> updatePassKey(Map<String, dynamic> updateData) async{
-    final encrypted = encryptor.encryptMap(updateData);
-    await database.collection(Constants.mainCollection).document((encrypted[Constants.docId] as int).toString()).update(encrypted);
+    try {
+      final encrypted = encryptor.encryptMap(updateData);
+      await database
+          .collection(Constants.mainCollection)
+          .document((encrypted[Constants.docId] as int).toString())
+          .update(encrypted);
+    } catch (e) {
+      throw Exception('Error updating passkey($updateData): $e');
+    }
   }
 
   Stream<List<PassKey>> fetchAllPassKeys() {
-    return database.collection('main').stream.map(
-          (docs) => docs.map((doc) => PassKey.fromJson(doc.map)..crypt(encryptor.decrypt)).toList(),
-        );
+    try {
+      return database.collection('main').stream.map(
+            (docs) =>
+                docs.map((doc) => PassKey.fromJson(doc.map)..crypt(encryptor.decrypt)).toList(),
+          );
+    } catch (e) {
+      throw Exception('Error fetching all passkeys: $e');
+    }
   }
 }
