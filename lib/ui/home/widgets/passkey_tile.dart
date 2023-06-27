@@ -88,7 +88,9 @@ class PasskeyTitle extends StatelessWidget {
               copyButton(context, isUserName: true),
               Padding(
                 padding: const EdgeInsets.all(5),
-                child: Text(passkey.username ?? passkey.email ?? passkey.org ?? 'No username'),
+                child: Text(passkey.username ?? passkey.email ?? passkey.org ?? 'No username',style: TextStyle(
+                  color: passkey.syncStatus == SyncStatus.synced ? Colors.white : Colors.red,
+                )),
               ),
               copyButton(context, isUserName: false),
             ],

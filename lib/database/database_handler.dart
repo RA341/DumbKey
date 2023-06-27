@@ -194,7 +194,6 @@ class DatabaseHandler with IsarDbMixin {
       logger
         ..e('Error adding Data to firebase', [error, stackTrace])
         ..d('data not updated', passkey.toJSON());
-      passkey.syncStatus = SyncStatus.notSynced;
     });
   }
 

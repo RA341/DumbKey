@@ -7,6 +7,8 @@ A dumb password manger
 
 add filtering, sorting, and searching, tagging
 
+local de sync data is syncing before firebase adds it
+
 add tags to sort by movies/banks/etc or categories
 
 add ui to show device is offline or online

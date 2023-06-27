@@ -10,10 +10,16 @@ class PasskeyListView extends StatelessWidget {
 
   final List<PassKey> passkeyList;
 
+
   @override
   Widget build(BuildContext context) {
+    final sortedBySyncStatus = <PassKey>[];
+    final notSynced =
+    passkeyList.where((e) => e.syncStatus == SyncStatus.notSynced).toList();
+    final synced = passkeyList.where((e) => e.syncStatus == SyncStatus.synced).toList();
+    sortedBySyncStatus.addAll([...synced, ...notSynced]);
     return ListView(
-      children: passkeyList.map((e) => PasskeyTitle(passkey: e)).toList(),
+      children: sortedBySyncStatus.map((e) => PasskeyTitle(passkey: e)).toList(),
     );
   }
 }

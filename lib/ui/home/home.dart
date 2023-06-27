@@ -60,7 +60,7 @@ class _ListViewStreamBuilderState extends State<ListViewStreamBuilder> {
           final data = snapshot.data ?? [];
           return PasskeyListView(passkeyList: data);
         } else if (snapshot.hasError) {
-          GetIt.I.get<Logger>().e('Stream builder returned error',[snapshot.error]);
+          GetIt.I.get<Logger>().e('Stream builder returned error', [snapshot.error]);
           return Text(snapshot.error.toString());
         } else if (snapshot.data == null) {
           return const Text('Stream returned is null');
