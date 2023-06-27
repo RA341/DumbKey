@@ -21,6 +21,8 @@ desktop ui
 # Roadmap
 [setup ci/cd](https://github.com/vykes-mac/flutter_env/blob/dev/.github/workflows/ci.yml)
 
+add password leak check from [haveibeenpwned](https://haveibeenpwned.com/Passwords)
+
 may be add a date field to model and remind user to update password in a set interval
 
 # done
