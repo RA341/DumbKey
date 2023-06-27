@@ -1,7 +1,7 @@
 import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/model/passkey_model.dart';
-import 'package:dumbkey/ui/form_input.dart';
-import 'package:dumbkey/ui/widgets/home/passkey_listview.dart';
+import 'package:dumbkey/ui/form/form_input.dart';
+import 'package:dumbkey/ui/home/widgets/passkey_listview.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';

@@ -1,10 +1,10 @@
 import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/model/passkey_model.dart';
-import 'package:dumbkey/ui/widgets/edit_buttons/description_input.dart';
-import 'package:dumbkey/ui/widgets/edit_buttons/email_input.dart';
-import 'package:dumbkey/ui/widgets/edit_buttons/org_input.dart';
-import 'package:dumbkey/ui/widgets/edit_buttons/password_input.dart';
-import 'package:dumbkey/ui/widgets/edit_buttons/username_input.dart';
+import 'package:dumbkey/ui/form/fields/description_input.dart';
+import 'package:dumbkey/ui/form/fields/email_input.dart';
+import 'package:dumbkey/ui/form/fields/org_input.dart';
+import 'package:dumbkey/ui/form/fields/password_input.dart';
+import 'package:dumbkey/ui/form/fields/username_input.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter/material.dart';

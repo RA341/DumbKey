@@ -2,7 +2,7 @@ import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/logic/settings_handler.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/model/settings.dart';
-import 'package:dumbkey/ui/home.dart';
+import 'package:dumbkey/ui/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';

@@ -2,8 +2,8 @@
 
 import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/model/passkey_model.dart';
-import 'package:dumbkey/ui/details_screen.dart';
-import 'package:dumbkey/ui/form_input.dart';
+import 'package:dumbkey/ui/details/details_screen.dart';
+import 'package:dumbkey/ui/form/form_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';

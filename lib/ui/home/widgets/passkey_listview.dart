@@ -1,5 +1,5 @@
 import 'package:dumbkey/model/passkey_model.dart';
-import 'package:dumbkey/ui/widgets/home/passkey_tile.dart';
+import 'package:dumbkey/ui/home/widgets/passkey_tile.dart';
 import 'package:flutter/material.dart';
 
 class PasskeyListView extends StatelessWidget {
@@ -13,13 +13,7 @@ class PasskeyListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: passkeyList
-          .map(
-            (e) => PasskeyTitle(
-              passkey: e,
-            ),
-          )
-          .toList(),
+      children: passkeyList.map((e) => PasskeyTitle(passkey: e)).toList(),
     );
   }
 }
