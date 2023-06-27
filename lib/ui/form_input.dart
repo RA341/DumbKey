@@ -6,6 +6,7 @@ import 'package:dumbkey/ui/widgets/edit_buttons/org_input.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/password_input.dart';
 import 'package:dumbkey/ui/widgets/edit_buttons/username_input.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -149,19 +150,13 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
       Constants.email: email,
       Constants.username: username,
       Constants.description: description,
-      Constants.docId: widget.savedKey?.docId ?? 0, // possible bug originating
+      Constants.docId: widget.savedKey?.docId ?? idGenerator(),
+      Constants.syncStatus: widget.savedKey?.syncStatus.index ?? SyncStatus.synced.index,
     };
   }
 
   Future<void> createFunc(Map<String, dynamic> data) async {
-    final newPasskey = PassKey(
-      org: data[Constants.org] as String?,
-      passKey: data[Constants.passKey] as String?,
-      docId: data[Constants.docId] as int,
-      email: data[Constants.email] as String?,
-      username: data[Constants.username] as String?,
-      description: data[Constants.description] as String?,
-    );
+    final newPasskey = PassKey.fromJson(data);
 
     try {
       await GetIt.I<DatabaseHandler>().createPassKey(newPasskey);
@@ -176,11 +171,11 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
 
   Future<void> updateKeyFunc(Map<String, dynamic> updateData) async {
     assert(updateData[Constants.docId] != null, 'docId cannot be null');
-    final docId = updateData[Constants.docId] as int;
-    updateData.removeWhere((key, value) => value == null || value == '' || key == Constants.docId);
+    updateData.removeWhere((key, value) => value == null || value == '');
 
-    await GetIt.I<DatabaseHandler>().updatePassKey(docId.toString(), updateData);
-    try {} catch (e) {
+    try {
+      await GetIt.I<DatabaseHandler>().updatePassKey(updateData);
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Could not update $e'),

@@ -16,4 +16,5 @@ class Constants{
   static const String username = 'username';
   static const String description = 'description';
   static const String docId = 'docId';
+  static const String syncStatus = 'syncstatus';
 }

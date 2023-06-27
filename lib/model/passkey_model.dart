@@ -8,8 +8,9 @@ part 'passkey_model.g.dart';
 class PassKey {
   /// constructor
   PassKey({
+    required this.syncStatus,
     required this.docId,
-    required this.passKey,
+    this.passKey,
     this.org = 'any',
     this.email,
     this.username,
@@ -17,12 +18,13 @@ class PassKey {
   });
 
   factory PassKey.fromJson(Map<String, dynamic> json) => PassKey(
-        passKey: json[Constants.passKey] as String,
-        org: json[Constants.org] as String,
+        passKey: json[Constants.passKey] as String?,
+        org: json[Constants.org] as String?,
         description: json[Constants.description] as String?,
         email: json[Constants.email] as String?,
         username: json[Constants.username] as String?,
         docId: json[Constants.docId] as int,
+    syncStatus: SyncStatus.values[(json[Constants.syncStatus] as int)],
       );
 
   Map<String, dynamic> toJSON() {
@@ -33,6 +35,7 @@ class PassKey {
     m[Constants.passKey] = passKey;
     m[Constants.description] = description;
     m[Constants.docId] = docId;
+    m[Constants.syncStatus] = syncStatus.index;
     return m;
   }
 
@@ -51,4 +54,15 @@ class PassKey {
   String? email;
   String? username;
   String? description;
+  @enumerated
+  SyncStatus syncStatus;
+
+
+
+}
+
+enum SyncStatus {
+  notSynced,
+  synced,
+  deleted,
 }

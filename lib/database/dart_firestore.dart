@@ -1,7 +1,6 @@
 import 'package:dumbkey/logic/encryptor.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/utils/constants.dart';
-import 'package:dumbkey/utils/helper_func.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
@@ -28,34 +27,47 @@ class DartFireStore {
   late final Firestore database;
   late final AESEncryption encryptor;
 
-  Future<void> createPassKey(PassKey passkey) async {
-    final docId = idGenerator();
-    passkey
-      ..docId = docId
-      ..crypt(encryptor.encrypt);
+  Future<void> createPassKey(Map<String,dynamic> data) async {
+    try {
+      final encrypted = encryptor.encryptMap(data);
 
-    await database
-        .collection(Constants.mainCollection)
-        .document(docId.toString()).set(passkey.toJSON());
-  }
-
-  Future<void> deletePassKey(PassKey passkey) async {
-    await database
-        .collection(Constants.mainCollection)
-        .document(passkey.docId.toString())
-        .delete();
-  }
-
-  Future<void> updatePassKey(String docId, Map<String, dynamic> updateData) async{
-    for (final key in updateData.keys) {
-      updateData[key] = encryptor.encrypt(updateData[key] as String);
+      await database
+          .collection(Constants.mainCollection)
+          .document((encrypted[Constants.docId] as int).toString())
+          .set(encrypted);
+    } catch (e) {
+      throw Exception('Error creating passkey($data): $e');
     }
-    await database.collection(Constants.mainCollection).document(docId).update(updateData);
+  }
+
+  Future<void> deletePassKey(int docId) async {
+    try {
+      await database.collection(Constants.mainCollection).document(docId.toString()).delete();
+    } catch (e) {
+      throw Exception('Error deleting passkey(docid:$docId): $e');
+    }
+  }
+
+  Future<void> updatePassKey(Map<String, dynamic> updateData) async{
+    try {
+      final encrypted = encryptor.encryptMap(updateData);
+      await database
+          .collection(Constants.mainCollection)
+          .document((encrypted[Constants.docId] as int).toString())
+          .update(encrypted);
+    } catch (e) {
+      throw Exception('Error updating passkey($updateData): $e');
+    }
   }
 
   Stream<List<PassKey>> fetchAllPassKeys() {
-    return database.collection('main').stream.map(
-          (docs) => docs.map((doc) => PassKey.fromJson(doc.map)..crypt(encryptor.decrypt)).toList(),
-        );
+    try {
+      return database.collection('main').stream.map(
+            (docs) =>
+                docs.map((doc) => PassKey.fromJson(doc.map)..crypt(encryptor.decrypt)).toList(),
+          );
+    } catch (e) {
+      throw Exception('Error fetching all passkeys: $e');
+    }
   }
 }

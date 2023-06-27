@@ -24,7 +24,19 @@ class AESEncryption {
 
   String decrypt(String encryptedData) {
     final encrypted = Encrypted.fromBase64(encryptedData);
-    final data = _encryptionManager.decrypt(encrypted,iv: _iv);
+    final data = _encryptionManager.decrypt(encrypted, iv: _iv);
     return data;
+  }
+
+  Map<String, dynamic> encryptMap(Map<String, dynamic> data) {
+    try {
+      for (final key in data.keys) {
+        if (key == Constants.syncStatus || key == Constants.docId) continue;
+        data[key] = data[key] == null ? data[key] : encrypt(data[key] as String);
+      }
+      return data;
+    } catch (e) {
+      throw Exception('Error encrypting map($data}): $e');
+    }
   }
 }

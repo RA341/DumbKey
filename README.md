@@ -5,15 +5,13 @@ A dumb password manger
 
 # Currently working
 
-add offline queue that syncs with firestore
-
-add connectivity checks and insert into a persistence queue through isar disable buttons if offline
-
 add filtering, sorting, and searching, tagging
 
-improving ui
-
 add tags to sort by movies/banks/etc or categories
+
+add ui to show device is offline or online
+
+improving ui
 
 desktop ui
 
@@ -24,6 +22,11 @@ desktop ui
 may be add a date field to model and remind user to update password in a set interval
 
 # done
+~~figure how delete works in offline mode~~
+
+~~add offline queue that syncs with firestore~~
+
+~~add connectivity checks and insert into a persistence queue through isar disable buttons if offline~~
 
 ~~add logging~~
 
@@ -33,6 +36,9 @@ may be add a date field to model and remind user to update password in a set int
 
 
 # Bugs
+
+offline queue support - vpn is not available on android rest all
+platforms should be fine
 
 bug in emulator that prevents firestore from working version 33
 
