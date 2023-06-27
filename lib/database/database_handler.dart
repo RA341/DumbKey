@@ -38,7 +38,7 @@ class DatabaseHandler with IsarDbMixin {
       logger
         ..e('Error adding Data to firebase', e)
         ..d('data to be locally stored', passkey.toJSON());
-      passkey.syncStatus = false;
+      passkey.syncStatus = SyncStatus.notSynced;
     }
     await isarCreateOrUpdate(passkey);
   }
@@ -68,7 +68,7 @@ class DatabaseHandler with IsarDbMixin {
   }
 
   Future<void> deletePassKey(int docId) async {
-    // TODO(deletepaskey): maybe rework this
+    // TODO(deletePassKey): maybe rework this
     if (connectionState.value == ConnectivityResult.none ||
         connectionState.value == ConnectivityResult.other) {
       logger.d('No connection', connectionState.value);
@@ -92,7 +92,7 @@ class DatabaseHandler with IsarDbMixin {
     return firestore.fetchAllPassKeys().listen(
           (documents) async {
             logger.d('firebase listening');
-            final allPassKeys = await isarDb.passKeys.filter().syncStatusEqualTo(true).findAll();
+            final allPassKeys = await isarDb.passKeys.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
             logger.d('passkeys-to-sync', allPassKeys.length);
             for (final passKey in allPassKeys) {
               // remove the passkey locally if not present in firebase
@@ -113,9 +113,9 @@ class DatabaseHandler with IsarDbMixin {
 
   void _listenToDeSyncPasskey() {
     // ignore: cancel_subscriptions
-    final unSyncPasskeys = isarDb.passKeys
+    final unSyncPasskeysListener = isarDb.passKeys
         .filter()
-        .syncStatusEqualTo(false)
+        .syncStatusEqualTo(SyncStatus.notSynced)
         .build()
         .watch(fireImmediately: true)
         .listen(
@@ -130,14 +130,14 @@ class DatabaseHandler with IsarDbMixin {
 
     connection.onConnectivityChanged.listen((status) async {
       connectionState.value = status;
-      if (unSyncPasskeys.isPaused) unSyncPasskeys.resume();
+      if (unSyncPasskeysListener.isPaused) unSyncPasskeysListener.resume();
       logger.d('firelistener type', fireListener.runtimeType);
       if (status != ConnectivityResult.none) {
         fireListener ??= _listenToChangesFromFireBase();
         logger.d('Online starting firestore', status);
       } else {
         logger.d('Offline canceling firestore', status);
-        unSyncPasskeys.pause();
+        unSyncPasskeysListener.pause();
       }
     });
   }
@@ -150,7 +150,7 @@ class DatabaseHandler with IsarDbMixin {
         connection.checkConnectivity().then((status) {
           logger.d('current connection for syncing', status);
           if (status != ConnectivityResult.none) {
-            passKey.syncStatus = true;
+            passKey.syncStatus = SyncStatus.synced;
             _createPasskeyAsync(passKey);
           }
         }),
@@ -162,11 +162,12 @@ class DatabaseHandler with IsarDbMixin {
     logger.d('Adding data from offline listeners', passkey.toJSON());
     firestore.createPassKey(passkey.toJSON()).then((value) async {
       await isarCreateOrUpdate(passkey);
+      logger.d('data added', passkey.toJSON());
     }).onError((error, stackTrace) {
       logger
         ..e('Error adding Data to firebase', [error, stackTrace])
-        ..d('data to be locally stored', passkey.toJSON());
-      passkey.syncStatus = false;
+        ..d('data not updated', passkey.toJSON());
+      passkey.syncStatus = SyncStatus.notSynced;
     });
   }
 }

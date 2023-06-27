@@ -24,7 +24,7 @@ class PassKey {
         email: json[Constants.email] as String?,
         username: json[Constants.username] as String?,
         docId: json[Constants.docId] as int,
-    syncStatus: json[Constants.syncStatus] as bool,
+    syncStatus: json[Constants.syncStatus] as SyncStatus,
       );
 
   Map<String, dynamic> toJSON() {
@@ -54,5 +54,12 @@ class PassKey {
   String? email;
   String? username;
   String? description;
-  bool syncStatus;
+  @enumerated
+  SyncStatus syncStatus;
+}
+
+enum SyncStatus {
+  notSynced,
+  synced,
+  deleted,
 }

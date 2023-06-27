@@ -151,14 +151,14 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
       Constants.username: username,
       Constants.description: description,
       Constants.docId: widget.savedKey?.docId ?? idGenerator(),
-      Constants.syncStatus: widget.savedKey?.syncStatus ?? true,
+      Constants.syncStatus: widget.savedKey?.syncStatus ?? SyncStatus.synced,
     };
   }
 
   Future<void> createFunc(Map<String, dynamic> data) async {
     final newPasskey = PassKey(
       docId: data[Constants.docId] as int,
-      syncStatus: data[Constants.syncStatus] as bool,
+      syncStatus: data[Constants.syncStatus] as SyncStatus,
       org: data[Constants.org] as String?,
       passKey: data[Constants.passKey] as String?,
       email: data[Constants.email] as String?,

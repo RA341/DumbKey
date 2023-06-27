@@ -40,7 +40,8 @@ const PassKeySchema = CollectionSchema(
     r'syncStatus': PropertySchema(
       id: 4,
       name: r'syncStatus',
-      type: IsarType.bool,
+      type: IsarType.byte,
+      enumMap: _PassKeysyncStatusEnumValueMap,
     ),
     r'username': PropertySchema(
       id: 5,
@@ -111,7 +112,7 @@ void _passKeySerialize(
   writer.writeString(offsets[1], object.email);
   writer.writeString(offsets[2], object.org);
   writer.writeString(offsets[3], object.passKey);
-  writer.writeBool(offsets[4], object.syncStatus);
+  writer.writeByte(offsets[4], object.syncStatus.index);
   writer.writeString(offsets[5], object.username);
 }
 
@@ -127,7 +128,9 @@ PassKey _passKeyDeserialize(
     email: reader.readStringOrNull(offsets[1]),
     org: reader.readStringOrNull(offsets[2]),
     passKey: reader.readStringOrNull(offsets[3]),
-    syncStatus: reader.readBool(offsets[4]),
+    syncStatus:
+        _PassKeysyncStatusValueEnumMap[reader.readByteOrNull(offsets[4])] ??
+            SyncStatus.notSynced,
     username: reader.readStringOrNull(offsets[5]),
   );
   return object;
@@ -149,13 +152,25 @@ P _passKeyDeserializeProp<P>(
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
-      return (reader.readBool(offset)) as P;
+      return (_PassKeysyncStatusValueEnumMap[reader.readByteOrNull(offset)] ??
+          SyncStatus.notSynced) as P;
     case 5:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
+
+const _PassKeysyncStatusEnumValueMap = {
+  'notSynced': 0,
+  'synced': 1,
+  'deleted': 2,
+};
+const _PassKeysyncStatusValueEnumMap = {
+  0: SyncStatus.notSynced,
+  1: SyncStatus.synced,
+  2: SyncStatus.deleted,
+};
 
 Id _passKeyGetId(PassKey object) {
   return object.docId;
@@ -884,11 +899,54 @@ extension PassKeyQueryFilter
   }
 
   QueryBuilder<PassKey, PassKey, QAfterFilterCondition> syncStatusEqualTo(
-      bool value) {
+      SyncStatus value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'syncStatus',
         value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> syncStatusGreaterThan(
+    SyncStatus value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'syncStatus',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> syncStatusLessThan(
+    SyncStatus value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'syncStatus',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> syncStatusBetween(
+    SyncStatus lower,
+    SyncStatus upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'syncStatus',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -1283,7 +1341,7 @@ extension PassKeyQueryProperty
     });
   }
 
-  QueryBuilder<PassKey, bool, QQueryOperations> syncStatusProperty() {
+  QueryBuilder<PassKey, SyncStatus, QQueryOperations> syncStatusProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'syncStatus');
     });
