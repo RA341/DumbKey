@@ -3,12 +3,11 @@ import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:get_it/get_it.dart';
 
 class DartFireStore {
   DartFireStore() {
     initFireDart();
-    encryptor = GetIt.I.get<AESEncryption>();
+    encryptor = AESEncryption();
   }
 
   void initFireDart() {
@@ -64,8 +63,8 @@ class DartFireStore {
     try {
       return database.collection('main').stream.map(
             (docs) =>
-                docs.map((doc) => PassKey.fromJson(doc.map)..crypt(encryptor.decrypt)).toList(),
-          );
+            docs.map((doc) => PassKey.fromJson(doc.map)..crypt(encryptor.decrypt)).toList(),
+      );
     } catch (e) {
       throw Exception('Error fetching all passkeys: $e');
     }
