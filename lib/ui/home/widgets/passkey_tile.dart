@@ -89,6 +89,7 @@ class PasskeyTitle extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(5),
                 child: Text(passkey.username ?? passkey.email ?? passkey.org ?? 'No username',style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
                   color: passkey.syncStatus == SyncStatus.synced ? Colors.white : Colors.red,
                 )),
               ),

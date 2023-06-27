@@ -2,6 +2,7 @@ import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/model/passkey_model.dart';
 import 'package:dumbkey/ui/form/form_input.dart';
 import 'package:dumbkey/ui/home/widgets/passkey_listview.dart';
+import 'package:dumbkey/ui/home/widgets/serach_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
@@ -11,11 +12,16 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final queryListener = ValueNotifier<String>('');
+
     return Scaffold(
-      body: const Column(
+      body: Column(
         children: [
+          PassKeySearchBar(query: queryListener),
           Expanded(
-            child: ListViewStreamBuilder(),
+            child: ListViewStreamBuilder(
+              valueListenable: queryListener,
+            ),
           ),
         ],
       ),
@@ -34,8 +40,11 @@ class HomePage extends StatelessWidget {
 
 class ListViewStreamBuilder extends StatefulWidget {
   const ListViewStreamBuilder({
+    required this.valueListenable,
     super.key,
   });
+
+  final ValueNotifier<String> valueListenable;
 
   @override
   State<ListViewStreamBuilder> createState() => _ListViewStreamBuilderState();
@@ -58,7 +67,10 @@ class _ListViewStreamBuilderState extends State<ListViewStreamBuilder> {
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final data = snapshot.data ?? [];
-          return PasskeyListView(passkeyList: data);
+          return PasskeyListView(
+            query: widget.valueListenable,
+            passkeyList: data,
+          );
         } else if (snapshot.hasError) {
           GetIt.I.get<Logger>().e('Stream builder returned error', [snapshot.error]);
           return Text(snapshot.error.toString());
@@ -66,7 +78,10 @@ class _ListViewStreamBuilderState extends State<ListViewStreamBuilder> {
           return const Text('Stream returned is null');
         } else {
           final data = snapshot.data ?? [];
-          return PasskeyListView(passkeyList: data);
+          return PasskeyListView(
+            passkeyList: data,
+            query: widget.valueListenable,
+          );
         }
       },
     );

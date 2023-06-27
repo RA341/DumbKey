@@ -5,9 +5,11 @@ A dumb password manger
 
 # Currently working
 
-add filtering, sorting, and searching, tagging
+add filtering, sorting, tagging
 
-local de sync data is syncing before firebase adds it
+improve search
+
+there is weird bug that causes listview to shuffle on delete
 
 add tags to sort by movies/banks/etc or categories
 
@@ -26,6 +28,9 @@ add password leak check from [haveibeenpwned](https://haveibeenpwned.com/Passwor
 may be add a date field to model and remind user to update password in a set interval
 
 # done
+
+added good enough searching
+
 ~~figure how delete works in offline mode~~
 
 ~~add offline queue that syncs with firestore~~
