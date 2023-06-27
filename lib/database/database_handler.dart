@@ -21,9 +21,9 @@ class DatabaseHandler with IsarDbMixin {
       logger.e('No internet connection canceling listener', e);
     }
     syncing.addListener(() {
-      logger.w('Syncing status:',syncing.value);
+      logger.w('Syncing status:', syncing.value);
     });
-    _listenToDeSyncPasskey();
+    _listenToConnectionState();
   }
 
   final connection = Connectivity();
@@ -120,51 +120,49 @@ class DatabaseHandler with IsarDbMixin {
             await isarCreateOrUpdateAll(documents);
           },
           cancelOnError: true,
-          onError: (Object error, StackTrace stackTrace) {
+          onError: (Object error, StackTrace stackTrace) async {
+            await fireListener?.cancel();
             fireListener = null;
             logger.e('firebase offline', error, stackTrace);
           },
         );
   }
 
-  void _listenToDeSyncPasskey() {
-    // ignore: cancel_subscriptions
-    final unSyncPasskeysListener = isarDb.passKeys
+  FutureOr<void> _listenToConnectionState() async {
+    connection.onConnectivityChanged.distinct().listen((status) async {
+      connectionState.value = status;
+      // if (unSyncPasskeysListener.isPaused) unSyncPasskeysListener.resume();
+      logger.d('firelistener type', fireListener.runtimeType);
+      if (status != ConnectivityResult.none) {
+        fireListener ??= _listenToChangesFromFireBase();
+        listenToDeSyncPasskeys();
+        logger.d('Online starting firestore', status);
+      } else {
+        logger.d('Offline canceling firestore', status);
+        // if (unSyncPasskeysListener.isPaused != true) unSyncPasskeysListener.pause();
+      }
+    });
+  }
+
+  void listenToDeSyncPasskeys() {
+    isarDb.passKeys
         .filter()
         .syncStatusEqualTo(SyncStatus.notSynced)
         .or()
         .syncStatusEqualTo(SyncStatus.deleted)
         .build()
-        .watch(fireImmediately: true)
-        .listen(
-          (event) async {
-            syncing = ValueNotifier(true);
-            await _syncOfflineItems(event);
-          },
-          cancelOnError: true,
-          onError: (Object err, StackTrace st) {
-            logger.e('Desync listener error', err, st);
-          },
-          onDone: () {
-            syncing = ValueNotifier(false);
-          },
-        );
-
-    connection.onConnectivityChanged.listen((status) async {
-      connectionState.value = status;
-      if (unSyncPasskeysListener.isPaused) unSyncPasskeysListener.resume();
-      logger.d('firelistener type', fireListener.runtimeType);
-      if (status != ConnectivityResult.none) {
-        fireListener ??= _listenToChangesFromFireBase();
-        logger.d('Online starting firestore', status);
-      } else {
-        logger.d('Offline canceling firestore', status);
-        unSyncPasskeysListener.pause();
+        .findAll()
+        .then((value) {
+      logger.i('Items to sync', value.length);
+      if (value.isNotEmpty) {
+        _syncOfflineItems(value);
       }
+    }).onError((error, stackTrace) {
+      logger.e('Error fetching desync items', error, stackTrace);
     });
   }
 
-  Future<void> _syncOfflineItems(List<PassKey> deSyncKeys) async {
+  void _syncOfflineItems(List<PassKey> deSyncKeys) {
     if (deSyncKeys.isEmpty) return;
     logger.i('No of passkeys to be synced', deSyncKeys);
     for (final passKey in deSyncKeys) {
