@@ -9,15 +9,11 @@ add filtering, sorting, and searching, tagging
 
 add tags to sort by movies/banks/etc or categories
 
-figure how delete works in offline mode
-
 add ui to show device is offline or online
 
 improving ui
 
 desktop ui
-
-
 
 
 # Roadmap
@@ -26,6 +22,8 @@ desktop ui
 may be add a date field to model and remind user to update password in a set interval
 
 # done
+~~figure how delete works in offline mode~~
+
 ~~add offline queue that syncs with firestore~~
 
 ~~add connectivity checks and insert into a persistence queue through isar disable buttons if offline~~

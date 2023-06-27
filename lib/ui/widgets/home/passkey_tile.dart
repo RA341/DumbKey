@@ -49,7 +49,7 @@ class PasskeyTitle extends StatelessWidget {
           ),
         ),
         onDismissed: (direction) async =>
-            await GetIt.I.get<DatabaseHandler>().deletePassKey(passkey.docId),
+            await GetIt.I.get<DatabaseHandler>().deletePassKey(passkey),
         confirmDismiss: (direction) => showDialog(
           context: context,
           builder: (context) => AlertDialog(
