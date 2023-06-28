@@ -1,3 +1,4 @@
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter/material.dart';
 
 class PasskeyField extends StatefulWidget {
@@ -19,6 +20,13 @@ class PasskeyField extends StatefulWidget {
 class _PasskeyFieldState extends State<PasskeyField> {
   bool isHidden = true;
 
+  final passwordStrengthMap = <PasswordStrength, Color>{
+    PasswordStrength.Weak: Colors.red,
+    PasswordStrength.WeakMedium: Colors.orange,
+    PasswordStrength.Medium: Colors.yellow,
+    PasswordStrength.Strong: Colors.green,
+  };
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -39,10 +47,19 @@ class _PasskeyFieldState extends State<PasskeyField> {
               if (value == null || value.isEmpty) {
                 return 'Please enter the passkey';
               }
+              final strength = testPasswordStrength(value);
+              if (strength == PasswordStrength.Weak) {
+                return 'Passkey is too small';
+              } else if (strength == PasswordStrength.WeakMedium) {
+                return 'Passkey does not contain numbers';
+              } else if (strength == PasswordStrength.Medium) {
+                return 'Passkey does not contain special characters';
+              }
               return null;
             },
             obscureText: isHidden,
             decoration: const InputDecoration(
+              border: OutlineInputBorder(),
               labelText: 'Passkey',
             ),
           ),

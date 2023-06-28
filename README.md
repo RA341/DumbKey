@@ -5,6 +5,8 @@ A dumb password manger
 
 # Currently working
 
+add password generator in input screen
+
 add filtering, sorting, tagging
 
 improve search
