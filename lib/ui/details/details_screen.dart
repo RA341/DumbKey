@@ -31,6 +31,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Details'),
+          leading: IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            tooltip: 'Back',
+          ),
           actions: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 1),
@@ -99,7 +107,34 @@ class _DetailsScreenState extends State<DetailsScreen> {
               child: buildFields(),
             ),
           ],
-        ));
+        ),
+        bottomNavigationBar: bottomCopyButtons());
+  }
+
+  Row bottomCopyButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ElevatedButton(
+          onPressed: () => Clipboard.setData(
+            ClipboardData(text: _passkey.username ?? ''),
+          ),
+          child: const Text('Username'),
+        ),
+        ElevatedButton(
+          onPressed: () => Clipboard.setData(
+            ClipboardData(text: _passkey.email ?? ''),
+          ),
+          child: const Text('Email'),
+        ),
+        ElevatedButton(
+          onPressed: () => Clipboard.setData(
+            ClipboardData(text: _passkey.passKey ?? ''),
+          ),
+          child: const Text('PassKey'),
+        ),
+      ],
+    );
   }
 
   Widget buildHeader() {

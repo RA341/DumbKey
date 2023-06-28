@@ -37,7 +37,9 @@ may be add a date field to model and remind user to update password in a set int
 
 # done
 
-added good enough searching
+~~added details screen~~
+
+~~added good enough searching~~
 
 ~~figure how delete works in offline mode~~
 
