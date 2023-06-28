@@ -15,9 +15,15 @@ class HomePage extends StatelessWidget {
     final queryListener = ValueNotifier<String>('');
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Center(child: Text('DumbKey')),
+      ),
       body: Column(
         children: [
-          PassKeySearchBar(query: queryListener),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: PassKeySearchBar(query: queryListener),
+          ),
           Expanded(
             child: ListViewStreamBuilder(
               valueListenable: queryListener,

@@ -4,10 +4,12 @@ class DescriptionField extends StatelessWidget {
   const DescriptionField({
     required this.controller,
     required this.currFocusNode,
+    required this.nextFocusNode,
     super.key,
   });
 
   final FocusNode currFocusNode;
+  final FocusNode nextFocusNode;
   final TextEditingController controller;
 
   @override

@@ -22,7 +22,7 @@ class PasskeyListView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (passkeyList.isEmpty) {
       return const Center(
-        child: Text('No passwords found'),
+        child: Text('Put some passwords in dumbass !'),
       );
     }
 

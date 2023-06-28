@@ -10,7 +10,7 @@ class Settings {
     this.backupPath,
     this.backupFileName,
     this.lastBackupDate,
-    this.offlineQueue,
+    this.categories,
   });
 
   Id? id;
@@ -22,5 +22,5 @@ class Settings {
 
 
   // offline_queue
-  List<int>? offlineQueue; //store ids of passkeys
+  List<String>? categories; //store ids of passkeys
 }

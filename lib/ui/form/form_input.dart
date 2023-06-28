@@ -1,5 +1,6 @@
 import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/model/passkey_model.dart';
+import 'package:dumbkey/ui/form/fields/category_input.dart';
 import 'package:dumbkey/ui/form/fields/description_input.dart';
 import 'package:dumbkey/ui/form/fields/email_input.dart';
 import 'package:dumbkey/ui/form/fields/org_input.dart';
@@ -29,12 +30,14 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
   final emailController = TextEditingController();
   final usernameController = TextEditingController();
   final descriptionController = TextEditingController();
+  final categoryController = TextEditingController();
 
   final FocusNode _orgFocusNode = FocusNode();
   final FocusNode _passkeyFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _usernameFocusNode = FocusNode();
   final FocusNode _descriptionFocusNode = FocusNode();
+  final FocusNode _categoryFocusNode = FocusNode();
 
   bool isLoading = false;
 
@@ -46,6 +49,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
       emailController.text = widget.savedKey!.email ?? '';
       usernameController.text = widget.savedKey!.username ?? '';
       descriptionController.text = widget.savedKey!.description ?? '';
+      categoryController.text = widget.savedKey!.category ?? '';
     }
     super.initState();
   }
@@ -57,11 +61,14 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
     emailController.dispose();
     usernameController.dispose();
     descriptionController.dispose();
+    categoryController.dispose();
+
     _orgFocusNode.dispose();
     _passkeyFocusNode.dispose();
     _emailFocusNode.dispose();
     _usernameFocusNode.dispose();
     _descriptionFocusNode.dispose();
+    _categoryFocusNode.dispose();
     super.dispose();
   }
 
@@ -107,6 +114,12 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
                 DescriptionField(
                   controller: descriptionController,
                   currFocusNode: _descriptionFocusNode,
+                  nextFocusNode: _categoryFocusNode,
+                ),
+                const SizedBox(height: 16),
+                CategoryField(
+                  controller: categoryController,
+                  currFocusNode: _categoryFocusNode,
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
@@ -143,6 +156,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
     final email = emailController.text.isEmpty ? null : emailController.text;
     final username = usernameController.text.isEmpty ? null : usernameController.text;
     final description = descriptionController.text.isEmpty ? null : descriptionController.text;
+    final category = categoryController.text.isEmpty ? null : categoryController.text;
 
     return {
       Constants.passKey: passKey,
@@ -150,6 +164,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
       Constants.email: email,
       Constants.username: username,
       Constants.description: description,
+      Constants.category: category,
       Constants.docId: widget.savedKey?.docId ?? idGenerator(),
       Constants.syncStatus: widget.savedKey?.syncStatus.index ?? SyncStatus.synced.index,
     };

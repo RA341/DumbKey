@@ -27,15 +27,15 @@ const SettingsSchema = CollectionSchema(
       name: r'backupPath',
       type: IsarType.string,
     ),
-    r'lastBackupDate': PropertySchema(
+    r'categories': PropertySchema(
       id: 2,
+      name: r'categories',
+      type: IsarType.stringList,
+    ),
+    r'lastBackupDate': PropertySchema(
+      id: 3,
       name: r'lastBackupDate',
       type: IsarType.dateTime,
-    ),
-    r'offlineQueue': PropertySchema(
-      id: 3,
-      name: r'offlineQueue',
-      type: IsarType.longList,
     )
   },
   estimateSize: _settingsEstimateSize,
@@ -71,9 +71,15 @@ int _settingsEstimateSize(
     }
   }
   {
-    final value = object.offlineQueue;
-    if (value != null) {
-      bytesCount += 3 + value.length * 8;
+    final list = object.categories;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount += value.length * 3;
+        }
+      }
     }
   }
   return bytesCount;
@@ -87,8 +93,8 @@ void _settingsSerialize(
 ) {
   writer.writeString(offsets[0], object.backupFileName);
   writer.writeString(offsets[1], object.backupPath);
-  writer.writeDateTime(offsets[2], object.lastBackupDate);
-  writer.writeLongList(offsets[3], object.offlineQueue);
+  writer.writeStringList(offsets[2], object.categories);
+  writer.writeDateTime(offsets[3], object.lastBackupDate);
 }
 
 Settings _settingsDeserialize(
@@ -100,9 +106,9 @@ Settings _settingsDeserialize(
   final object = Settings(
     backupFileName: reader.readStringOrNull(offsets[0]),
     backupPath: reader.readStringOrNull(offsets[1]),
+    categories: reader.readStringList(offsets[2]),
     id: id,
-    lastBackupDate: reader.readDateTimeOrNull(offsets[2]),
-    offlineQueue: reader.readLongList(offsets[3]),
+    lastBackupDate: reader.readDateTimeOrNull(offsets[3]),
   );
   return object;
 }
@@ -119,9 +125,9 @@ P _settingsDeserializeProp<P>(
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 3:
-      return (reader.readLongList(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -517,6 +523,247 @@ extension SettingsQueryFilter
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> categoriesIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'categories',
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'categories',
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'categories',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'categories',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'categories',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'categories',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'categories',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'categories',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesElementContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'categories',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesElementMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'categories',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'categories',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'categories',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'categories',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> categoriesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'categories',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'categories',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'categories',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'categories',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+      categoriesLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'categories',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterFilterCondition> idIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -657,168 +904,6 @@ extension SettingsQueryFilter
       ));
     });
   }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition> offlineQueueIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'offlineQueue',
-      ));
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      offlineQueueIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'offlineQueue',
-      ));
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      offlineQueueElementEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'offlineQueue',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      offlineQueueElementGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'offlineQueue',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      offlineQueueElementLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'offlineQueue',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      offlineQueueElementBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'offlineQueue',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      offlineQueueLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'offlineQueue',
-        length,
-        true,
-        length,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      offlineQueueIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'offlineQueue',
-        0,
-        true,
-        0,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      offlineQueueIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'offlineQueue',
-        0,
-        false,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      offlineQueueLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'offlineQueue',
-        0,
-        true,
-        length,
-        include,
-      );
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      offlineQueueLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'offlineQueue',
-        length,
-        include,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      offlineQueueLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'offlineQueue',
-        lower,
-        includeLower,
-        upper,
-        includeUpper,
-      );
-    });
-  }
 }
 
 extension SettingsQueryObject
@@ -933,15 +1018,15 @@ extension SettingsQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Settings, Settings, QDistinct> distinctByLastBackupDate() {
+  QueryBuilder<Settings, Settings, QDistinct> distinctByCategories() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'lastBackupDate');
+      return query.addDistinctBy(r'categories');
     });
   }
 
-  QueryBuilder<Settings, Settings, QDistinct> distinctByOfflineQueue() {
+  QueryBuilder<Settings, Settings, QDistinct> distinctByLastBackupDate() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'offlineQueue');
+      return query.addDistinctBy(r'lastBackupDate');
     });
   }
 }
@@ -966,15 +1051,15 @@ extension SettingsQueryProperty
     });
   }
 
-  QueryBuilder<Settings, DateTime?, QQueryOperations> lastBackupDateProperty() {
+  QueryBuilder<Settings, List<String>?, QQueryOperations> categoriesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'lastBackupDate');
+      return query.addPropertyName(r'categories');
     });
   }
 
-  QueryBuilder<Settings, List<int>?, QQueryOperations> offlineQueueProperty() {
+  QueryBuilder<Settings, DateTime?, QQueryOperations> lastBackupDateProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'offlineQueue');
+      return query.addPropertyName(r'lastBackupDate');
     });
   }
 }
