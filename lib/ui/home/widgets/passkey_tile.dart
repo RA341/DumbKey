@@ -72,7 +72,7 @@ class PasskeyTitle extends StatelessWidget {
         child: InkWell(
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const DetailsScreen(),
+              builder: (context) => DetailsScreen(passkey: passkey),
             ),
           ),
           onLongPress: () => Navigator.of(context).push(
