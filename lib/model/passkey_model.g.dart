@@ -17,34 +17,39 @@ const PassKeySchema = CollectionSchema(
   name: r'PassKey',
   id: 6233586077040508349,
   properties: {
-    r'description': PropertySchema(
+    r'category': PropertySchema(
       id: 0,
+      name: r'category',
+      type: IsarType.string,
+    ),
+    r'description': PropertySchema(
+      id: 1,
       name: r'description',
       type: IsarType.string,
     ),
     r'email': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'email',
       type: IsarType.string,
     ),
     r'org': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'org',
       type: IsarType.string,
     ),
     r'passKey': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'passKey',
       type: IsarType.string,
     ),
     r'syncStatus': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'syncStatus',
       type: IsarType.byte,
       enumMap: _PassKeysyncStatusEnumValueMap,
     ),
     r'username': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'username',
       type: IsarType.string,
     )
@@ -69,6 +74,12 @@ int _passKeyEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.category;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   {
     final value = object.description;
     if (value != null) {
@@ -108,12 +119,13 @@ void _passKeySerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.description);
-  writer.writeString(offsets[1], object.email);
-  writer.writeString(offsets[2], object.org);
-  writer.writeString(offsets[3], object.passKey);
-  writer.writeByte(offsets[4], object.syncStatus.index);
-  writer.writeString(offsets[5], object.username);
+  writer.writeString(offsets[0], object.category);
+  writer.writeString(offsets[1], object.description);
+  writer.writeString(offsets[2], object.email);
+  writer.writeString(offsets[3], object.org);
+  writer.writeString(offsets[4], object.passKey);
+  writer.writeByte(offsets[5], object.syncStatus.index);
+  writer.writeString(offsets[6], object.username);
 }
 
 PassKey _passKeyDeserialize(
@@ -123,15 +135,16 @@ PassKey _passKeyDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = PassKey(
-    description: reader.readStringOrNull(offsets[0]),
+    category: reader.readStringOrNull(offsets[0]),
+    description: reader.readStringOrNull(offsets[1]),
     docId: id,
-    email: reader.readStringOrNull(offsets[1]),
-    org: reader.readStringOrNull(offsets[2]),
-    passKey: reader.readStringOrNull(offsets[3]),
+    email: reader.readStringOrNull(offsets[2]),
+    org: reader.readStringOrNull(offsets[3]),
+    passKey: reader.readStringOrNull(offsets[4]),
     syncStatus:
-        _PassKeysyncStatusValueEnumMap[reader.readByteOrNull(offsets[4])] ??
+        _PassKeysyncStatusValueEnumMap[reader.readByteOrNull(offsets[5])] ??
             SyncStatus.notSynced,
-    username: reader.readStringOrNull(offsets[5]),
+    username: reader.readStringOrNull(offsets[6]),
   );
   return object;
 }
@@ -152,9 +165,11 @@ P _passKeyDeserializeProp<P>(
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
       return (_PassKeysyncStatusValueEnumMap[reader.readByteOrNull(offset)] ??
           SyncStatus.notSynced) as P;
-    case 5:
+    case 6:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -261,6 +276,152 @@ extension PassKeyQueryWhere on QueryBuilder<PassKey, PassKey, QWhereClause> {
 
 extension PassKeyQueryFilter
     on QueryBuilder<PassKey, PassKey, QFilterCondition> {
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'category',
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'category',
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'category',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'category',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'category',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterFilterCondition> categoryIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'category',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<PassKey, PassKey, QAfterFilterCondition> descriptionIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1105,6 +1266,18 @@ extension PassKeyQueryLinks
     on QueryBuilder<PassKey, PassKey, QFilterCondition> {}
 
 extension PassKeyQuerySortBy on QueryBuilder<PassKey, PassKey, QSortBy> {
+  QueryBuilder<PassKey, PassKey, QAfterSortBy> sortByCategory() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'category', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterSortBy> sortByCategoryDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'category', Sort.desc);
+    });
+  }
+
   QueryBuilder<PassKey, PassKey, QAfterSortBy> sortByDescription() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.asc);
@@ -1180,6 +1353,18 @@ extension PassKeyQuerySortBy on QueryBuilder<PassKey, PassKey, QSortBy> {
 
 extension PassKeyQuerySortThenBy
     on QueryBuilder<PassKey, PassKey, QSortThenBy> {
+  QueryBuilder<PassKey, PassKey, QAfterSortBy> thenByCategory() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'category', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PassKey, PassKey, QAfterSortBy> thenByCategoryDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'category', Sort.desc);
+    });
+  }
+
   QueryBuilder<PassKey, PassKey, QAfterSortBy> thenByDescription() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.asc);
@@ -1267,6 +1452,13 @@ extension PassKeyQuerySortThenBy
 
 extension PassKeyQueryWhereDistinct
     on QueryBuilder<PassKey, PassKey, QDistinct> {
+  QueryBuilder<PassKey, PassKey, QDistinct> distinctByCategory(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'category', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<PassKey, PassKey, QDistinct> distinctByDescription(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1314,6 +1506,12 @@ extension PassKeyQueryProperty
   QueryBuilder<PassKey, int, QQueryOperations> docIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'docId');
+    });
+  }
+
+  QueryBuilder<PassKey, String?, QQueryOperations> categoryProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'category');
     });
   }
 

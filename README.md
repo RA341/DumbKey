@@ -19,6 +19,14 @@ improving ui
 
 desktop ui
 
+# possible uis
+
+mobile [ - https://www.figma.com/community/file/1120231988229292951
+
+https://www.figma.com/community/file/1030246241062284627
+
+]
+
 
 # Roadmap
 [setup ci/cd](https://github.com/vykes-mac/flutter_env/blob/dev/.github/workflows/ci.yml)
