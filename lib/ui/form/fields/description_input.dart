@@ -23,6 +23,7 @@ class DescriptionField extends StatelessWidget {
       ),
       controller: controller,
       decoration: const InputDecoration(
+        border: OutlineInputBorder(),
         labelText: 'Description (optional)',
       ),
     );

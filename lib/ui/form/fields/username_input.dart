@@ -26,6 +26,7 @@ class UsernameField extends StatelessWidget {
       ),
       controller: controller,
       decoration: const InputDecoration(
+        border: OutlineInputBorder(),
         labelText: 'Username (optional)',
       ),
     );

@@ -27,6 +27,7 @@ class EmailField extends StatelessWidget {
       ),
       controller: controller,
       decoration: const InputDecoration(
+        border: OutlineInputBorder(),
         labelText: 'Email (optional)',
       ),
     );

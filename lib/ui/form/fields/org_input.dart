@@ -26,6 +26,7 @@ class OrganizationField extends StatelessWidget {
       ),
       controller: controller,
       decoration: const InputDecoration(
+        border: OutlineInputBorder(),
         labelText: 'Organization',
       ),
     );
