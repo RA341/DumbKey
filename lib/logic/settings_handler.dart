@@ -1,4 +1,4 @@
-import 'package:dumbkey/model/settings.dart';
+import 'package:dumbkey/model/settings_model/settings.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 import 'package:logger/logger.dart';
