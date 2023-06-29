@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:dumbkey/database/database_handler.dart';
-import 'package:dumbkey/model/passkey_model.dart';
+import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/ui/form/form_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,14 +11,14 @@ import 'package:isar/isar.dart';
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen({required this.passkey, super.key});
 
-  final PassKey passkey;
+  final Password passkey;
 
   @override
   State<DetailsScreen> createState() => _DetailsScreenState();
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
-  late PassKey _passkey;
+  late Password _passkey;
 
   @override
   void initState() {
@@ -50,7 +50,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       builder: (context) => DetailsInputScreen(savedKey: _passkey),
                     ),
                   );
-                  _passkey = (await GetIt.I.get<Isar>().passKeys.get(_passkey.docId))!;
+                  _passkey = (await GetIt.I.get<Isar>().passwords.get(_passkey.id))!;
                   setState(() {});
                 },
                 icon: const Icon(
@@ -129,9 +129,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
         ),
         ElevatedButton(
           onPressed: () => Clipboard.setData(
-            ClipboardData(text: _passkey.passKey ?? ''),
+            ClipboardData(text: _passkey.password ?? ''),
           ),
-          child: const Text('PassKey'),
+          child: const Text('Password'),
         ),
       ],
     );
@@ -146,8 +146,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       children: [
         buildRowDetail('Email', _passkey.email ?? ''),
         buildRowDetail('Username', _passkey.username ?? ''),
-        buildRowDetail('Password', _passkey.passKey ?? ''),
-        buildRowDetail('Organization', _passkey.org ?? ''),
+        buildRowDetail('Password', _passkey.password ?? ''),
         buildRowDetail('Description', _passkey.description ?? ''),
       ],
     );

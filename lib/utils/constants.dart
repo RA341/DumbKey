@@ -14,7 +14,6 @@ class Constants{
   static const String email = 'email';
   static const String username = 'username';
   static const String description = 'description';
-  static const String docId = 'docId';
   static const String syncStatus = 'syncstatus';
   static const String dateAddedIso = 'dateAdded';
   static const String category = 'category';

@@ -1,5 +1,5 @@
 import 'package:dumbkey/database/database_handler.dart';
-import 'package:dumbkey/model/passkey_model.dart';
+import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/ui/form/form_input.dart';
 import 'package:dumbkey/ui/home/widgets/passkey_listview.dart';
 import 'package:dumbkey/ui/home/widgets/serach_bar.dart';
@@ -57,7 +57,7 @@ class ListViewStreamBuilder extends StatefulWidget {
 }
 
 class _ListViewStreamBuilderState extends State<ListViewStreamBuilder> {
-  late final Stream<List<PassKey>> passkeyStream;
+  late final Stream<List<Password>> passkeyStream;
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _ListViewStreamBuilderState extends State<ListViewStreamBuilder> {
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: passkeyStream,
-      initialData: const <PassKey>[],
+      initialData: const <Password>[],
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           final data = snapshot.data ?? [];

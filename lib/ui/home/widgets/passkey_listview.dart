@@ -1,5 +1,6 @@
 import 'package:dumbkey/logic/settings_handler.dart';
-import 'package:dumbkey/model/passkey_model.dart';
+import 'package:dumbkey/model/password_model/password_model.dart';
+import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/ui/home/widgets/passkey_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -15,7 +16,7 @@ class PasskeyListView extends StatelessWidget {
     super.key,
   });
 
-  final List<PassKey> passkeyList;
+  final List<Password> passkeyList;
   final ValueNotifier<String> query;
 
   @override
@@ -26,7 +27,7 @@ class PasskeyListView extends StatelessWidget {
       );
     }
 
-    var sortedBySyncStatus = <PassKey>[];
+    var sortedBySyncStatus = <Password>[];
     final notSynced = passkeyList.where((e) => e.syncStatus == SyncStatus.notSynced).toList();
     final synced = passkeyList.where((e) => e.syncStatus == SyncStatus.synced).toList();
     sortedBySyncStatus = [...synced, ...notSynced];
@@ -45,7 +46,7 @@ class PasskeyListView extends StatelessWidget {
         });
   }
 
-  List<PassKey> filterList(List<PassKey> sortedBySyncStatus) {
+  List<Password> filterList(List<Password> sortedBySyncStatus) {
     final settings = GetIt.I.get<SettingsHandler>();
 
     // TODO(filterList): add config if user wants to search through passwords
@@ -55,19 +56,19 @@ class PasskeyListView extends StatelessWidget {
 
     for (final passKeys in sortedBySyncStatus) {
       var totalScore = 0.0;
-      for (final value in passKeys.toJSON().values) {
+      for (final value in passKeys.toJson().values) {
         if (value.runtimeType != String) continue;
         totalScore += (value as String).getJaro(query.value);
       }
-      results[passKeys.docId] = totalScore;
+      results[passKeys.id] = totalScore;
     }
 
     final sortedByScore = results.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
     results = {for (var entry in sortedByScore) entry.key: entry.value};
 
-    final sortedList = <PassKey>[];
+    final sortedList = <Password>[];
     for (final entry in results.entries) {
-      final data = sortedBySyncStatus.firstWhere((element) => element.docId == entry.key);
+      final data = sortedBySyncStatus.firstWhere((element) => element.id == entry.key);
       sortedList.add(data);
     }
     // logger.d('Sorted list: ${sortedList.map((e) => e.docId)}');

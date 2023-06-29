@@ -6,7 +6,7 @@ class TypeBase {
     required this.id,
     required this.dataType,
     required this.title,
-    required this.dataAdded,
+    required this.dateAdded,
     required this.syncStatus,
   });
 
@@ -16,7 +16,7 @@ class TypeBase {
       dataType: getDataType(map[KeyNames.dataType] as String),
       syncStatus: getSyncStatus(map[KeyNames.syncStatus] as String),
       title: map[KeyNames.title] as String,
-      dataAdded: getDateTime(map[KeyNames.dataAdded] as String),
+      dateAdded: getDateTime(map[KeyNames.dateAdded] as String),
     );
   }
 
@@ -31,7 +31,7 @@ class TypeBase {
         KeyNames.dataType: dataType.index.toString(),
         KeyNames.syncStatus: syncStatus.index.toString(),
         KeyNames.title: title,
-        KeyNames.dataAdded: dataAdded.toIso8601String(),
+        KeyNames.dateAdded: dateAdded.toIso8601String(),
       };
 
   Id id;
@@ -40,7 +40,7 @@ class TypeBase {
   @enumerated
   SyncStatus syncStatus;
   String title;
-  DateTime dataAdded;
+  DateTime dateAdded;
 }
 
 enum DataType {

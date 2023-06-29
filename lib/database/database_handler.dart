@@ -4,8 +4,12 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dumbkey/database/dart_firestore.dart';
 import 'package:dumbkey/database/isar_mixin.dart';
-import 'package:dumbkey/model/passkey_model.dart';
+import 'package:dumbkey/model/card_details_model/card_details_model.dart';
+import 'package:dumbkey/model/notes_model/notes_model.dart';
+import 'package:dumbkey/model/password_model/password_model.dart';
+import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/key_name_constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
@@ -18,38 +22,40 @@ class DatabaseHandler with IsarDbMixin {
       fireListener ??= _listenToChangesFromFireBase();
     } on SocketException catch (e) {
       fireListener?.cancel();
-      logger.e('No internet connection canceling listener', e);
+      logger.e('No connection canceling listener', e);
     }
-    syncing.addListener(() {
-      logger.w('Syncing status:', syncing.value);
-    });
+    // syncing.addListener(() {
+    //   logger.w('Syncing status:', syncing.value);
+    // });
     _listenToConnectionState();
   }
 
+  late final DartFireStore firestore;
   final connection = Connectivity();
   final logger = GetIt.I.get<Logger>();
-  late final DartFireStore firestore;
-  StreamSubscription<List<PassKey>>? fireListener;
+
+  StreamSubscription<List<TypeBase>>? fireListener;
+
   ValueNotifier<ConnectivityResult> connectionState = ValueNotifier(ConnectivityResult.none);
   ValueNotifier<bool> syncing = ValueNotifier(false);
 
-  Future<void> createPassKey(PassKey passkey) async {
-    logger.w('Creating Data', passkey.toJSON());
+  Future<void> createPassKey(TypeBase data) async {
+    logger.w('Creating Data', data.toJson());
 
     try {
-      await firestore.createPassKey(passkey.toJSON());
+      await firestore.createData(data.toJson());
     } catch (e) {
       logger
         ..e('Error adding Data to firebase', e)
-        ..d('data to be locally stored', passkey.toJSON());
-      passkey.syncStatus = SyncStatus.notSynced;
+        ..d('data to be locally stored', data.toJson());
+      data.syncStatus = SyncStatus.notSynced;
     }
-    await isarCreateOrUpdate(passkey);
+    await isarCreateOrUpdate(data);
   }
 
   Future<void> updatePassKey(Map<String, dynamic> updateData) async {
     // here we use map instead of passkey
-    // because we only want  data that is changed to be updated
+    // because we only want data that is changed to be updated
     assert(
       !updateData.containsValue(null),
       'update data contains null,$updateData',
@@ -59,7 +65,7 @@ class DatabaseHandler with IsarDbMixin {
     final data = Map<String, dynamic>.from(updateData);
 
     try {
-      await firestore.updatePassKey(updateData);
+      await firestore.updateData(updateData);
       logger.i('Updated Data', updateData);
     } catch (e) {
       logger.e('Error updating Data to firebase', e);
@@ -67,35 +73,45 @@ class DatabaseHandler with IsarDbMixin {
     }
 
     assert(
-      data.containsKey(Constants.docId) || data.containsKey(Constants.syncStatus),
+      data.containsKey(KeyNames.id) ||
+          data.containsKey(KeyNames.syncStatus) ||
+          data.containsKey(KeyNames.dataType),
       'update data does not contain ID,$data',
     );
+
     logger.w('Update Data', data);
-    await isarCreateOrUpdate(PassKey.fromJson(data));
+    switch (TypeBase.getDataType(data[KeyNames.dataType] as String)) {
+      case DataType.card:
+        await isarCreateOrUpdate(CardDetails.fromMap(data));
+      case DataType.password:
+        await isarCreateOrUpdate(Password.fromMap(data));
+      case DataType.notes:
+        await isarCreateOrUpdate(Notes.fromMap(data));
+    }
   }
 
-  Future<void> deletePassKey(PassKey passkey) async {
-    logger.w('Deleting Data', passkey.toJSON());
+  Future<void> deletePassKey(TypeBase data) async {
+    logger.w('Deleting Data', data.toJson());
 
-    if (passkey.syncStatus == SyncStatus.notSynced) {
-      await isarDelete(passkey.docId);
-      logger.i('Deleting local only data', passkey.toJSON());
+    if (data.syncStatus == SyncStatus.notSynced) {
+      await isarDelete(data.id, data.dataType);
+      logger.i('Deleting local only data', data.toJson());
       return;
     }
 
     try {
-      await firestore.deletePassKey(passkey.docId);
-      await isarDelete(passkey.docId); // let the fire store complete first
-      logger.i('Deleted Data', passkey.toJSON());
+      await firestore.deleteData(data.id);
+      await isarDelete(data.id, data.dataType); // let the fire store complete first
+      logger.i('Deleted Data', data.toJson());
     } catch (e) {
       logger.e('Error deleting Data from firebase', e);
-      passkey.syncStatus = SyncStatus.deleted; // temp status until device gets online and deletes
-      await isarCreateOrUpdate(passkey);
+      data.syncStatus = SyncStatus.deleted; // temp status until device gets online and deletes
+      await isarCreateOrUpdate(data);
       return;
     }
   }
 
-  Stream<List<PassKey>> fetchAllPassKeys() => isarDb.passKeys
+  Stream<List<Password>> fetchAllPassKeys() => isarDb.passwords
       .where()
       .filter()
       .not()
@@ -103,25 +119,35 @@ class DatabaseHandler with IsarDbMixin {
       .build()
       .watch(fireImmediately: true);
 
-  StreamSubscription<List<PassKey>> _listenToChangesFromFireBase() {
-    return firestore.fetchAllPassKeys().listen(
+  Stream<List<Notes>> fetchAllNotes() => isarDb.notes
+      .where()
+      .filter()
+      .not()
+      .syncStatusEqualTo(SyncStatus.deleted)
+      .build()
+      .watch(fireImmediately: true);
+
+  Stream<List<CardDetails>> fetchAllCardDetails() => isarDb.cardDetails
+      .where()
+      .filter()
+      .not()
+      .syncStatusEqualTo(SyncStatus.deleted)
+      .build()
+      .watch(fireImmediately: true);
+
+  StreamSubscription<List<TypeBase>> _listenToChangesFromFireBase() {
+    return firestore.fetchAllPassKeys().distinct().listen(
           (documents) async {
-            logger.d('firebase listening');
-            final allPassKeys =
-                await isarDb.passKeys.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
-            logger.d('synced passkeys', allPassKeys.length);
-            for (final passKey in allPassKeys) {
-              // remove the passkey locally if not present in firebase
-              // used here because other devices can delete the passkey
-              if (documents.contains(passKey) == false) {
-                await isarDelete(passKey.docId);
-              }
-            }
-            await isarCreateOrUpdateAll(documents);
+            logger.d('firebase listening',documents.length);
+            // deletes local data that is not present in remote
+            await deleteLocalNotInRemote(documents);
+            // updates local data from remote
+            await isarCreateOrUpdateAll(documents); // possible optimization update only changed data
           },
           cancelOnError: true,
           onError: (Object error, StackTrace stackTrace) async {
             await fireListener?.cancel();
+            firestore.dispose();
             fireListener = null;
             logger.e('firebase offline', error, stackTrace);
           },
@@ -136,6 +162,8 @@ class DatabaseHandler with IsarDbMixin {
       if (status != ConnectivityResult.none) {
         fireListener ??= _listenToChangesFromFireBase();
         listenToDeSyncPasskeys();
+        listenToDeSyncNotes();
+        listenToDeSyncCardDetails();
         logger.d('Online starting firestore', status);
       } else {
         logger.d('Offline canceling firestore', status);
@@ -144,8 +172,22 @@ class DatabaseHandler with IsarDbMixin {
     });
   }
 
+  Future<void> deleteLocalNotInRemote(List<TypeBase> remoteData) async {
+    final allPassKeys =
+    await isarDb.passwords.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
+    final allCards =
+    await isarDb.cardDetails.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
+    final allNotes = await isarDb.notes.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
+
+    for (final passkey in [...allPassKeys, ...allCards, ...allNotes]) {
+      if (!remoteData.contains(passkey)) {
+        await isarDelete(passkey.id, passkey.dataType);
+      }
+    }
+  }
+
   void listenToDeSyncPasskeys() {
-    isarDb.passKeys
+    isarDb.passwords
         .filter()
         .syncStatusEqualTo(SyncStatus.notSynced)
         .or()
@@ -153,7 +195,7 @@ class DatabaseHandler with IsarDbMixin {
         .build()
         .findAll()
         .then((value) {
-      logger.i('Items to sync', value.length);
+      logger.i('Passwords to sync', value.length);
       if (value.isNotEmpty) {
         _syncOfflineItems(value);
       }
@@ -162,7 +204,43 @@ class DatabaseHandler with IsarDbMixin {
     });
   }
 
-  void _syncOfflineItems(List<PassKey> deSyncKeys) {
+  void listenToDeSyncCardDetails() {
+    isarDb.cardDetails
+        .filter()
+        .syncStatusEqualTo(SyncStatus.notSynced)
+        .or()
+        .syncStatusEqualTo(SyncStatus.deleted)
+        .build()
+        .findAll()
+        .then((value) {
+      logger.i('Cards to sync', value.length);
+      if (value.isNotEmpty) {
+        _syncOfflineItems(value);
+      }
+    }).onError((error, stackTrace) {
+      logger.e('Error fetching desync items', error, stackTrace);
+    });
+  }
+
+  void listenToDeSyncNotes() {
+    isarDb.notes
+        .filter()
+        .syncStatusEqualTo(SyncStatus.notSynced)
+        .or()
+        .syncStatusEqualTo(SyncStatus.deleted)
+        .build()
+        .findAll()
+        .then((value) {
+      logger.i('Notes to sync', value.length);
+      if (value.isNotEmpty) {
+        _syncOfflineItems(value);
+      }
+    }).onError((error, stackTrace) {
+      logger.e('Error fetching desync items', error, stackTrace);
+    });
+  }
+
+  void _syncOfflineItems(List<TypeBase> deSyncKeys) {
     if (deSyncKeys.isEmpty) return;
     logger.i('No of passkeys to be synced', deSyncKeys);
     for (final passKey in deSyncKeys) {
@@ -181,30 +259,30 @@ class DatabaseHandler with IsarDbMixin {
     }
   }
 
-  void _createPasskeyAsync(PassKey passkey) {
-    logger.i('adding to remote', passkey.toJSON());
+  void _createPasskeyAsync(TypeBase passkey) {
+    logger.i('adding to remote', passkey.toJson());
 
     passkey.syncStatus = SyncStatus.synced;
-    firestore.createPassKey(passkey.toJSON()).then((value) async {
+    firestore.createData(passkey.toJson()).then((value) async {
       await isarCreateOrUpdate(passkey);
-      logger.i('data added', passkey.toJSON());
+      logger.i('data added', passkey.toJson());
     }).onError((error, stackTrace) {
       logger
-        ..e('Error adding Data to firebase', [error, stackTrace])
-        ..d('data not updated', passkey.toJSON());
+        ..e('Error adding offlin Data to firebase', [error, stackTrace])
+        ..d('data not updated', passkey.toJson());
     });
   }
 
-  void _deletePasskeyAsync(PassKey passKey) {
-    logger.i('deleting from remote', passKey.toJSON());
+  void _deletePasskeyAsync(TypeBase passKey) {
+    logger.i('deleting from remote', passKey.toJson());
 
-    firestore.deletePassKey(passKey.docId).then((value) async {
-      await isarDelete(passKey.docId);
-      logger.i('data removed', passKey.toJSON());
+    firestore.deleteData(passKey.id).then((value) async {
+      await isarDelete(passKey.id, passKey.dataType);
+      logger.i('data removed', passKey.toJson());
     }).onError((error, stackTrace) {
       logger
         ..e('Error deleting from remote', [error, stackTrace])
-        ..d('data not deleted', passKey.toJSON());
+        ..d('data not deleted', passKey.toJson());
     });
   }
 }

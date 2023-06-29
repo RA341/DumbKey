@@ -37,6 +37,7 @@ class AESEncryption {
       }
       return data;
     } catch (e) {
+
       throw Exception('Error encrypting map($data}): $e');
     }
   }

@@ -1,7 +1,9 @@
 import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/logic/settings_handler.dart';
-import 'package:dumbkey/model/passkey_model.dart';
-import 'package:dumbkey/model/settings.dart';
+import 'package:dumbkey/model/card_details_model/card_details_model.dart';
+import 'package:dumbkey/model/notes_model/notes_model.dart';
+import 'package:dumbkey/model/password_model/password_model.dart';
+import 'package:dumbkey/model/settings_model/settings.dart';
 import 'package:dumbkey/ui/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -20,7 +22,7 @@ Future<void> initDatabase() async {
   );
   final dir = await getApplicationDocumentsDirectory();
   final isar = await Isar.open(
-    [SettingsSchema, PassKeySchema],
+    [SettingsSchema, PasswordSchema,NotesSchema,CardDetailsSchema],
     directory: dir.path,
   );
 

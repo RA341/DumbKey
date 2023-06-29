@@ -1,13 +1,13 @@
 import 'package:dumbkey/database/database_handler.dart';
-import 'package:dumbkey/model/passkey_model.dart';
+import 'package:dumbkey/model/password_model/password_model.dart';
+import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/ui/form/fields/category_input.dart';
 import 'package:dumbkey/ui/form/fields/description_input.dart';
 import 'package:dumbkey/ui/form/fields/email_input.dart';
-import 'package:dumbkey/ui/form/fields/org_input.dart';
 import 'package:dumbkey/ui/form/fields/password_input.dart';
 import 'package:dumbkey/ui/form/fields/username_input.dart';
-import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
+import 'package:dumbkey/utils/key_name_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -17,7 +17,7 @@ class DetailsInputScreen extends StatefulWidget {
     this.savedKey,
   });
 
-  final PassKey? savedKey;
+  final Password? savedKey;
 
   @override
   State<DetailsInputScreen> createState() => _DetailsInputScreenState();
@@ -25,14 +25,12 @@ class DetailsInputScreen extends StatefulWidget {
 
 class _DetailsInputScreenState extends State<DetailsInputScreen> {
   final _formKey = GlobalKey<FormState>();
-  final orgController = TextEditingController();
   final passkeyController = TextEditingController();
   final emailController = TextEditingController();
   final usernameController = TextEditingController();
   final descriptionController = TextEditingController();
   final categoryController = TextEditingController();
 
-  final FocusNode _orgFocusNode = FocusNode();
   final FocusNode _passkeyFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _usernameFocusNode = FocusNode();
@@ -44,8 +42,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
   @override
   void initState() {
     if (widget.savedKey != null) {
-      orgController.text = widget.savedKey!.org ?? '';
-      passkeyController.text = widget.savedKey!.passKey ?? '';
+      passkeyController.text = widget.savedKey!.password ?? '';
       emailController.text = widget.savedKey!.email ?? '';
       usernameController.text = widget.savedKey!.username ?? '';
       descriptionController.text = widget.savedKey!.description ?? '';
@@ -56,14 +53,12 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
 
   @override
   void dispose() {
-    orgController.dispose();
     passkeyController.dispose();
     emailController.dispose();
     usernameController.dispose();
     descriptionController.dispose();
     categoryController.dispose();
 
-    _orgFocusNode.dispose();
     _passkeyFocusNode.dispose();
     _emailFocusNode.dispose();
     _usernameFocusNode.dispose();
@@ -102,12 +97,6 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
                 PasskeyField(
                   controller: passkeyController,
                   currFocusNode: _passkeyFocusNode,
-                  nextFocusNode: _orgFocusNode,
-                ),
-                const SizedBox(height: 16),
-                OrganizationField(
-                  controller: orgController,
-                  currFocusNode: _orgFocusNode,
                   nextFocusNode: _descriptionFocusNode,
                 ),
                 const SizedBox(height: 16),
@@ -152,26 +141,27 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
 
   Map<String, dynamic> convertInputToList() {
     final passKey = passkeyController.text.isEmpty ? null : passkeyController.text;
-    final org = orgController.text.isEmpty ? Constants.defaultOrgName : orgController.text;
     final email = emailController.text.isEmpty ? null : emailController.text;
     final username = usernameController.text.isEmpty ? null : usernameController.text;
     final description = descriptionController.text.isEmpty ? null : descriptionController.text;
     final category = categoryController.text.isEmpty ? null : categoryController.text;
 
     return {
-      Constants.passKey: passKey,
-      Constants.org: org,
-      Constants.email: email,
-      Constants.username: username,
-      Constants.description: description,
-      Constants.category: category,
-      Constants.docId: widget.savedKey?.docId ?? idGenerator(),
-      Constants.syncStatus: widget.savedKey?.syncStatus.index ?? SyncStatus.synced.index,
+      KeyNames.id: widget.savedKey?.id ?? idGenerator(),
+      KeyNames.syncStatus: (widget.savedKey?.syncStatus.index ?? SyncStatus.synced.index).toString(),
+      KeyNames.dataType: (widget.savedKey?.syncStatus.index ?? DataType.password.index).toString(),
+      KeyNames.title: widget.savedKey?.title ?? 'title',
+      KeyNames.dateAdded: (widget.savedKey?.dateAdded ?? DateTime.now()).toIso8601String(),
+      KeyNames.password: passKey,
+      KeyNames.email: email,
+      KeyNames.username: username,
+      KeyNames.description: description,
+      KeyNames.category: category,
     };
   }
 
   Future<void> createFunc(Map<String, dynamic> data) async {
-    final newPasskey = PassKey.fromJson(data);
+    final newPasskey = Password.fromMap(data);
 
     try {
       await GetIt.I<DatabaseHandler>().createPassKey(newPasskey);
@@ -185,8 +175,11 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
   }
 
   Future<void> updateKeyFunc(Map<String, dynamic> updateData) async {
-    assert(updateData[Constants.docId] != null, 'docId cannot be null');
-    updateData.removeWhere((key, value) => value == null || value == '');
+    assert(updateData[KeyNames.id] != null, 'docId cannot be null');
+    updateData.removeWhere(
+      // TODO(updateKeyFunc): maybe remove dateadded key
+      (key, value) => value == null || value == '',
+    );
 
     try {
       await GetIt.I<DatabaseHandler>().updatePassKey(updateData);

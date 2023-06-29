@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dumbkey/logic/encryptor.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
@@ -62,17 +64,13 @@ class DartFireStore {
   }
 
   Stream<List<TypeBase>> fetchAllPassKeys() {
-    try {
-      return database.collection(Constants.mainCollection).stream.map(
-            (docs) => docs.map((doc) {
-              final decrypted = encryptor.decryptMap(doc.map);
-              final type = TypeBase.getDataType(decrypted[KeyNames.dataAdded] as String);
-              return typeSelector(type, decrypted);
-            }).toList(),
-          );
-    } catch (e) {
-      throw Exception('Error fetching any data: $e');
-    }
+    return database.collection(Constants.mainCollection).stream.map(
+          (docs) => docs.map((doc) {
+            final decrypted = encryptor.decryptMap(doc.map);
+            final type = TypeBase.getDataType(decrypted[KeyNames.dataType] as String);
+            return typeSelector(type, decrypted);
+          }).toList(),
+        );
   }
 
   TypeBase typeSelector(DataType type, Map<String, dynamic> data) {
@@ -84,5 +82,9 @@ class DartFireStore {
       case DataType.card:
         return CardDetails.fromMap(data);
     }
+  }
+
+  void dispose() {
+    database.close();
   }
 }

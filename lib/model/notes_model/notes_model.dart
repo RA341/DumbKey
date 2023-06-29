@@ -10,7 +10,7 @@ class Notes extends TypeBase {
     required super.id,
     required super.dataType,
     required super.title,
-    required super.dataAdded,
+    required super.dateAdded,
     required super.syncStatus,
     required this.notes,
   });
@@ -20,7 +20,7 @@ class Notes extends TypeBase {
       id: map[KeyNames.id] as int,
       dataType: TypeBase.getDataType(map[KeyNames.dataType] as String),
       syncStatus: TypeBase.getSyncStatus(map[KeyNames.syncStatus] as String),
-      dataAdded: TypeBase.getDateTime(map[KeyNames.dataAdded] as String),
+      dateAdded: TypeBase.getDateTime(map[KeyNames.dateAdded] as String),
       title: map[KeyNames.title] as String,
       notes: map[KeyNames.notes] as String,
     );

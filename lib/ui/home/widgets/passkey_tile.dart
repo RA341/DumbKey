@@ -1,7 +1,8 @@
 // ignore_for_file: inference_failure_on_instance_creation
 
 import 'package:dumbkey/database/database_handler.dart';
-import 'package:dumbkey/model/passkey_model.dart';
+import 'package:dumbkey/model/password_model/password_model.dart';
+import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/ui/details/details_screen.dart';
 import 'package:dumbkey/ui/form/form_input.dart';
 import 'package:flutter/material.dart';
@@ -14,14 +15,14 @@ class PasskeyTitle extends StatelessWidget {
     super.key,
   });
 
-  final PassKey passkey;
+  final Password passkey;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Dismissible(
-        key: ValueKey(passkey.docId),
+        key: ValueKey(passkey.id),
         background: const ColoredBox(
           color: Colors.red,
           child: Align(
@@ -88,7 +89,7 @@ class PasskeyTitle extends StatelessWidget {
               copyButton(context, isUserName: true),
               Padding(
                 padding: const EdgeInsets.all(5),
-                child: Text(passkey.username ?? passkey.email ?? passkey.org ?? 'No username',style: TextStyle(
+                child: Text(passkey.username ?? passkey.email ?? 'No username',style: TextStyle(
                   overflow: TextOverflow.ellipsis,
                   color: passkey.syncStatus == SyncStatus.synced ? Colors.white : Colors.red,
                 )),
@@ -108,7 +109,7 @@ class PasskeyTitle extends StatelessWidget {
       onPressed: () {
         Clipboard.setData(
           ClipboardData(
-            text: isUserName ? (passkey.username ?? passkey.email ?? '') : passkey.passKey ?? '',
+            text: isUserName ? (passkey.username ?? passkey.email ?? '') : passkey.password ?? '',
           ),
         );
         ScaffoldMessenger.of(ctx).showSnackBar(
