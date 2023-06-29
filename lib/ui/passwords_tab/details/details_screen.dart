@@ -2,7 +2,7 @@
 
 import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
-import 'package:dumbkey/ui/form/form_input.dart';
+import 'package:dumbkey/ui/passwords_tab/form/form_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -47,7 +47,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   await Navigator.of(context).push(
                     // ignore: inference_failure_on_instance_creation
                     MaterialPageRoute(
-                      builder: (context) => DetailsInputScreen(savedKey: _passkey),
+                      builder: (context) => AddUpdatePassword(savedKey: _passkey),
                     ),
                   );
                   _passkey = (await GetIt.I.get<Isar>().passwords.get(_passkey.id))!;

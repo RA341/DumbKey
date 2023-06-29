@@ -3,8 +3,8 @@
 import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
-import 'package:dumbkey/ui/details/details_screen.dart';
-import 'package:dumbkey/ui/form/form_input.dart';
+import 'package:dumbkey/ui/passwords_tab/details/details_screen.dart';
+import 'package:dumbkey/ui/passwords_tab/form/form_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -78,7 +78,7 @@ class PasskeyTitle extends StatelessWidget {
           ),
           onLongPress: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => DetailsInputScreen(
+              builder: (context) => AddUpdatePassword(
                 savedKey: passkey,
               ),
             ),

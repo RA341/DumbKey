@@ -1,18 +1,18 @@
 import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
-import 'package:dumbkey/ui/form/fields/category_input.dart';
-import 'package:dumbkey/ui/form/fields/description_input.dart';
-import 'package:dumbkey/ui/form/fields/email_input.dart';
-import 'package:dumbkey/ui/form/fields/password_input.dart';
-import 'package:dumbkey/ui/form/fields/username_input.dart';
+import 'package:dumbkey/ui/passwords_tab/form/fields/category_input.dart';
+import 'package:dumbkey/ui/passwords_tab/form/fields/description_input.dart';
+import 'package:dumbkey/ui/passwords_tab/form/fields/email_input.dart';
+import 'package:dumbkey/ui/passwords_tab/form/fields/password_input.dart';
+import 'package:dumbkey/ui/passwords_tab/form/fields/username_input.dart';
 import 'package:dumbkey/utils/helper_func.dart';
 import 'package:dumbkey/utils/key_name_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-class DetailsInputScreen extends StatefulWidget {
-  const DetailsInputScreen({
+class AddUpdatePassword extends StatefulWidget {
+  const AddUpdatePassword({
     super.key,
     this.savedKey,
   });
@@ -20,10 +20,10 @@ class DetailsInputScreen extends StatefulWidget {
   final Password? savedKey;
 
   @override
-  State<DetailsInputScreen> createState() => _DetailsInputScreenState();
+  State<AddUpdatePassword> createState() => _AddUpdatePasswordState();
 }
 
-class _DetailsInputScreenState extends State<DetailsInputScreen> {
+class _AddUpdatePasswordState extends State<AddUpdatePassword> {
   final _formKey = GlobalKey<FormState>();
   final passkeyController = TextEditingController();
   final emailController = TextEditingController();
@@ -106,7 +106,7 @@ class _DetailsInputScreenState extends State<DetailsInputScreen> {
                   nextFocusNode: _categoryFocusNode,
                 ),
                 const SizedBox(height: 16),
-                CategoryField(
+                 CategoryField(
                   controller: categoryController,
                   currFocusNode: _categoryFocusNode,
                 ),
