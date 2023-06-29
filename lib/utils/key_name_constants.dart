@@ -2,7 +2,7 @@ class KeyNames{
   static const String id = 'id';
   static const String dataType = 'dataType';
   static const String title = 'title';
-  static const String dateAdded = 'dateAdded';
+  static const String dataAdded = 'dataAdded';
   static const String syncStatus = 'syncStatus';
 
   static const String email = 'email';

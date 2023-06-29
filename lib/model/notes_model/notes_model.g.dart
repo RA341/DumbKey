@@ -17,16 +17,16 @@ const NotesSchema = CollectionSchema(
   name: r'Notes',
   id: 1316144172548953035,
   properties: {
-    r'dataType': PropertySchema(
+    r'dataAdded': PropertySchema(
       id: 0,
+      name: r'dataAdded',
+      type: IsarType.dateTime,
+    ),
+    r'dataType': PropertySchema(
+      id: 1,
       name: r'dataType',
       type: IsarType.byte,
       enumMap: _NotesdataTypeEnumValueMap,
-    ),
-    r'dateAdded': PropertySchema(
-      id: 1,
-      name: r'dateAdded',
-      type: IsarType.dateTime,
     ),
     r'notes': PropertySchema(
       id: 2,
@@ -76,8 +76,8 @@ void _notesSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeByte(offsets[0], object.dataType.index);
-  writer.writeDateTime(offsets[1], object.dateAdded);
+  writer.writeDateTime(offsets[0], object.dataAdded);
+  writer.writeByte(offsets[1], object.dataType.index);
   writer.writeString(offsets[2], object.notes);
   writer.writeByte(offsets[3], object.syncStatus.index);
   writer.writeString(offsets[4], object.title);
@@ -90,9 +90,9 @@ Notes _notesDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Notes(
-    dataType: _NotesdataTypeValueEnumMap[reader.readByteOrNull(offsets[0])] ??
+    dataAdded: reader.readDateTime(offsets[0]),
+    dataType: _NotesdataTypeValueEnumMap[reader.readByteOrNull(offsets[1])] ??
         DataType.card,
-    dateAdded: reader.readDateTime(offsets[1]),
     id: id,
     notes: reader.readString(offsets[2]),
     syncStatus:
@@ -111,10 +111,10 @@ P _notesDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
+      return (reader.readDateTime(offset)) as P;
+    case 1:
       return (_NotesdataTypeValueEnumMap[reader.readByteOrNull(offset)] ??
           DataType.card) as P;
-    case 1:
-      return (reader.readDateTime(offset)) as P;
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
@@ -236,6 +236,59 @@ extension NotesQueryWhere on QueryBuilder<Notes, Notes, QWhereClause> {
 }
 
 extension NotesQueryFilter on QueryBuilder<Notes, Notes, QFilterCondition> {
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> dataAddedEqualTo(
+      DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dataAdded',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> dataAddedGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'dataAdded',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> dataAddedLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'dataAdded',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> dataAddedBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'dataAdded',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Notes, Notes, QAfterFilterCondition> dataTypeEqualTo(
       DataType value) {
     return QueryBuilder.apply(this, (query) {
@@ -281,59 +334,6 @@ extension NotesQueryFilter on QueryBuilder<Notes, Notes, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'dataType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterFilterCondition> dateAddedEqualTo(
-      DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'dateAdded',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterFilterCondition> dateAddedGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'dateAdded',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterFilterCondition> dateAddedLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'dateAdded',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterFilterCondition> dateAddedBetween(
-    DateTime lower,
-    DateTime upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'dateAdded',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -709,6 +709,18 @@ extension NotesQueryObject on QueryBuilder<Notes, Notes, QFilterCondition> {}
 extension NotesQueryLinks on QueryBuilder<Notes, Notes, QFilterCondition> {}
 
 extension NotesQuerySortBy on QueryBuilder<Notes, Notes, QSortBy> {
+  QueryBuilder<Notes, Notes, QAfterSortBy> sortByDataAdded() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dataAdded', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterSortBy> sortByDataAddedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dataAdded', Sort.desc);
+    });
+  }
+
   QueryBuilder<Notes, Notes, QAfterSortBy> sortByDataType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dataType', Sort.asc);
@@ -718,18 +730,6 @@ extension NotesQuerySortBy on QueryBuilder<Notes, Notes, QSortBy> {
   QueryBuilder<Notes, Notes, QAfterSortBy> sortByDataTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dataType', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterSortBy> sortByDateAdded() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dateAdded', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterSortBy> sortByDateAddedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dateAdded', Sort.desc);
     });
   }
 
@@ -771,6 +771,18 @@ extension NotesQuerySortBy on QueryBuilder<Notes, Notes, QSortBy> {
 }
 
 extension NotesQuerySortThenBy on QueryBuilder<Notes, Notes, QSortThenBy> {
+  QueryBuilder<Notes, Notes, QAfterSortBy> thenByDataAdded() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dataAdded', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterSortBy> thenByDataAddedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dataAdded', Sort.desc);
+    });
+  }
+
   QueryBuilder<Notes, Notes, QAfterSortBy> thenByDataType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dataType', Sort.asc);
@@ -780,18 +792,6 @@ extension NotesQuerySortThenBy on QueryBuilder<Notes, Notes, QSortThenBy> {
   QueryBuilder<Notes, Notes, QAfterSortBy> thenByDataTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dataType', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterSortBy> thenByDateAdded() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dateAdded', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Notes, Notes, QAfterSortBy> thenByDateAddedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dateAdded', Sort.desc);
     });
   }
 
@@ -845,15 +845,15 @@ extension NotesQuerySortThenBy on QueryBuilder<Notes, Notes, QSortThenBy> {
 }
 
 extension NotesQueryWhereDistinct on QueryBuilder<Notes, Notes, QDistinct> {
-  QueryBuilder<Notes, Notes, QDistinct> distinctByDataType() {
+  QueryBuilder<Notes, Notes, QDistinct> distinctByDataAdded() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'dataType');
+      return query.addDistinctBy(r'dataAdded');
     });
   }
 
-  QueryBuilder<Notes, Notes, QDistinct> distinctByDateAdded() {
+  QueryBuilder<Notes, Notes, QDistinct> distinctByDataType() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'dateAdded');
+      return query.addDistinctBy(r'dataType');
     });
   }
 
@@ -885,15 +885,15 @@ extension NotesQueryProperty on QueryBuilder<Notes, Notes, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Notes, DataType, QQueryOperations> dataTypeProperty() {
+  QueryBuilder<Notes, DateTime, QQueryOperations> dataAddedProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'dataType');
+      return query.addPropertyName(r'dataAdded');
     });
   }
 
-  QueryBuilder<Notes, DateTime, QQueryOperations> dateAddedProperty() {
+  QueryBuilder<Notes, DataType, QQueryOperations> dataTypeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'dateAdded');
+      return query.addPropertyName(r'dataType');
     });
   }
 
