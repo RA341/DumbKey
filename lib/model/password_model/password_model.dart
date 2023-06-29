@@ -22,10 +22,10 @@ class Password extends TypeBase {
   factory Password.fromMap(Map<String, dynamic> map) {
     return Password(
       id: map[KeyNames.id] as int,
-      dataType: DataType.values[map[KeyNames.dataType] as int],
-      syncStatus: SyncStatus.values[map[KeyNames.syncStatus] as int],
+      dataType: TypeBase.getDataType(map[KeyNames.dataType] as String),
+      syncStatus: TypeBase.getSyncStatus(map[KeyNames.syncStatus] as String),
+      dataAdded: TypeBase.getDateTime(map[KeyNames.dataAdded] as String),
       title: map[KeyNames.title] as String,
-      dataAdded: DateTime.parse(map[KeyNames.dataAdded] as String),
       email: map[KeyNames.email] as String?,
       username: map[KeyNames.username] as String?,
       password: map[KeyNames.password] as String?,

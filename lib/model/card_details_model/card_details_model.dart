@@ -21,10 +21,10 @@ class CardDetails extends TypeBase {
   factory CardDetails.fromMap(Map<String, dynamic> map) {
     return CardDetails(
       id: map[KeyNames.id] as int,
-      dataType: DataType.values[map[KeyNames.dataType] as int],
-      syncStatus: SyncStatus.values[map[KeyNames.syncStatus] as int],
+      dataType: TypeBase.getDataType(map[KeyNames.dataType] as String),
+      syncStatus: TypeBase.getSyncStatus(map[KeyNames.syncStatus] as String),
+      dataAdded: TypeBase.getDateTime(map[KeyNames.dataAdded] as String),
       title: map[KeyNames.title] as String,
-      dataAdded: DateTime.parse(map[KeyNames.dataAdded] as String),
       cardNumber: map[KeyNames.cardNumber] as String,
       cardHolderName: map[KeyNames.cardHolderName] as String,
       expirationDate: map[KeyNames.expirationDate] as String,
