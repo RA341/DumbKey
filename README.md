@@ -39,6 +39,8 @@ may be add a date field to model and remind user to update password in a set int
 
 # done
 
+~~readme update~~
+
 ~~added details screen~~
 
 ~~added good enough searching~~
