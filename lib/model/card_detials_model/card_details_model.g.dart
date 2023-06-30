@@ -32,16 +32,16 @@ const CardDetailsSchema = CollectionSchema(
       name: r'cvv',
       type: IsarType.string,
     ),
-    r'dataAdded': PropertySchema(
-      id: 3,
-      name: r'dataAdded',
-      type: IsarType.dateTime,
-    ),
     r'dataType': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'dataType',
       type: IsarType.byte,
       enumMap: _CardDetailsdataTypeEnumValueMap,
+    ),
+    r'dateAdded': PropertySchema(
+      id: 4,
+      name: r'dateAdded',
+      type: IsarType.dateTime,
     ),
     r'expirationDate': PropertySchema(
       id: 5,
@@ -97,8 +97,8 @@ void _cardDetailsSerialize(
   writer.writeString(offsets[0], object.cardHolderName);
   writer.writeString(offsets[1], object.cardNumber);
   writer.writeString(offsets[2], object.cvv);
-  writer.writeDateTime(offsets[3], object.dataAdded);
-  writer.writeByte(offsets[4], object.dataType.index);
+  writer.writeByte(offsets[3], object.dataType.index);
+  writer.writeDateTime(offsets[4], object.dateAdded);
   writer.writeString(offsets[5], object.expirationDate);
   writer.writeByte(offsets[6], object.syncStatus.index);
   writer.writeString(offsets[7], object.title);
@@ -114,10 +114,10 @@ CardDetails _cardDetailsDeserialize(
     cardHolderName: reader.readString(offsets[0]),
     cardNumber: reader.readString(offsets[1]),
     cvv: reader.readString(offsets[2]),
-    dataAdded: reader.readDateTime(offsets[3]),
     dataType:
-        _CardDetailsdataTypeValueEnumMap[reader.readByteOrNull(offsets[4])] ??
+        _CardDetailsdataTypeValueEnumMap[reader.readByteOrNull(offsets[3])] ??
             DataType.card,
+    dateAdded: reader.readDateTime(offsets[4]),
     expirationDate: reader.readString(offsets[5]),
     id: id,
     syncStatus:
@@ -142,10 +142,10 @@ P _cardDetailsDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readDateTime(offset)) as P;
-    case 4:
       return (_CardDetailsdataTypeValueEnumMap[reader.readByteOrNull(offset)] ??
           DataType.card) as P;
+    case 4:
+      return (reader.readDateTime(offset)) as P;
     case 5:
       return (reader.readString(offset)) as P;
     case 6:
@@ -676,62 +676,6 @@ extension CardDetailsQueryFilter
     });
   }
 
-  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
-      dataAddedEqualTo(DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'dataAdded',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
-      dataAddedGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'dataAdded',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
-      dataAddedLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'dataAdded',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
-      dataAddedBetween(
-    DateTime lower,
-    DateTime upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'dataAdded',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
   QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> dataTypeEqualTo(
       DataType value) {
     return QueryBuilder.apply(this, (query) {
@@ -779,6 +723,62 @@ extension CardDetailsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'dataType',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
+      dateAddedEqualTo(DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dateAdded',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
+      dateAddedGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'dateAdded',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
+      dateAddedLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'dateAdded',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
+      dateAddedBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'dateAdded',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1210,18 +1210,6 @@ extension CardDetailsQuerySortBy
     });
   }
 
-  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortByDataAdded() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dataAdded', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortByDataAddedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dataAdded', Sort.desc);
-    });
-  }
-
   QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortByDataType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dataType', Sort.asc);
@@ -1231,6 +1219,18 @@ extension CardDetailsQuerySortBy
   QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortByDataTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dataType', Sort.desc);
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortByDateAdded() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dateAdded', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortByDateAddedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dateAdded', Sort.desc);
     });
   }
 
@@ -1311,18 +1311,6 @@ extension CardDetailsQuerySortThenBy
     });
   }
 
-  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenByDataAdded() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dataAdded', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenByDataAddedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dataAdded', Sort.desc);
-    });
-  }
-
   QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenByDataType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dataType', Sort.asc);
@@ -1332,6 +1320,18 @@ extension CardDetailsQuerySortThenBy
   QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenByDataTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dataType', Sort.desc);
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenByDateAdded() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dateAdded', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenByDateAddedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dateAdded', Sort.desc);
     });
   }
 
@@ -1409,15 +1409,15 @@ extension CardDetailsQueryWhereDistinct
     });
   }
 
-  QueryBuilder<CardDetails, CardDetails, QDistinct> distinctByDataAdded() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'dataAdded');
-    });
-  }
-
   QueryBuilder<CardDetails, CardDetails, QDistinct> distinctByDataType() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'dataType');
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QDistinct> distinctByDateAdded() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'dateAdded');
     });
   }
 
@@ -1469,15 +1469,15 @@ extension CardDetailsQueryProperty
     });
   }
 
-  QueryBuilder<CardDetails, DateTime, QQueryOperations> dataAddedProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'dataAdded');
-    });
-  }
-
   QueryBuilder<CardDetails, DataType, QQueryOperations> dataTypeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dataType');
+    });
+  }
+
+  QueryBuilder<CardDetails, DateTime, QQueryOperations> dateAddedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'dateAdded');
     });
   }
 
