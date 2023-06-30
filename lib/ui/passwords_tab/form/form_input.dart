@@ -6,6 +6,7 @@ import 'package:dumbkey/ui/passwords_tab/form/fields/description_input.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/email_input.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/password_input.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/username_input.dart';
+import 'package:dumbkey/ui/shared/title_input.dart';
 import 'package:dumbkey/utils/helper_func.dart';
 import 'package:dumbkey/utils/key_name_constants.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
   final usernameController = TextEditingController();
   final descriptionController = TextEditingController();
   final categoryController = TextEditingController();
+  final titleController = TextEditingController();
 
   final FocusNode _passkeyFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
@@ -53,6 +55,7 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
 
   @override
   void dispose() {
+    titleController.dispose();
     passkeyController.dispose();
     emailController.dispose();
     usernameController.dispose();
@@ -82,6 +85,8 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                TitleInput(controller: titleController),
+                const SizedBox(height: 16),
                 EmailField(
                   controller: emailController,
                   currFocusNode: _emailFocusNode,
