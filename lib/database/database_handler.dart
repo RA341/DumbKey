@@ -149,7 +149,6 @@ class DatabaseHandler with IsarDbMixin {
         logger.d('Online starting firestore', status);
       } else {
         logger.d('Offline canceling firestore', status);
-        // if (unSyncPasskeysListener.isPaused != true) unSyncPasskeysListener.pause();
       }
     });
   }
@@ -176,10 +175,10 @@ class DatabaseHandler with IsarDbMixin {
         .syncStatusEqualTo(SyncStatus.deleted)
         .build()
         .findAll()
-        .then((value) {
-      logger.i('Passwords to sync', value.length);
-      if (value.isNotEmpty) {
-        _syncOfflineItems(value);
+        .then((dataList) {
+      logger.i('Passwords to sync', dataList.length);
+      if (dataList.isNotEmpty) {
+        _syncOfflineItems(dataList);
       }
     }).onError((error, stackTrace) {
       logger.e('Error fetching desync items', error, stackTrace);
@@ -194,10 +193,10 @@ class DatabaseHandler with IsarDbMixin {
         .syncStatusEqualTo(SyncStatus.deleted)
         .build()
         .findAll()
-        .then((value) {
-      logger.i('Cards to sync', value.length);
-      if (value.isNotEmpty) {
-        _syncOfflineItems(value);
+        .then((dataList) {
+      logger.i('Cards to sync', dataList.length);
+      if (dataList.isNotEmpty) {
+        _syncOfflineItems(dataList);
       }
     }).onError((error, stackTrace) {
       logger.e('Error fetching desync items', error, stackTrace);
@@ -212,20 +211,20 @@ class DatabaseHandler with IsarDbMixin {
         .syncStatusEqualTo(SyncStatus.deleted)
         .build()
         .findAll()
-        .then((value) {
-      logger.i('Notes to sync', value.length);
-      if (value.isNotEmpty) {
-        _syncOfflineItems(value);
+        .then((dataList) {
+      logger.i('Notes to sync', dataList.length);
+      if (dataList.isNotEmpty) {
+        _syncOfflineItems(dataList);
       }
     }).onError((error, stackTrace) {
       logger.e('Error fetching desync items', error, stackTrace);
     });
   }
 
-  void _syncOfflineItems(List<TypeBase> deSyncKeys) {
-    if (deSyncKeys.isEmpty) return;
-    logger.i('No of passkeys to be synced', deSyncKeys);
-    for (final passKey in deSyncKeys) {
+  void _syncOfflineItems(List<TypeBase> deSyncData) {
+    if (deSyncData.isEmpty) return;
+    logger.i('No of items to be synced', deSyncData);
+    for (final passKey in deSyncData) {
       unawaited(
         connection.checkConnectivity().then((status) {
           logger.i('current connection for syncing', status);
@@ -250,7 +249,7 @@ class DatabaseHandler with IsarDbMixin {
       logger.i('data added', passkey.toJson());
     }).onError((error, stackTrace) {
       logger
-        ..e('Error adding offlin Data to firebase', [error, stackTrace])
+        ..e('Error adding offline Data to firebase', [error, stackTrace])
         ..d('data not updated', passkey.toJson());
     });
   }
