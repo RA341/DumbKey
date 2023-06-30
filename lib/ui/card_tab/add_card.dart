@@ -33,6 +33,8 @@ class _AddCardState extends State<AddCard> {
 
   final _formKey = GlobalKey<FormState>();
 
+  bool isLoading = false;
+
   @override
   void initState() {
     titleController = TextEditingController();
@@ -110,12 +112,23 @@ class _AddCardState extends State<AddCard> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  if (isLoading) return;
+                  setState(() => isLoading = true);
+
                   if (_formKey.currentState!.validate()) {
-                    addNewCard();
+                    if (widget.savedCard == null) {
+                      await addNewCard();
+                    } else {
+                      await updateCard();
+                    }
                   }
+
+                  setState(() => isLoading = false);
+                  if (!context.mounted) return;
+                  Navigator.of(context).pop();
                 },
-                child: const Text('Submit'),
+                child: isLoading ? const CircularProgressIndicator() : const Text('Submit'),
               ),
             ],
           ),
@@ -171,7 +184,7 @@ class _AddCardState extends State<AddCard> {
     }
   }
 
-  void updateCard() {
+  Future<void> updateCard() async {
     final updatedData = retrieveData();
 
     // required fields
@@ -183,7 +196,7 @@ class _AddCardState extends State<AddCard> {
     updatedData.removeWhere((key, value) => value == null || value == '');
 
     try {
-      GetIt.I.get<DatabaseHandler>().updatePassKey(updatedData, updatedModel);
+      await GetIt.I.get<DatabaseHandler>().updatePassKey(updatedData, updatedModel);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
