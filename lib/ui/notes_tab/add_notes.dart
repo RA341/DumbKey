@@ -84,7 +84,7 @@ class _AddNotesState extends State<AddNotes> {
                   if (!context.mounted) return;
                   Navigator.of(context).pop();
                 },
-                child: const Text('Save Note'),
+                child: isLoading ? const CircularProgressIndicator() : const Text('Submit'),
               ),
             ],
           ),
