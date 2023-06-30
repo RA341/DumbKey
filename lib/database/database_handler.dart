@@ -8,8 +8,6 @@ import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
-import 'package:dumbkey/utils/constants.dart';
-import 'package:dumbkey/utils/key_name_constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
@@ -53,7 +51,7 @@ class DatabaseHandler with IsarDbMixin {
     await isarCreateOrUpdate(data);
   }
 
-  Future<void> updatePassKey(Map<String, dynamic> updateData) async {
+  Future<void> updatePassKey(Map<String, dynamic> updateData, TypeBase updatedModel) async {
     // here we use map instead of passkey
     // because we only want data that is changed to be updated
     assert(
@@ -61,33 +59,16 @@ class DatabaseHandler with IsarDbMixin {
       'update data contains null,$updateData',
     );
 
-    // used here because updateData gets somehow mutated(no idea why) by updatePassKey
-    final data = Map<String, dynamic>.from(updateData);
-
     try {
       await firestore.updateData(updateData);
       logger.i('Updated Data', updateData);
     } catch (e) {
       logger.e('Error updating Data to firebase', e);
-      data[Constants.syncStatus] = SyncStatus.notSynced.index;
+      updatedModel.syncStatus = SyncStatus.notSynced;
     }
 
-    assert(
-      data.containsKey(KeyNames.id) ||
-          data.containsKey(KeyNames.syncStatus) ||
-          data.containsKey(KeyNames.dataType),
-      'update data does not contain ID,$data',
-    );
-
-    logger.w('Update Data', data);
-    switch (TypeBase.getDataType(data[KeyNames.dataType] as String)) {
-      case DataType.card:
-        await isarCreateOrUpdate(CardDetails.fromMap(data));
-      case DataType.password:
-        await isarCreateOrUpdate(Password.fromMap(data));
-      case DataType.notes:
-        await isarCreateOrUpdate(Notes.fromMap(data));
-    }
+    logger.w('Update Data', updateData);
+    await isarCreateOrUpdate(updatedModel);
   }
 
   Future<void> deletePassKey(TypeBase data) async {
@@ -138,11 +119,12 @@ class DatabaseHandler with IsarDbMixin {
   StreamSubscription<List<TypeBase>> _listenToChangesFromFireBase() {
     return firestore.fetchAllPassKeys().distinct().listen(
           (documents) async {
-            logger.d('firebase listening',documents.length);
+            logger.d('firebase listening', documents.length);
             // deletes local data that is not present in remote
             await deleteLocalNotInRemote(documents);
             // updates local data from remote
-            await isarCreateOrUpdateAll(documents); // possible optimization update only changed data
+            await isarCreateOrUpdateAll(
+                documents); // possible optimization update only changed data
           },
           cancelOnError: true,
           onError: (Object error, StackTrace stackTrace) async {
@@ -174,9 +156,9 @@ class DatabaseHandler with IsarDbMixin {
 
   Future<void> deleteLocalNotInRemote(List<TypeBase> remoteData) async {
     final allPassKeys =
-    await isarDb.passwords.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
+        await isarDb.passwords.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
     final allCards =
-    await isarDb.cardDetails.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
+        await isarDb.cardDetails.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
     final allNotes = await isarDb.notes.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
 
     for (final passkey in [...allPassKeys, ...allCards, ...allNotes]) {

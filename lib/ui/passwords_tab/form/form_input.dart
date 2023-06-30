@@ -106,7 +106,7 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
                   nextFocusNode: _categoryFocusNode,
                 ),
                 const SizedBox(height: 16),
-                 CategoryField(
+                CategoryField(
                   controller: categoryController,
                   currFocusNode: _categoryFocusNode,
                 ),
@@ -140,27 +140,37 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
   }
 
   Map<String, dynamic> convertInputToList() {
-    final passKey = passkeyController.text.isEmpty ? null : passkeyController.text;
     final email = emailController.text.isEmpty ? null : emailController.text;
     final username = usernameController.text.isEmpty ? null : usernameController.text;
+    final passKey = passkeyController.text.isEmpty ? null : passkeyController.text;
     final description = descriptionController.text.isEmpty ? null : descriptionController.text;
     final category = categoryController.text.isEmpty ? null : categoryController.text;
 
-    return {
-      KeyNames.id: widget.savedKey?.id ?? idGenerator(),
-      KeyNames.syncStatus: (widget.savedKey?.syncStatus.index ?? SyncStatus.synced.index).toString(),
-      KeyNames.dataType: (widget.savedKey?.syncStatus.index ?? DataType.password.index).toString(),
-      KeyNames.title: widget.savedKey?.title ?? 'title',
-      KeyNames.dateAdded: (widget.savedKey?.dateAdded ?? DateTime.now()).toIso8601String(),
-      KeyNames.password: passKey,
-      KeyNames.email: email,
-      KeyNames.username: username,
-      KeyNames.description: description,
-      KeyNames.category: category,
-    };
+    final data = <String, dynamic>{};
+
+    if (widget.savedKey != null) {
+      data[KeyNames.email] = email == widget.savedKey!.email ? null : email;
+      data[KeyNames.username] = username == widget.savedKey!.username ? null : username;
+      data[KeyNames.password] = passKey == widget.savedKey!.password ? null : passKey;
+      data[KeyNames.description] = description == widget.savedKey!.description ? null : description;
+      data[KeyNames.category] = category == widget.savedKey!.category ? null : category;
+    } else {
+      data[KeyNames.username] = username;
+      data[KeyNames.email] = email;
+      data[KeyNames.password] = passKey;
+      data[KeyNames.description] = description;
+      data[KeyNames.category] = category;
+    }
+
+    return data;
   }
 
   Future<void> createFunc(Map<String, dynamic> data) async {
+    data[KeyNames.id] = idGenerator();
+    data[KeyNames.dataType] = DataType.password.index.toString();
+    data[KeyNames.syncStatus] = SyncStatus.synced.index.toString();
+    data[KeyNames.dateAdded] = DateTime.now().toIso8601String();
+
     final newPasskey = Password.fromMap(data);
 
     try {
@@ -175,14 +185,16 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
   }
 
   Future<void> updateKeyFunc(Map<String, dynamic> updateData) async {
-    assert(updateData[KeyNames.id] != null, 'docId cannot be null');
-    updateData.removeWhere(
-      // TODO(updateKeyFunc): maybe remove dateadded key
-      (key, value) => value == null || value == '',
-    );
+    updateData[KeyNames.id] = widget.savedKey?.id;
+    updateData[KeyNames.syncStatus] = widget.savedKey!.syncStatus.index.toString();
+    updateData[KeyNames.dataType] = null;
+
+    final updatedPasskey = widget.savedKey!.copyWith(updateData);
+
+    updateData.removeWhere((key, value) => value == null || value == '');
 
     try {
-      await GetIt.I<DatabaseHandler>().updatePassKey(updateData);
+      await GetIt.I<DatabaseHandler>().updatePassKey(updateData, updatedPasskey);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
