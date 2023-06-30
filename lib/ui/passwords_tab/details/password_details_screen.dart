@@ -2,22 +2,22 @@
 
 import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
-import 'package:dumbkey/ui/passwords_tab/form/form_input.dart';
+import 'package:dumbkey/ui/passwords_tab/form/password_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 
-class DetailsScreen extends StatefulWidget {
-  const DetailsScreen({required this.passkey, super.key});
+class PasswordDetailsScreen extends StatefulWidget {
+  const PasswordDetailsScreen({required this.passkey, super.key});
 
   final Password passkey;
 
   @override
-  State<DetailsScreen> createState() => _DetailsScreenState();
+  State<PasswordDetailsScreen> createState() => _PasswordDetailsScreenState();
 }
 
-class _DetailsScreenState extends State<DetailsScreen> {
+class _PasswordDetailsScreenState extends State<PasswordDetailsScreen> {
   late Password _passkey;
 
   @override

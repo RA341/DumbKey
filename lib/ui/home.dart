@@ -2,7 +2,7 @@ import 'package:dumbkey/ui/card_tab/add_card.dart';
 import 'package:dumbkey/ui/card_tab/cards_tab.dart';
 import 'package:dumbkey/ui/notes_tab/add_notes.dart';
 import 'package:dumbkey/ui/notes_tab/notes_tab.dart';
-import 'package:dumbkey/ui/passwords_tab/form/form_input.dart';
+import 'package:dumbkey/ui/passwords_tab/form/password_input.dart';
 import 'package:dumbkey/ui/passwords_tab/password_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
