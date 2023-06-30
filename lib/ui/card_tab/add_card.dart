@@ -174,7 +174,7 @@ class _AddCardState extends State<AddCard> {
     data[KeyNames.dateAdded] = DateTime.now().toIso8601String();
 
     try {
-      await GetIt.I.get<DatabaseHandler>().createPassKey(CardDetails.fromMap(data));
+      await GetIt.I.get<DatabaseHandler>().createData(CardDetails.fromMap(data));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -196,7 +196,7 @@ class _AddCardState extends State<AddCard> {
     updatedData.removeWhere((key, value) => value == null || value == '');
 
     try {
-      await GetIt.I.get<DatabaseHandler>().updatePassKey(updatedData, updatedModel);
+      await GetIt.I.get<DatabaseHandler>().updateData(updatedData, updatedModel);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

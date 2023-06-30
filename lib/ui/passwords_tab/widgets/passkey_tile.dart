@@ -50,8 +50,8 @@ class PasskeyTitle extends StatelessWidget {
           ),
         ),
         onDismissed: (direction) async =>
-            await GetIt.I.get<DatabaseHandler>().deletePassKey(passkey),
-        confirmDismiss: (direction) => showDialog(
+            await GetIt.I.get<DatabaseHandler>().deleteData(passkey),
+        confirmDismiss: (direction) => showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Are you sure?'),

@@ -78,7 +78,7 @@ class _PasswordDetailsScreenState extends State<PasswordDetailsScreen> {
                       ),
                       TextButton(
                         onPressed: () async {
-                          await GetIt.I.get<DatabaseHandler>().deletePassKey(_passkey);
+                          await GetIt.I.get<DatabaseHandler>().deleteData(_passkey);
                           Navigator.of(context).pop(true); // for the dialog
                           Navigator.of(context).pop(); // for the screen
                         },

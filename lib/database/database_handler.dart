@@ -37,7 +37,7 @@ class DatabaseHandler with IsarDbMixin {
   ValueNotifier<ConnectivityResult> connectionState = ValueNotifier(ConnectivityResult.none);
   ValueNotifier<bool> syncing = ValueNotifier(false);
 
-  Future<void> createPassKey(TypeBase data) async {
+  Future<void> createData(TypeBase data) async {
     logger.w('Creating Data', data.toJson());
 
     try {
@@ -51,7 +51,7 @@ class DatabaseHandler with IsarDbMixin {
     await isarCreateOrUpdate(data);
   }
 
-  Future<void> updatePassKey(Map<String, dynamic> updateData, TypeBase updatedModel) async {
+  Future<void> updateData(Map<String, dynamic> updateData, TypeBase updatedModel) async {
     // here we use map instead of passkey
     // because we only want data that is changed to be updated
     assert(
@@ -71,7 +71,7 @@ class DatabaseHandler with IsarDbMixin {
     await isarCreateOrUpdate(updatedModel);
   }
 
-  Future<void> deletePassKey(TypeBase data) async {
+  Future<void> deleteData(TypeBase data) async {
     logger.w('Deleting Data', data.toJson());
 
     if (data.syncStatus == SyncStatus.notSynced) {

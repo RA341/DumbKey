@@ -182,7 +182,7 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
     final newPasskey = Password.fromMap(data);
 
     try {
-      await GetIt.I<DatabaseHandler>().createPassKey(newPasskey);
+      await GetIt.I<DatabaseHandler>().createData(newPasskey);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -203,7 +203,7 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
     updateData.removeWhere((key, value) => value == null || value == '');
 
     try {
-      await GetIt.I<DatabaseHandler>().updatePassKey(updateData, updatedPasskey);
+      await GetIt.I<DatabaseHandler>().updateData(updateData, updatedPasskey);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

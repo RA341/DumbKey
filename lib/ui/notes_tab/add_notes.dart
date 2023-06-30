@@ -120,7 +120,7 @@ class _AddNotesState extends State<AddNotes> {
     final newPasskey = Notes.fromMap(data);
 
     try {
-      await GetIt.I<DatabaseHandler>().createPassKey(newPasskey);
+      await GetIt.I<DatabaseHandler>().createData(newPasskey);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -142,7 +142,7 @@ class _AddNotesState extends State<AddNotes> {
     updateData.removeWhere((key, value) => value == null || value == '');
 
     try {
-      await GetIt.I<DatabaseHandler>().updatePassKey(updateData, updatedNote);
+      await GetIt.I<DatabaseHandler>().updateData(updateData, updatedNote);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
