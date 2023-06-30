@@ -34,6 +34,27 @@ class Password extends TypeBase {
     );
   }
 
+  Password copyWith(Map<String, dynamic> updatedData) {
+    return Password(
+      id: updatedData[KeyNames.id] as int? ?? id,
+      dataType: updatedData[KeyNames.dataType] != null
+          ? TypeBase.getDataType(updatedData[KeyNames.dataType] as String)
+          : dataType,
+      syncStatus: updatedData[KeyNames.syncStatus] != null
+          ? TypeBase.getSyncStatus(updatedData[KeyNames.syncStatus] as String)
+          : syncStatus,
+      dateAdded: updatedData[KeyNames.dateAdded] != null
+          ? TypeBase.getDateTime(updatedData[KeyNames.dateAdded] as String)
+          : dateAdded,
+      title: updatedData[KeyNames.title] as String? ?? title,
+      email: updatedData[KeyNames.email] as String? ?? email,
+      username: updatedData[KeyNames.username] as String? ?? username,
+      password: updatedData[KeyNames.password] as String? ?? password,
+      description: updatedData[KeyNames.description] as String? ?? description,
+      category: updatedData[KeyNames.category] as String? ?? category,
+    );
+  }
+
   @override
   Map<String, dynamic> toJson() {
     final data = super.toJson();

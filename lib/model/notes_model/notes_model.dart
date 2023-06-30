@@ -26,5 +26,29 @@ class Notes extends TypeBase {
     );
   }
 
+  Notes copyWith(Map<String, dynamic> updatedData) {
+    return Notes(
+      id: updatedData[KeyNames.id] as int? ?? id,
+      dataType: updatedData[KeyNames.dataType] != null
+          ? TypeBase.getDataType(updatedData[KeyNames.dataType] as String)
+          : dataType,
+      syncStatus: updatedData[KeyNames.syncStatus] != null
+          ? TypeBase.getSyncStatus(updatedData[KeyNames.syncStatus] as String)
+          : syncStatus,
+      dateAdded: updatedData[KeyNames.dateAdded] != null
+          ? TypeBase.getDateTime(updatedData[KeyNames.dateAdded] as String)
+          : dateAdded,
+      title: updatedData[KeyNames.title] as String? ?? title,
+      notes: updatedData[KeyNames.notes] as String? ?? notes,
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    final data = super.toJson();
+    data[KeyNames.notes] = notes;
+    return data;
+  }
+
   String notes;
 }
