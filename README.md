@@ -11,6 +11,8 @@ add filtering, sorting, tagging
 
 improve search
 
+maybe add separate encryption key for each data type
+
 there is weird bug that causes listview to shuffle on delete
 
 add tags to sort by movies/banks/etc or categories
