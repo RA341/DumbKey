@@ -3,15 +3,22 @@
 A dumb password manger
 
 
-# Currently working
+# Currently working on
+
+add authentication
+
+centralize the CRUD operation for the ui
+
+add setup for encryption key, randomize iv,
 
 add password generator in input screen
+
+maybe add separate encryption key for each data type
 
 add filtering, sorting, tagging
 
 improve search
 
-maybe add separate encryption key for each data type
 
 there is weird bug that causes listview to shuffle on delete
 
