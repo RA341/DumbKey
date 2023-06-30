@@ -14,6 +14,7 @@ class CardDetailsView extends StatelessWidget {
     return ListView(
       children: cardsList.map((note) {
         return Card(
+          color: Colors.transparent,
           child: ListTile(title: Text(note.title)),
         );
       }).toList(),

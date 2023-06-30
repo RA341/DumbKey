@@ -145,6 +145,7 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
   }
 
   Map<String, dynamic> convertInputToList() {
+    final title = titleController.text.isEmpty ? null : titleController.text;
     final email = emailController.text.isEmpty ? null : emailController.text;
     final username = usernameController.text.isEmpty ? null : usernameController.text;
     final passKey = passkeyController.text.isEmpty ? null : passkeyController.text;
@@ -154,12 +155,14 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
     final data = <String, dynamic>{};
 
     if (widget.savedKey != null) {
+      data[KeyNames.title] = title == widget.savedKey!.title ? null : title;
       data[KeyNames.email] = email == widget.savedKey!.email ? null : email;
       data[KeyNames.username] = username == widget.savedKey!.username ? null : username;
       data[KeyNames.password] = passKey == widget.savedKey!.password ? null : passKey;
       data[KeyNames.description] = description == widget.savedKey!.description ? null : description;
       data[KeyNames.category] = category == widget.savedKey!.category ? null : category;
     } else {
+      data[KeyNames.title] = title;
       data[KeyNames.username] = username;
       data[KeyNames.email] = email;
       data[KeyNames.password] = passKey;
@@ -191,8 +194,9 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
 
   Future<void> updateKeyFunc(Map<String, dynamic> updateData) async {
     updateData[KeyNames.id] = widget.savedKey?.id;
-    updateData[KeyNames.syncStatus] = widget.savedKey!.syncStatus.index.toString();
+    updateData[KeyNames.syncStatus] = null;
     updateData[KeyNames.dataType] = null;
+    updateData[KeyNames.dateAdded] = null;
 
     final updatedPasskey = widget.savedKey!.copyWith(updateData);
 
