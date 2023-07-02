@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
             fontSize: 23,
             fontWeight: FontWeight.bold,
           ),
-        )
+        ),
       ),
       home: const SafeArea(child: HomePage()),
     );
