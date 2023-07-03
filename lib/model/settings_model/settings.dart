@@ -11,6 +11,10 @@ class Settings {
     this.backupFileName,
     this.lastBackupDate,
     this.categories,
+    this.userId,
+    this.idToken,
+    this.refreshToken,
+    this.expiry,
   });
 
   Id? id;
@@ -20,6 +24,11 @@ class Settings {
   String? backupFileName;
   DateTime? lastBackupDate;
 
+  // auth
+  String? userId;
+  String? idToken;
+  String? refreshToken;
+  String? expiry;
 
   // offline_queue
   List<String>? categories; //store ids of passkeys
