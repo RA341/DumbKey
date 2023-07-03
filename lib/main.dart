@@ -1,11 +1,9 @@
 import 'package:dumbkey/database/database_handler.dart';
-import 'package:dumbkey/logic/database_auth.dart';
 import 'package:dumbkey/logic/settings_handler.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/settings_model/settings.dart';
-import 'package:dumbkey/ui/auth_page/auth_page.dart';
 import 'package:dumbkey/ui/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -31,23 +29,21 @@ Future<void> initDatabase() async {
   GetIt.I
     ..registerSingleton<Logger>(log)
     ..registerLazySingleton<Isar>(() => isar)
-    ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar));
+    ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar))
+    ..registerSingleton<DatabaseHandler>(DatabaseHandler());
 }
 
-void initFirebase() {
-  GetIt.I.registerLazySingleton(DatabaseAuth.new);
-
-  if (GetIt.I.get<DatabaseAuth>().isSignedIn == false) return;
-
-  GetIt.I.registerSingleton<DatabaseHandler>(DatabaseHandler());
-}
+// void initFirebase() {
+//   GetIt.I.registerLazySingleton(DatabaseAuth.new);
+//
+//   if (GetIt.I.get<DatabaseAuth>().isSignedIn == false) return;
+// }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load();
   await initDatabase();
-  initFirebase();
   runApp(const MyApp());
 }
 
@@ -76,9 +72,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: SafeArea(
-        child: GetIt.I.get<DatabaseAuth>().isSignedIn ? const HomePage() : const LoginScreen(),
-      ),
+      home: const SafeArea(child: HomePage()),
     );
   }
 }
