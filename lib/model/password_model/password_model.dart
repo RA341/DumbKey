@@ -10,7 +10,7 @@ class Password extends TypeBase {
     required super.id,
     required super.dataType,
     required super.title,
-    required super.dataAdded,
+    required super.dateAdded,
     required super.syncStatus,
     this.email,
     this.username,
@@ -22,15 +22,36 @@ class Password extends TypeBase {
   factory Password.fromMap(Map<String, dynamic> map) {
     return Password(
       id: map[KeyNames.id] as int,
-      dataType: DataType.values[map[KeyNames.dataType] as int],
-      syncStatus: SyncStatus.values[map[KeyNames.syncStatus] as int],
+      dataType: TypeBase.getDataType(map[KeyNames.dataType] as String),
+      syncStatus: TypeBase.getSyncStatus(map[KeyNames.syncStatus] as String),
+      dateAdded: TypeBase.getDateTime(map[KeyNames.dateAdded] as String),
       title: map[KeyNames.title] as String,
-      dataAdded: DateTime.parse(map[KeyNames.dataAdded] as String),
       email: map[KeyNames.email] as String?,
       username: map[KeyNames.username] as String?,
       password: map[KeyNames.password] as String?,
       description: map[KeyNames.description] as String?,
       category: map[KeyNames.category] as String?,
+    );
+  }
+
+  Password copyWith(Map<String, dynamic> updatedData) {
+    return Password(
+      id: updatedData[KeyNames.id] as int? ?? id,
+      dataType: updatedData[KeyNames.dataType] != null
+          ? TypeBase.getDataType(updatedData[KeyNames.dataType] as String)
+          : dataType,
+      syncStatus: updatedData[KeyNames.syncStatus] != null
+          ? TypeBase.getSyncStatus(updatedData[KeyNames.syncStatus] as String)
+          : syncStatus,
+      dateAdded: updatedData[KeyNames.dateAdded] != null
+          ? TypeBase.getDateTime(updatedData[KeyNames.dateAdded] as String)
+          : dateAdded,
+      title: updatedData[KeyNames.title] as String? ?? title,
+      email: updatedData[KeyNames.email] as String? ?? email,
+      username: updatedData[KeyNames.username] as String? ?? username,
+      password: updatedData[KeyNames.password] as String? ?? password,
+      description: updatedData[KeyNames.description] as String? ?? description,
+      category: updatedData[KeyNames.category] as String? ?? category,
     );
   }
 

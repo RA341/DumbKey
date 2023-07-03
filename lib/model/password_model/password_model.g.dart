@@ -22,9 +22,9 @@ const PasswordSchema = CollectionSchema(
       name: r'category',
       type: IsarType.string,
     ),
-    r'dataAdded': PropertySchema(
+    r'dateAdded': PropertySchema(
       id: 1,
-      name: r'dataAdded',
+      name: r'dateAdded',
       type: IsarType.dateTime,
     ),
     r'dataType': PropertySchema(
@@ -126,7 +126,7 @@ void _passwordSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.category);
-  writer.writeDateTime(offsets[1], object.dataAdded);
+  writer.writeDateTime(offsets[1], object.dateAdded);
   writer.writeByte(offsets[2], object.dataType.index);
   writer.writeString(offsets[3], object.description);
   writer.writeString(offsets[4], object.email);
@@ -144,7 +144,7 @@ Password _passwordDeserialize(
 ) {
   final object = Password(
     category: reader.readStringOrNull(offsets[0]),
-    dataAdded: reader.readDateTime(offsets[1]),
+    dateAdded: reader.readDateTime(offsets[1]),
     dataType:
         _PassworddataTypeValueEnumMap[reader.readByteOrNull(offsets[2])] ??
             DataType.card,
@@ -453,7 +453,7 @@ extension PasswordQueryFilter
       DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'dataAdded',
+        property: r'dateAdded',
         value: value,
       ));
     });
@@ -466,7 +466,7 @@ extension PasswordQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'dataAdded',
+        property: r'dateAdded',
         value: value,
       ));
     });
@@ -479,7 +479,7 @@ extension PasswordQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'dataAdded',
+        property: r'dateAdded',
         value: value,
       ));
     });
@@ -493,7 +493,7 @@ extension PasswordQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'dataAdded',
+        property: r'dateAdded',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1399,13 +1399,13 @@ extension PasswordQuerySortBy on QueryBuilder<Password, Password, QSortBy> {
 
   QueryBuilder<Password, Password, QAfterSortBy> sortByDataAdded() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dataAdded', Sort.asc);
+      return query.addSortBy(r'dateAdded', Sort.asc);
     });
   }
 
   QueryBuilder<Password, Password, QAfterSortBy> sortByDataAddedDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dataAdded', Sort.desc);
+      return query.addSortBy(r'dateAdded', Sort.desc);
     });
   }
 
@@ -1510,13 +1510,13 @@ extension PasswordQuerySortThenBy
 
   QueryBuilder<Password, Password, QAfterSortBy> thenByDataAdded() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dataAdded', Sort.asc);
+      return query.addSortBy(r'dateAdded', Sort.asc);
     });
   }
 
   QueryBuilder<Password, Password, QAfterSortBy> thenByDataAddedDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dataAdded', Sort.desc);
+      return query.addSortBy(r'dateAdded', Sort.desc);
     });
   }
 
@@ -1628,7 +1628,7 @@ extension PasswordQueryWhereDistinct
 
   QueryBuilder<Password, Password, QDistinct> distinctByDataAdded() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'dataAdded');
+      return query.addDistinctBy(r'dateAdded');
     });
   }
 
@@ -1696,7 +1696,7 @@ extension PasswordQueryProperty
 
   QueryBuilder<Password, DateTime, QQueryOperations> dataAddedProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'dataAdded');
+      return query.addPropertyName(r'dateAdded');
     });
   }
 

@@ -7,8 +7,6 @@ class Constants{
   static const String firebaseApiKey = 'FIREBASE_APIKEY';
   static const String firebaseProjID = 'FIREBASE_PROJECTID';
 
-
-
   static const String database = 'database';
 
   static const String passKey = 'passKey';

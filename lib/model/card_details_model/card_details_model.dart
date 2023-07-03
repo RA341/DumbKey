@@ -35,13 +35,13 @@ class CardDetails extends TypeBase {
   CardDetails copyWith(Map<String, dynamic> cardDetails) {
     return CardDetails(
       id: (cardDetails[KeyNames.id] as int?) ?? id,
-      dataType: cardDetails[KeyNames.dataType] != null
+      dataType: cardDetails[KeyNames.dataType] == null
           ? TypeBase.getDataType(cardDetails[KeyNames.dataType]! as String)
           : dataType,
-      syncStatus: cardDetails[KeyNames.syncStatus] != null
+      syncStatus: cardDetails[KeyNames.syncStatus] == null
           ? TypeBase.getSyncStatus(cardDetails[KeyNames.syncStatus]! as String)
           : syncStatus,
-      dateAdded: cardDetails[KeyNames.dateAdded] != null
+      dateAdded: cardDetails[KeyNames.dateAdded] == null
           ? TypeBase.getDateTime(cardDetails[KeyNames.dateAdded]! as String)
           : dateAdded,
       title: (cardDetails[KeyNames.title] as String?) ?? title,
