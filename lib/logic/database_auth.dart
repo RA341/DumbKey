@@ -1,3 +1,4 @@
+import 'package:dumbkey/logic/isar_auth_store.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:firedart/auth/user_gateway.dart';
 import 'package:firedart/firedart.dart';
@@ -9,11 +10,11 @@ class DatabaseAuth {
 
     if (apiKey == Constants.noKey) throw Exception('No API key found');
 
-    _tokenStore = VolatileStore();
+    _tokenStore = IsarStore();
     _auth = FirebaseAuth(apiKey, _tokenStore);
   }
 
-  late TokenStore _tokenStore;
+  late IsarStore _tokenStore;
   late FirebaseAuth _auth;
 
   Future<void> signIn(String email, String password) async {

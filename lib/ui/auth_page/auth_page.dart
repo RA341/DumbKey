@@ -12,7 +12,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final DatabaseAuth _auth = DatabaseAuth();
+  final DatabaseAuth _auth = GetIt.I.get<DatabaseAuth>();
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -31,6 +31,16 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await _auth.signUp(_emailController.text, _passwordController.text);
     } on AuthException catch (e) {
+
+      if (e.message == 'EMAIL_EXISTS') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Email already exists try logging in'),
+          ),
+        );
+        return;
+      }
+
       GetIt.I.get<Logger>().e('failed to sign in', e);
     }
   }
@@ -70,11 +80,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ElevatedButton(
               onPressed: _signUp,
               child: const Text('Sign Up'),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'wow',
-              style: TextStyle(color: Colors.red),
             ),
           ],
         ),
