@@ -33,6 +33,7 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
   final categoryController = TextEditingController();
   final titleController = TextEditingController();
 
+  final FocusNode _titleFocusNode = FocusNode();
   final FocusNode _passkeyFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _usernameFocusNode = FocusNode();
@@ -62,6 +63,7 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
     descriptionController.dispose();
     categoryController.dispose();
 
+    _titleFocusNode.dispose();
     _passkeyFocusNode.dispose();
     _emailFocusNode.dispose();
     _usernameFocusNode.dispose();
@@ -85,7 +87,11 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TitleInput(controller: titleController),
+                TitleInput(
+                  controller: titleController,
+                  currFocusNode: _titleFocusNode,
+                  nextFocusNode: _passkeyFocusNode,
+                ),
                 const SizedBox(height: 16),
                 EmailField(
                   controller: emailController,
