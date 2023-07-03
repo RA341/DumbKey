@@ -5,38 +5,32 @@ A dumb password manger
 
 # Currently working on
 
-add authentication
-
-centralize the CRUD operation for the ui
-
-add setup for encryption key, randomize iv,
-
-add password generator in input screen
-
-maybe add separate encryption key for each data type
-
-add filtering, sorting, tagging
-
-improve search
+## Features
+- add authentication
 
 
-there is weird bug that causes listview to shuffle on delete
+## Quality of life
+- centralize the CRUD operation for the ui
+- add setup for encryption key, randomize iv,
+- add password generator in input screen
+- maybe add separate encryption key for each data type
 
-add tags to sort by movies/banks/etc or categories
+## UI stuff
 
-add ui to show device is offline or online
+- add filtering, sorting, tagging
+- add tags to sort by movies/banks/etc or categories
+- desktop ui
+- add ui to show device is offline or online
 
-improving ui
-
-desktop ui
+## Bugs
+- there is weird bug that causes listview to shuffle on delete
+- bug in emulator that prevents firestore from working version 33
 
 # possible uis
+mobile
+- https://www.figma.com/community/file/1120231988229292951
+- https://www.figma.com/community/file/1030246241062284627
 
-mobile [ - https://www.figma.com/community/file/1120231988229292951
-
-https://www.figma.com/community/file/1030246241062284627
-
-]
 
 
 # Roadmap
@@ -65,14 +59,6 @@ may be add a date field to model and remind user to update password in a set int
 ~~add desktop grpc/rest api for firestore interface~~
 
 ~~add persistence layer for desktop not supported by firedart~~
-
-
-# Bugs
-
-offline queue support - vpn is not available on android rest all
-platforms should be fine
-
-bug in emulator that prevents firestore from working version 33
 
 # windows build steps
 
