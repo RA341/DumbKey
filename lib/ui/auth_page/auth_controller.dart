@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:dumbkey/logic/database_auth.dart';
+import 'package:dumbkey/model/card_details_model/card_details_model.dart';
+import 'package:dumbkey/model/notes_model/notes_model.dart';
+import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/ui/auth_page/auth_page.dart';
 import 'package:dumbkey/ui/home.dart';
 import 'package:dumbkey/ui/shared/util.dart';
 import 'package:firedart/auth/exceptions.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:isar/isar.dart';
 import 'package:logger/logger.dart';
 
 class AuthController {
@@ -71,13 +75,13 @@ class AuthController {
     try {
       await auth.signOut();
 
+      removeDatabaseHandlers();
+      await deleteLocalCache();
+
       if (!context.mounted) return;
 
       Navigator.of(context).popUntil((route) => false);
       unawaited(Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LoginScreen())));
-
-      removeDatabaseHandlers();
-
       displaySnackBar(context, 'Successfully signed out');
 
       isLoading.value = false;
@@ -96,5 +100,31 @@ class AuthController {
 
   void removeDatabaseHandlers() {
     GetIt.I.unregister<DatabaseAuth>();
+  }
+
+  Future<void> deleteLocalCache() async {
+    final isar = GetIt.I.get<Isar>();
+
+    final passwordList = await isar.passwords.where().build().findAll();
+    final cardsList = await isar.cardDetails.where().build().findAll();
+    final notesList = await isar.notes.where().build().findAll();
+
+    if (notesList.isNotEmpty) {
+      await isar.writeTxn(() async {
+        await isar.notes.deleteAll(notesList.map((e) => e.id).toList());
+      });
+    }
+
+    if (passwordList.isNotEmpty) {
+      await isar.writeTxn(() async {
+        await isar.passwords.deleteAll(passwordList.map((e) => e.id).toList());
+      });
+    }
+
+    if (cardsList.isNotEmpty) {
+      await isar.writeTxn(() async {
+        await isar.cardDetails.deleteAll(cardsList.map((e) => e.id).toList());
+      });
+    }
   }
 }
