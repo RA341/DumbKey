@@ -4,6 +4,7 @@ import 'package:dumbkey/ui/notes_tab/add_notes.dart';
 import 'package:dumbkey/ui/notes_tab/notes_tab.dart';
 import 'package:dumbkey/ui/passwords_tab/form/password_input.dart';
 import 'package:dumbkey/ui/passwords_tab/password_tab.dart';
+import 'package:dumbkey/ui/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
@@ -33,6 +34,16 @@ class HomePage extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               title: const Center(child: Text('DumbKey')),
+              actions: [
+                IconButton.outlined(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (context) => const SettingsPage(),
+                    ),
+                  ),
+                  icon: const Icon(Icons.settings),
+                ),
+              ],
             ),
             body: const Column(
               children: [

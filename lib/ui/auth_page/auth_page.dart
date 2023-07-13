@@ -1,8 +1,6 @@
-import 'package:dumbkey/logic/database_auth.dart';
-import 'package:firedart/auth/exceptions.dart';
+import 'package:dumbkey/ui/auth_page/auth_controller.dart';
+import 'package:dumbkey/ui/auth_page/signup_page.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,38 +10,17 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final DatabaseAuth _auth = GetIt.I.get<DatabaseAuth>();
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> _login() async {
-    try {
-      await _auth.signIn(_emailController.text, _passwordController.text);
-    } on AuthException catch (e) {
-      GetIt.I.get<Logger>().e('failed to sign in', e);
-    }
-  }
+  Future<void> _login() async => AuthController.inst.signIn(
+        context,
+        _emailController.text,
+        _passwordController.text,
+      );
 
   // stuff@stuff.com
   // coolpassword123
-  Future<void> _signUp() async {
-    try {
-      await _auth.signUp(_emailController.text, _passwordController.text);
-    } on AuthException catch (e) {
-
-      if (e.message == 'EMAIL_EXISTS') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Email already exists try logging in'),
-          ),
-        );
-        return;
-      }
-
-      GetIt.I.get<Logger>().e('failed to sign in', e);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,18 +49,30 @@ class _LoginScreenState extends State<LoginScreen> {
               obscureText: true,
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _login,
-              child: const Text('Login'),
+            ValueListenableBuilder(
+              valueListenable: AuthController.inst.isLoading,
+              builder: (context, value, child) {
+                return ElevatedButton(
+                  onPressed: value ? null : _login,
+                  child: value ? const CircularProgressIndicator() : const Text('Login'),
+                );
+              },
             ),
             const SizedBox(height: 8),
             ElevatedButton(
-              onPressed: _signUp,
+              onPressed: pushPage,
               child: const Text('Sign Up'),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void pushPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(builder: (_) => const SignUpPage()),
     );
   }
 }

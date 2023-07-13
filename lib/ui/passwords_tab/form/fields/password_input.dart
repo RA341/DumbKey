@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 class PasskeyField extends StatefulWidget {
   const PasskeyField({
     required this.controller,
-    required this.currFocusNode,
-    required this.nextFocusNode,
+    this.currFocusNode,
+    this.nextFocusNode,
     super.key,
   });
 
-  final FocusNode currFocusNode;
-  final FocusNode nextFocusNode;
+  final FocusNode? currFocusNode;
+  final FocusNode? nextFocusNode;
   final TextEditingController controller;
 
   @override
@@ -35,7 +35,7 @@ class _PasskeyFieldState extends State<PasskeyField> {
           child: TextFormField(
             focusNode: widget.currFocusNode,
             onFieldSubmitted: (_) {
-              widget.currFocusNode.unfocus();
+              widget.currFocusNode?.unfocus();
               FocusScope.of(context).requestFocus(widget.nextFocusNode);
             },
             autovalidateMode: AutovalidateMode.onUserInteraction,

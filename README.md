@@ -2,6 +2,9 @@
 
 A dumb password manger
 
+# test cred
+w@w.com  
+ThisisaStrongPassword1234@
 
 # Currently working on
 
