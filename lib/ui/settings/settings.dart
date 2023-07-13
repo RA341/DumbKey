@@ -15,7 +15,7 @@ class SettingsPage extends StatelessWidget {
             builder: (context, value, child) {
               return ElevatedButton(
                 onPressed: value ? null : () async => AuthController.inst.signOut(context),
-                child: value ? const CircularProgressIndicator() : const Text('Login'),
+                child: value ? const CircularProgressIndicator() : const Text('Log out'),
               );
             },
           ),

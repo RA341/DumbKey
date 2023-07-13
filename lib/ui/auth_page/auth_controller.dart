@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dumbkey/logic/database_auth.dart';
 import 'package:dumbkey/ui/auth_page/auth_page.dart';
 import 'package:dumbkey/ui/home.dart';
+import 'package:dumbkey/ui/shared/util.dart';
 import 'package:firedart/auth/exceptions.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -26,19 +27,13 @@ class AuthController {
       Navigator.of(context).popUntil((route) => false);
       unawaited(Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HomePage())));
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Successfully signed up'),
-        ),
-      );
+      initDatabaseHandlers();
+
+      displaySnackBar(context, 'Successfully signed up');
     } catch (e) {
       // TODO(signIn): handle different exceptions
       GetIt.I.get<Logger>().e('failed to login $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to login\n$e'),
-        ),
-      );
+      displaySnackBar(context, 'Failed to login\n$e');
     }
     isLoading.value = false;
   }
@@ -54,27 +49,16 @@ class AuthController {
 
       Navigator.of(context).popUntil((route) => false);
       unawaited(Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HomePage())));
+      initDatabaseHandlers();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Successfully signed up'),
-        ),
-      );
+      displaySnackBar(context, 'Successfully signed up');
     } on AuthException catch (e) {
       if (e.message == 'EMAIL_EXISTS') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Email already exists try logging in'),
-          ),
-        );
+        displaySnackBar(context, 'Email already exists try logging in');
       }
       GetIt.I.get<Logger>().e('failed to sign in', e);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to sign up\n$e'),
-        ),
-      );
+      displaySnackBar(context, 'Failed to sign up\n$e');
       GetIt.I.get<Logger>().e('failed to sign in', e);
     }
     isLoading.value = false;
@@ -92,11 +76,9 @@ class AuthController {
       Navigator.of(context).popUntil((route) => false);
       unawaited(Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LoginScreen())));
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Successfully signed out'),
-        ),
-      );
+      removeDatabaseHandlers();
+
+      displaySnackBar(context, 'Successfully signed out');
 
       isLoading.value = false;
     } catch (e) {
@@ -104,11 +86,15 @@ class AuthController {
       Navigator.of(context).popUntil((route) => false);
       unawaited(Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LoginScreen())));
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to sign out\n$e'),
-        ),
-      );
+      displaySnackBar(context, 'Failed to sign out\n$e');
     }
+  }
+
+  void initDatabaseHandlers() {
+    GetIt.I.registerSingleton(DatabaseAuth());
+  }
+
+  void removeDatabaseHandlers() {
+    GetIt.I.unregister<DatabaseAuth>();
   }
 }
