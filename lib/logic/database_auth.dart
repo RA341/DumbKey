@@ -14,8 +14,8 @@ class DatabaseAuth {
     _auth = FirebaseAuth(apiKey, _tokenStore);
   }
 
-  late IsarStore _tokenStore;
-  late FirebaseAuth _auth;
+  late final IsarStore _tokenStore;
+  late final FirebaseAuth _auth;
 
   Future<void> signIn(String email, String password) async {
     await _auth.signIn(email, password);

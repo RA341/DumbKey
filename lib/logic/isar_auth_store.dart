@@ -6,12 +6,11 @@ import 'package:get_it/get_it.dart';
 
 class IsarStore extends TokenStore {
   IsarStore() {
-    inst = GetIt.I.get<SettingsHandler>().settingsInst;
-    encryptor = AESEncryption(); // TODO(IsarStore): get from Dependency Injection
+    // TODO(IsarStore): get from Dependency Injection
   }
 
-  late Settings inst;
-  late AESEncryption encryptor;
+  Settings inst = GetIt.I.get<SettingsHandler>().settingsInst;
+  AESEncryption encryptor = AESEncryption();
 
   @override
   void delete() {

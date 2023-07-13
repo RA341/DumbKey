@@ -5,11 +5,11 @@ import 'package:logger/logger.dart';
 
 class SettingsHandler {
   SettingsHandler._create({
-    required Isar settings,
-    required Settings settingsI,
+    required Isar isar,
+    required Settings setInst,
   }) {
-    isarInst = settings;
-    settingsInst = settingsI;
+    isarInst = isar;
+    settingsInst = setInst;
   }
 
   late Settings settingsInst;
@@ -23,12 +23,17 @@ class SettingsHandler {
       await isar.writeTxn(() async => await isar.settings.put(config!));
     }
 
-    return SettingsHandler._create(settings: isar, settingsI: config);
+    return SettingsHandler._create(isar: isar, setInst: config);
   }
 
   Future<void> refreshSettings() async {
-    await isarInst.writeTxn(() async => await isarInst.settings.put(settingsInst));
+    await isarInst.writeTxn(() async {
+      await isarInst.settings.put(settingsInst);
+    });
+
     settingsInst = (await isarInst.settings.get(0))!;
+
+    // settingsInst = tmp!;
     GetIt.I.get<Logger>().i('New settings', settingsInst.categories);
   }
 
