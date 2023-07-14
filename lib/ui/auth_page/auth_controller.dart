@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/logic/database_auth.dart';
+import 'package:dumbkey/logic/encryptor.dart';
+import 'package:dumbkey/logic/secure_storage.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
@@ -26,12 +29,12 @@ class AuthController {
     isLoading.value = true;
     try {
       await auth.signIn(email, password);
+      await GetIt.I.get<SecureStorageHandler>().writeData(password); // set encryption key
+      await initDatabaseHandlers();
 
       if (!context.mounted) return;
       Navigator.of(context).popUntil((route) => false);
       unawaited(Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HomePage())));
-
-      initDatabaseHandlers();
 
       displaySnackBar(context, 'Successfully signed up');
     } catch (e) {
@@ -48,12 +51,13 @@ class AuthController {
     isLoading.value = true;
     try {
       await auth.signUp(email, password);
+      await GetIt.I.get<SecureStorageHandler>().writeData(password); // set encryption key
+      await initDatabaseHandlers();
 
       if (!context.mounted) return;
 
       Navigator.of(context).popUntil((route) => false);
       unawaited(Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HomePage())));
-      initDatabaseHandlers();
 
       displaySnackBar(context, 'Successfully signed up');
     } on AuthException catch (e) {
@@ -74,7 +78,7 @@ class AuthController {
     isLoading.value = true;
     try {
       await auth.signOut();
-
+      await GetIt.I.get<SecureStorageHandler>().writeData(''); // clear ut encryption key
       removeDatabaseHandlers();
       await deleteLocalCache();
 
@@ -94,12 +98,14 @@ class AuthController {
     }
   }
 
-  void initDatabaseHandlers() {
-    GetIt.I.registerSingleton(DatabaseAuth());
+  Future<void> initDatabaseHandlers() async {
+    GetIt.I.registerSingleton<DataEncryptor>(await DataEncryptor.create());
+    GetIt.I.registerSingleton<DatabaseHandler>(DatabaseHandler());
   }
 
   void removeDatabaseHandlers() {
-    GetIt.I.unregister<DatabaseAuth>();
+    GetIt.I.unregister<DatabaseHandler>();
+    GetIt.I.unregister<DataEncryptor>();
   }
 
   Future<void> deleteLocalCache() async {

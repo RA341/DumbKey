@@ -9,11 +9,12 @@ import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/key_name_constants.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
 
 class DartFireStore {
   DartFireStore() {
     initFireDart();
-    encryptor = AESEncryption();
+    encryptor = GetIt.I.get<DataEncryptor>();
   }
 
   void initFireDart() {
@@ -29,7 +30,7 @@ class DartFireStore {
   }
 
   late final Firestore database;
-  late final AESEncryption encryptor;
+  late final DataEncryptor encryptor;
 
   Future<void> createData(Map<String, dynamic> data) async {
     try {

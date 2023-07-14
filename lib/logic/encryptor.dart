@@ -1,18 +1,20 @@
-import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/logic/secure_storage.dart';
 import 'package:dumbkey/utils/key_name_constants.dart';
 import 'package:encrypt/encrypt.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
 
-class AESEncryption {
-  AESEncryption() {
-    final envKey = dotenv.get(
-      Constants.key,
-      fallback: Constants.noKey,
-    );
-    if (envKey == Constants.noKey) throw Exception('No key found');
-    final key = Key.fromUtf8(envKey);
+class DataEncryptor {
+
+  DataEncryptor._create (String encryptionKey) {
+    final key = Key.fromUtf8(encryptionKey);
     _iv = IV.fromLength(16);
     _encryptionManager = Encrypter(AES(key));
+  }
+
+  static Future<DataEncryptor> create() async {
+    final encKey = await GetIt.I.get<SecureStorageHandler>().readData();
+    if (encKey == null) throw Exception('No key found');
+    return DataEncryptor._create(encKey);
   }
 
   late final Encrypter _encryptionManager;

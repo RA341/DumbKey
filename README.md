@@ -6,6 +6,9 @@ A dumb password manger
 w@w.com  
 ThisisaStrongPassword1234@
 
+w@w.app
+12345678aB!
+
 # Currently working on
 
 ## Features

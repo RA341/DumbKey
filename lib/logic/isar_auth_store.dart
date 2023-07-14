@@ -1,6 +1,4 @@
-import 'package:dumbkey/logic/encryptor.dart';
-import 'package:dumbkey/logic/settings_handler.dart';
-import 'package:dumbkey/model/settings_model/settings.dart';
+import 'package:dumbkey/logic/secure_storage.dart';
 import 'package:firedart/auth/token_store.dart';
 import 'package:get_it/get_it.dart';
 
@@ -9,47 +7,69 @@ class IsarStore extends TokenStore {
     // TODO(IsarStore): get from Dependency Injection
   }
 
-  Settings inst = GetIt.I.get<SettingsHandler>().settingsInst;
-  AESEncryption encryptor = AESEncryption();
+  String? userIdS;
+
+  String? idTokenS;
+
+  String? refreshTokenS;
+
+  String? expiryTokenS;
+
+  static const String userIdKey = 'userId';
+  static const String idTokenKey = 'idToken';
+  static const String refreshTokenKey = 'refreshToken';
+  static const String expiryKey = 'expiry';
+
+  Future<void> getValues() async {
+    userIdS = await secDb.readData(key: userIdKey);
+    idTokenS = await secDb.readData(key: idTokenKey);
+    refreshTokenS = await secDb.readData(key: refreshTokenKey);
+    expiryTokenS = await secDb.readData(key: expiryKey);
+  }
+
+  Future<void> setValues() async {
+    await secDb.writeData(userIdS, key: userIdKey);
+    await secDb.writeData(idTokenS, key: idTokenKey);
+    await secDb.writeData(refreshTokenS, key: refreshTokenKey);
+    await secDb.writeData(expiryTokenS, key: expiryKey);
+  }
+
+  SecureStorageHandler secDb = GetIt.I.get<SecureStorageHandler>();
 
   @override
-  void delete() {
-    inst
-      ..userId = null
-      ..idToken = null
-      ..refreshToken = null
-      ..expiry = null;
+  Future<void> delete() async {
+    userIdS = null;
+    idTokenS = null;
+    refreshTokenS = null;
+    expiryTokenS = null;
 
-    GetIt.I.get<SettingsHandler>().refreshSettings();
+    await setValues();
   }
 
   @override
   Token? read() {
-    if (inst.userId == null ||
-        inst.idToken == null ||
-        inst.refreshToken == null ||
-        inst.expiry == null) return null;
+    if (userIdS == null || idTokenS == null || refreshTokenS == null || expiryTokenS == null) {
+      return null;
+    }
 
-    final userId = encryptor.decrypt(inst.userId!);
-    final idToken = encryptor.decrypt(inst.idToken!);
-    final refreshToken = encryptor.decrypt(inst.refreshToken!);
-    final expiry = DateTime.parse(encryptor.decrypt(inst.expiry!));
-
-    return Token(userId, idToken, refreshToken, expiry);
+    return Token(
+      userIdS,
+      idTokenS!,
+      refreshTokenS!,
+      DateTime.parse(expiryTokenS!),
+    );
   }
 
   @override
-  void write(Token? token) {
+  Future<void> write(Token? token) async {
     if (token == null) return;
-    var data = token.toMap();
-    data = encryptor.encryptMap(data);
+    final data = token.toMap();
 
-    inst
-      ..userId = data['userId'] as String
-      ..idToken = data['idToken'] as String
-      ..refreshToken = data['refreshToken'] as String
-      ..expiry = data['expiry'] as String;
+    userIdS = data[userIdKey] as String;
+    idTokenS = data[idTokenKey] as String;
+    refreshTokenS = data[refreshTokenKey] as String;
+    expiryTokenS = data[expiryKey] as String;
 
-    GetIt.I.get<SettingsHandler>().refreshSettings();
+    await setValues();
   }
 }

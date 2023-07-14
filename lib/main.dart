@@ -1,5 +1,6 @@
 import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/logic/database_auth.dart';
+import 'package:dumbkey/logic/secure_storage.dart';
 import 'package:dumbkey/logic/settings_handler.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
@@ -30,6 +31,7 @@ Future<void> initDatabase() async {
 
   GetIt.I
     ..registerSingleton<Logger>(log)
+    ..registerLazySingleton(SecureStorageHandler.new)
     ..registerLazySingleton<Isar>(() => isar)
     ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar))
     ..registerSingleton<DatabaseAuth>(DatabaseAuth());
