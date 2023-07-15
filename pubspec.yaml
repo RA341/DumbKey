@@ -43,6 +43,8 @@ dependencies:
   isar_flutter_libs: ^3.1.0+1
   flutter_secure_storage: ^8.0.0
   path_provider:
+  sodium_libs: ^2.1.1+1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -71,7 +73,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-     - .env
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
