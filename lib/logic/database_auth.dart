@@ -6,9 +6,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DatabaseAuth {
   DatabaseAuth() {
-    final apiKey = dotenv.get(Constants.firebaseApiKey, fallback: Constants.noKey);
+    final apiKey = dotenv.get(DumbData.firebaseApiKey, fallback: DumbData.noKey);
 
-    if (apiKey == Constants.noKey) throw Exception('No API key found');
+    if (apiKey == DumbData.noKey) throw Exception('No API key found');
 
     _tokenStore = IsarStore();
     _auth = FirebaseAuth(apiKey, _tokenStore);
@@ -24,7 +24,6 @@ class DatabaseAuth {
   Future<void> signUp(String email, String password) async {
     await _auth.signUp(email, password);
   }
-
 
   Future<void> signOut() async {
     _auth.signOut();

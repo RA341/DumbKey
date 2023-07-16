@@ -1,4 +1,4 @@
-import 'package:dumbkey/utils/key_name_constants.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:isar/isar.dart';
 
 class TypeBase {
@@ -12,11 +12,11 @@ class TypeBase {
 
   factory TypeBase.fromMap(Map<String, dynamic> map) {
     return TypeBase(
-      id: map[KeyNames.id] as int,
-      dataType: getDataType(map[KeyNames.dataType] as String),
-      syncStatus: getSyncStatus(map[KeyNames.syncStatus] as String),
-      title: map[KeyNames.title] as String,
-      dateAdded: getDateTime(map[KeyNames.dateAdded] as String),
+      id: map[DumbData.id] as int,
+      dataType: getDataType(map[DumbData.dataType] as String),
+      syncStatus: getSyncStatus(map[DumbData.syncStatus] as String),
+      title: map[DumbData.title] as String,
+      dateAdded: getDateTime(map[DumbData.dateAdded] as String),
     );
   }
 
@@ -27,12 +27,12 @@ class TypeBase {
   static SyncStatus getSyncStatus(String dataIndex) => SyncStatus.values[int.parse(dataIndex)];
 
   Map<String, dynamic> toJson() => {
-    KeyNames.id: id,
-    KeyNames.dataType: dataType.index.toString(),
-    KeyNames.syncStatus: syncStatus.index.toString(),
-    KeyNames.title: title,
-    KeyNames.dateAdded: dateAdded.toIso8601String(),
-  };
+        DumbData.id: id,
+        DumbData.dataType: dataType.index.toString(),
+        DumbData.syncStatus: syncStatus.index.toString(),
+        DumbData.title: title,
+        DumbData.dateAdded: dateAdded.toIso8601String(),
+      };
 
   Id id;
   @enumerated

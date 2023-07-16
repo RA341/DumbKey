@@ -7,8 +7,8 @@ import 'package:dumbkey/ui/passwords_tab/form/fields/email_input.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/password_input.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/username_input.dart';
 import 'package:dumbkey/ui/shared/title_input.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
-import 'package:dumbkey/utils/key_name_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -161,29 +161,29 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
     final data = <String, dynamic>{};
 
     if (widget.savedKey != null) {
-      data[KeyNames.title] = title == widget.savedKey!.title ? null : title;
-      data[KeyNames.email] = email == widget.savedKey!.email ? null : email;
-      data[KeyNames.username] = username == widget.savedKey!.username ? null : username;
-      data[KeyNames.password] = passKey == widget.savedKey!.password ? null : passKey;
-      data[KeyNames.description] = description == widget.savedKey!.description ? null : description;
-      data[KeyNames.category] = category == widget.savedKey!.category ? null : category;
+      data[DumbData.title] = title == widget.savedKey!.title ? null : title;
+      data[DumbData.email] = email == widget.savedKey!.email ? null : email;
+      data[DumbData.username] = username == widget.savedKey!.username ? null : username;
+      data[DumbData.password] = passKey == widget.savedKey!.password ? null : passKey;
+      data[DumbData.description] = description == widget.savedKey!.description ? null : description;
+      data[DumbData.category] = category == widget.savedKey!.category ? null : category;
     } else {
-      data[KeyNames.title] = title;
-      data[KeyNames.username] = username;
-      data[KeyNames.email] = email;
-      data[KeyNames.password] = passKey;
-      data[KeyNames.description] = description;
-      data[KeyNames.category] = category;
+      data[DumbData.title] = title;
+      data[DumbData.username] = username;
+      data[DumbData.email] = email;
+      data[DumbData.password] = passKey;
+      data[DumbData.description] = description;
+      data[DumbData.category] = category;
     }
 
     return data;
   }
 
   Future<void> createFunc(Map<String, dynamic> data) async {
-    data[KeyNames.id] = idGenerator();
-    data[KeyNames.dataType] = DataType.password.index.toString();
-    data[KeyNames.syncStatus] = SyncStatus.synced.index.toString();
-    data[KeyNames.dateAdded] = DateTime.now().toIso8601String();
+    data[DumbData.id] = idGenerator();
+    data[DumbData.dataType] = DataType.password.index.toString();
+    data[DumbData.syncStatus] = SyncStatus.synced.index.toString();
+    data[DumbData.dateAdded] = DateTime.now().toIso8601String();
 
     final newPasskey = Password.fromMap(data);
 
@@ -199,10 +199,10 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
   }
 
   Future<void> updateKeyFunc(Map<String, dynamic> updateData) async {
-    updateData[KeyNames.id] = widget.savedKey?.id;
-    updateData[KeyNames.syncStatus] = null;
-    updateData[KeyNames.dataType] = null;
-    updateData[KeyNames.dateAdded] = null;
+    updateData[DumbData.id] = widget.savedKey?.id;
+    updateData[DumbData.syncStatus] = null;
+    updateData[DumbData.dataType] = null;
+    updateData[DumbData.dateAdded] = null;
 
     final updatedPasskey = widget.savedKey!.copyWith(updateData);
 

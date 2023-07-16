@@ -6,8 +6,7 @@ import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/settings_model/settings.dart';
-import 'package:dumbkey/ui/auth_page/auth_page.dart';
-import 'package:dumbkey/ui/home.dart';
+import 'package:dumbkey/ui/shared/test_homoe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
@@ -73,8 +72,9 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: SafeArea(
-        child: GetIt.I.get<DatabaseAuth>().isSignedIn ? const HomePage() : const LoginScreen(),
-      ),
+          child:
+              Hoome() //GetIt.I.get<DatabaseAuth>().isSignedIn ? const HomePage() : const LoginScreen(),
+          ),
     );
   }
 }

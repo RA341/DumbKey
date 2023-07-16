@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dumbkey/logic/secure_storage.dart';
-import 'package:dumbkey/utils/key_name_constants.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sodium_libs/sodium_libs.dart';
@@ -30,11 +30,12 @@ class SodiumEncryptor implements IDataEncryptor {
 
   static Future<SodiumEncryptor> create() async {
     final encKey = await GetIt.I.get<SecureStorageHandler>().readData();
-    if (encKey == null) throw Exception('No key found');
+    final salt = await GetIt.I.get<SecureStorageHandler>().readData(key: DumbData.salt);
+    if (encKey == null || salt == null) throw Exception('No key or salt found');
 
     final sodium = await SodiumInit.init();
 
-    return SodiumEncryptor.init(sodium: sodium, key: encKey, salt: '');
+    return SodiumEncryptor.init(sodium: sodium, key: encKey, salt: salt);
   }
 
   /// convert data to bytes for sodium encryption
@@ -87,7 +88,7 @@ class SodiumEncryptor implements IDataEncryptor {
     Map<String, dynamic> data, {
     List<String> blackListedKeys = const [],
   }) {
-    final nonce = base64Decode(data[KeyNames.nonce] as String);
+    final nonce = base64Decode(data[DumbData.nonce] as String);
 
     for (final key in data.keys) {
       if (blackListedKeys.contains(key)) continue;
@@ -109,7 +110,7 @@ class SodiumEncryptor implements IDataEncryptor {
       data[key] = data[key] == null ? data[key] : decrypt(data[key] as String, nonce);
     }
 
-    data[KeyNames.nonce] = base64Encode(convertBytesToData(nonce).codeUnits);
+    data[DumbData.nonce] = base64Encode(convertBytesToData(nonce).codeUnits);
 
     return data;
   }

@@ -1,5 +1,5 @@
 import 'package:dumbkey/model/type_base_model.dart';
-import 'package:dumbkey/utils/key_name_constants.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:isar/isar.dart';
 
 part 'password_model.g.dart';
@@ -21,48 +21,48 @@ class Password extends TypeBase {
 
   factory Password.fromMap(Map<String, dynamic> map) {
     return Password(
-      id: map[KeyNames.id] as int,
-      dataType: TypeBase.getDataType(map[KeyNames.dataType] as String),
-      syncStatus: TypeBase.getSyncStatus(map[KeyNames.syncStatus] as String),
-      dateAdded: TypeBase.getDateTime(map[KeyNames.dateAdded] as String),
-      title: map[KeyNames.title] as String,
-      email: map[KeyNames.email] as String?,
-      username: map[KeyNames.username] as String?,
-      password: map[KeyNames.password] as String?,
-      description: map[KeyNames.description] as String?,
-      category: map[KeyNames.category] as String?,
+      id: map[DumbData.id] as int,
+      dataType: TypeBase.getDataType(map[DumbData.dataType] as String),
+      syncStatus: TypeBase.getSyncStatus(map[DumbData.syncStatus] as String),
+      dateAdded: TypeBase.getDateTime(map[DumbData.dateAdded] as String),
+      title: map[DumbData.title] as String,
+      email: map[DumbData.email] as String?,
+      username: map[DumbData.username] as String?,
+      password: map[DumbData.password] as String?,
+      description: map[DumbData.description] as String?,
+      category: map[DumbData.category] as String?,
     );
   }
 
   Password copyWith(Map<String, dynamic> updatedData) {
     return Password(
-      id: updatedData[KeyNames.id] as int? ?? id,
-      dataType: updatedData[KeyNames.dataType] != null
-          ? TypeBase.getDataType(updatedData[KeyNames.dataType] as String)
+      id: updatedData[DumbData.id] as int? ?? id,
+      dataType: updatedData[DumbData.dataType] != null
+          ? TypeBase.getDataType(updatedData[DumbData.dataType] as String)
           : dataType,
-      syncStatus: updatedData[KeyNames.syncStatus] != null
-          ? TypeBase.getSyncStatus(updatedData[KeyNames.syncStatus] as String)
+      syncStatus: updatedData[DumbData.syncStatus] != null
+          ? TypeBase.getSyncStatus(updatedData[DumbData.syncStatus] as String)
           : syncStatus,
-      dateAdded: updatedData[KeyNames.dateAdded] != null
-          ? TypeBase.getDateTime(updatedData[KeyNames.dateAdded] as String)
+      dateAdded: updatedData[DumbData.dateAdded] != null
+          ? TypeBase.getDateTime(updatedData[DumbData.dateAdded] as String)
           : dateAdded,
-      title: updatedData[KeyNames.title] as String? ?? title,
-      email: updatedData[KeyNames.email] as String? ?? email,
-      username: updatedData[KeyNames.username] as String? ?? username,
-      password: updatedData[KeyNames.password] as String? ?? password,
-      description: updatedData[KeyNames.description] as String? ?? description,
-      category: updatedData[KeyNames.category] as String? ?? category,
+      title: updatedData[DumbData.title] as String? ?? title,
+      email: updatedData[DumbData.email] as String? ?? email,
+      username: updatedData[DumbData.username] as String? ?? username,
+      password: updatedData[DumbData.password] as String? ?? password,
+      description: updatedData[DumbData.description] as String? ?? description,
+      category: updatedData[DumbData.category] as String? ?? category,
     );
   }
 
   @override
   Map<String, dynamic> toJson() {
     final data = super.toJson();
-    data[KeyNames.email] = email;
-    data[KeyNames.username] = username;
-    data[KeyNames.password] = password;
-    data[KeyNames.description] = description;
-    data[KeyNames.category] = category;
+    data[DumbData.email] = email;
+    data[DumbData.username] = username;
+    data[DumbData.password] = password;
+    data[DumbData.description] = description;
+    data[DumbData.category] = category;
     return data;
   }
 

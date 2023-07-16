@@ -7,8 +7,8 @@ import 'package:dumbkey/ui/card_tab/widgets/form_widgets/cvv_input.dart';
 import 'package:dumbkey/ui/card_tab/widgets/form_widgets/expiry_input.dart';
 import 'package:dumbkey/ui/card_tab/widgets/form_widgets/mock_card.dart';
 import 'package:dumbkey/ui/shared/title_input.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
-import 'package:dumbkey/utils/key_name_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -148,17 +148,17 @@ class _AddCardState extends State<AddCard> {
 
     if (widget.savedCard != null) {
       final oldData = widget.savedCard!;
-      data[KeyNames.title] = oldData.title == title ? null : title;
-      data[KeyNames.cardNumber] = oldData.cardNumber == cardNumber ? null : cardNumber;
-      data[KeyNames.cardHolderName] = oldData.cardHolderName == cardHolder ? null : cardHolder;
-      data[KeyNames.expirationDate] = oldData.expirationDate == expiry ? null : expiry;
-      data[KeyNames.cvv] = oldData.cvv == cvv ? null : cvv;
+      data[DumbData.title] = oldData.title == title ? null : title;
+      data[DumbData.cardNumber] = oldData.cardNumber == cardNumber ? null : cardNumber;
+      data[DumbData.cardHolderName] = oldData.cardHolderName == cardHolder ? null : cardHolder;
+      data[DumbData.expirationDate] = oldData.expirationDate == expiry ? null : expiry;
+      data[DumbData.cvv] = oldData.cvv == cvv ? null : cvv;
     } else {
-      data[KeyNames.cardHolderName] = cardHolder;
-      data[KeyNames.cardNumber] = cardNumber;
-      data[KeyNames.expirationDate] = expiry;
-      data[KeyNames.cvv] = cvv;
-      data[KeyNames.title] = title;
+      data[DumbData.cardHolderName] = cardHolder;
+      data[DumbData.cardNumber] = cardNumber;
+      data[DumbData.expirationDate] = expiry;
+      data[DumbData.cvv] = cvv;
+      data[DumbData.title] = title;
     }
 
     return data;
@@ -168,10 +168,10 @@ class _AddCardState extends State<AddCard> {
     final data = retrieveData();
 
     // required fields
-    data[KeyNames.id] = idGenerator();
-    data[KeyNames.dataType] = DataType.card.index.toString();
-    data[KeyNames.syncStatus] = SyncStatus.synced.index.toString();
-    data[KeyNames.dateAdded] = DateTime.now().toIso8601String();
+    data[DumbData.id] = idGenerator();
+    data[DumbData.dataType] = DataType.card.index.toString();
+    data[DumbData.syncStatus] = SyncStatus.synced.index.toString();
+    data[DumbData.dateAdded] = DateTime.now().toIso8601String();
 
     try {
       await GetIt.I.get<DatabaseHandler>().createData(CardDetails.fromMap(data));
@@ -188,9 +188,9 @@ class _AddCardState extends State<AddCard> {
     final updatedData = retrieveData();
 
     // required fields
-    updatedData[KeyNames.id] = widget.savedCard!.id;
-    updatedData[KeyNames.syncStatus] = widget.savedCard!.syncStatus.index.toString();
-    updatedData[KeyNames.dataType] = null;
+    updatedData[DumbData.id] = widget.savedCard!.id;
+    updatedData[DumbData.syncStatus] = widget.savedCard!.syncStatus.index.toString();
+    updatedData[DumbData.dataType] = null;
 
     final updatedModel = widget.savedCard!.copyWith(updatedData);
     updatedData.removeWhere((key, value) => value == null || value == '');

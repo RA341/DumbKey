@@ -1,8 +1,8 @@
 import 'package:dumbkey/database/database_handler.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
-import 'package:dumbkey/utils/key_name_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -100,11 +100,11 @@ class _AddNotesState extends State<AddNotes> {
     final data = <String, dynamic>{};
 
     if (widget.savedNote != null) {
-      data[KeyNames.title] = widget.savedNote!.title == title ? null : title;
-      data[KeyNames.notes] = widget.savedNote!.notes == contents ? null : contents;
+      data[DumbData.title] = widget.savedNote!.title == title ? null : title;
+      data[DumbData.notes] = widget.savedNote!.notes == contents ? null : contents;
     } else {
-      data[KeyNames.title] = title;
-      data[KeyNames.notes] = contents;
+      data[DumbData.title] = title;
+      data[DumbData.notes] = contents;
     }
 
     return data;
@@ -112,10 +112,10 @@ class _AddNotesState extends State<AddNotes> {
 
   Future<void> _createNote() async {
     final data = retrieveData();
-    data[KeyNames.id] = idGenerator();
-    data[KeyNames.dataType] = DataType.notes.index.toString();
-    data[KeyNames.syncStatus] = SyncStatus.synced.index.toString();
-    data[KeyNames.dateAdded] = DateTime.now().toIso8601String();
+    data[DumbData.id] = idGenerator();
+    data[DumbData.dataType] = DataType.notes.index.toString();
+    data[DumbData.syncStatus] = SyncStatus.synced.index.toString();
+    data[DumbData.dateAdded] = DateTime.now().toIso8601String();
 
     final newPasskey = Notes.fromMap(data);
 
@@ -132,10 +132,10 @@ class _AddNotesState extends State<AddNotes> {
 
   Future<void> _updateNote() async {
     final updateData = retrieveData();
-    updateData[KeyNames.id] = widget.savedNote!.id;
-    updateData[KeyNames.dataType] = null;
-    updateData[KeyNames.syncStatus] = null;
-    updateData[KeyNames.dateAdded] = null;
+    updateData[DumbData.id] = widget.savedNote!.id;
+    updateData[DumbData.dataType] = null;
+    updateData[DumbData.syncStatus] = null;
+    updateData[DumbData.dateAdded] = null;
 
     final updatedNote = widget.savedNote!.copyWith(updateData);
 

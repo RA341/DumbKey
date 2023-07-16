@@ -1,5 +1,5 @@
 import 'package:dumbkey/model/type_base_model.dart';
-import 'package:dumbkey/utils/key_name_constants.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:isar/isar.dart';
 
 part 'card_details_model.g.dart';
@@ -20,45 +20,45 @@ class CardDetails extends TypeBase {
 
   factory CardDetails.fromMap(Map<String, dynamic> map) {
     return CardDetails(
-      id: map[KeyNames.id] as int,
-      dataType: TypeBase.getDataType(map[KeyNames.dataType] as String),
-      syncStatus: TypeBase.getSyncStatus(map[KeyNames.syncStatus] as String),
-      dateAdded: TypeBase.getDateTime(map[KeyNames.dateAdded] as String),
-      title: map[KeyNames.title] as String,
-      cardNumber: map[KeyNames.cardNumber] as String,
-      cardHolderName: map[KeyNames.cardHolderName] as String,
-      expirationDate: map[KeyNames.expirationDate] as String,
-      cvv: map[KeyNames.cvv] as String,
+      id: map[DumbData.id] as int,
+      dataType: TypeBase.getDataType(map[DumbData.dataType] as String),
+      syncStatus: TypeBase.getSyncStatus(map[DumbData.syncStatus] as String),
+      dateAdded: TypeBase.getDateTime(map[DumbData.dateAdded] as String),
+      title: map[DumbData.title] as String,
+      cardNumber: map[DumbData.cardNumber] as String,
+      cardHolderName: map[DumbData.cardHolderName] as String,
+      expirationDate: map[DumbData.expirationDate] as String,
+      cvv: map[DumbData.cvv] as String,
     );
   }
 
   CardDetails copyWith(Map<String, dynamic> cardDetails) {
     return CardDetails(
-      id: (cardDetails[KeyNames.id] as int?) ?? id,
-      dataType: cardDetails[KeyNames.dataType] == null
-          ? TypeBase.getDataType(cardDetails[KeyNames.dataType]! as String)
+      id: (cardDetails[DumbData.id] as int?) ?? id,
+      dataType: cardDetails[DumbData.dataType] == null
+          ? TypeBase.getDataType(cardDetails[DumbData.dataType]! as String)
           : dataType,
-      syncStatus: cardDetails[KeyNames.syncStatus] == null
-          ? TypeBase.getSyncStatus(cardDetails[KeyNames.syncStatus]! as String)
+      syncStatus: cardDetails[DumbData.syncStatus] == null
+          ? TypeBase.getSyncStatus(cardDetails[DumbData.syncStatus]! as String)
           : syncStatus,
-      dateAdded: cardDetails[KeyNames.dateAdded] == null
-          ? TypeBase.getDateTime(cardDetails[KeyNames.dateAdded]! as String)
+      dateAdded: cardDetails[DumbData.dateAdded] == null
+          ? TypeBase.getDateTime(cardDetails[DumbData.dateAdded]! as String)
           : dateAdded,
-      title: (cardDetails[KeyNames.title] as String?) ?? title,
-      cardNumber: (cardDetails[KeyNames.cardNumber] as String?) ?? cardNumber,
-      cardHolderName: (cardDetails[KeyNames.cardHolderName] as String?) ?? cardHolderName,
-      expirationDate: (cardDetails[KeyNames.expirationDate] as String?) ?? expirationDate,
-      cvv: (cardDetails[KeyNames.cvv] as String?) ?? cvv,
+      title: (cardDetails[DumbData.title] as String?) ?? title,
+      cardNumber: (cardDetails[DumbData.cardNumber] as String?) ?? cardNumber,
+      cardHolderName: (cardDetails[DumbData.cardHolderName] as String?) ?? cardHolderName,
+      expirationDate: (cardDetails[DumbData.expirationDate] as String?) ?? expirationDate,
+      cvv: (cardDetails[DumbData.cvv] as String?) ?? cvv,
     );
   }
 
   @override
   Map<String, dynamic> toJson() {
     final data = super.toJson();
-    data[KeyNames.cardNumber] = cardNumber;
-    data[KeyNames.cardHolderName] = cardHolderName;
-    data[KeyNames.expirationDate] = expirationDate;
-    data[KeyNames.cvv] = cvv;
+    data[DumbData.cardNumber] = cardNumber;
+    data[DumbData.cardHolderName] = cardHolderName;
+    data[DumbData.expirationDate] = expirationDate;
+    data[DumbData.cvv] = cvv;
     return data;
   }
 
