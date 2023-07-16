@@ -1,14 +1,15 @@
 import 'dart:convert';
 
 import 'package:dumbkey/logic/secure_storage.dart';
+import 'package:dumbkey/utils/key_name_constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sodium_libs/sodium_libs.dart';
 
 abstract class IDataEncryptor {
-  String encrypt(String data);
+  String encrypt(String data, Uint8List nonce);
 
-  String decrypt(String encryptedData);
+  String decrypt(String encryptedData, Uint8List nonce);
 
   Map<String, dynamic> encryptMap(Map<String, dynamic> data);
 
@@ -16,17 +17,15 @@ abstract class IDataEncryptor {
 }
 
 class SodiumEncryptor implements IDataEncryptor {
-  SodiumEncryptor.init({required this.sodium, required String key}) {
-    const key = 'a32bitlenghtpasskeyrewsfr';
-    const salt = 'asljfnasdfasdfsd';
-
-    nonce = sodium.randombytes.buf(sodium.crypto.secretBox.nonceBytes);
-
-    encryptionKey = generateSecretKey(key, salt);
+  SodiumEncryptor.init({
+    required this.sodium,
+    required String key,
+    required String salt,
+  }) {
+    _encryptionKey = generateSecretKey(key, salt);
   }
 
-  late final Uint8List nonce;
-  late final SecureKey encryptionKey;
+  late final SecureKey _encryptionKey;
   late final Sodium sodium;
 
   static Future<SodiumEncryptor> create() async {
@@ -35,7 +34,7 @@ class SodiumEncryptor implements IDataEncryptor {
 
     final sodium = await SodiumInit.init();
 
-    return SodiumEncryptor.init(sodium: sodium, key: encKey);
+    return SodiumEncryptor.init(sodium: sodium, key: encKey, salt: '');
   }
 
   /// convert data to bytes for sodium encryption
@@ -55,29 +54,29 @@ class SodiumEncryptor implements IDataEncryptor {
   }
 
   @override
-  String encrypt(String data) {
+  String encrypt(String data, Uint8List nonce) {
     final messageBytes = convertDataToBytes(data);
 
     final encryptedList = sodium.crypto.aead.encrypt(
       message: messageBytes,
       nonce: nonce,
-      key: encryptionKey,
+      key: _encryptionKey,
     );
 
     // convert back to string and encode to base64
     final str = convertBytesToData(encryptedList);
-    return base64.encode(str.codeUnits);
+    return base64Encode(str.codeUnits);
   }
 
   @override
-  String decrypt(String encryptedData) {
+  String decrypt(String encryptedData, Uint8List nonce) {
     // data is stored as base64 encoded string
-    final messageBytes = base64.decode(encryptedData);
+    final messageBytes = base64Decode(encryptedData);
 
     final decryptedList = sodium.crypto.aead.decrypt(
       cipherText: messageBytes,
       nonce: nonce,
-      key: encryptionKey,
+      key: _encryptionKey,
     ); // convert back to string
 
     return convertBytesToData(decryptedList);
@@ -88,9 +87,11 @@ class SodiumEncryptor implements IDataEncryptor {
     Map<String, dynamic> data, {
     List<String> blackListedKeys = const [],
   }) {
+    final nonce = base64Decode(data[KeyNames.nonce] as String);
+
     for (final key in data.keys) {
       if (blackListedKeys.contains(key)) continue;
-      data[key] = data[key] == null ? data[key] : decrypt(data[key] as String);
+      data[key] = data[key] == null ? data[key] : decrypt(data[key] as String, nonce);
     }
 
     return data;
@@ -101,10 +102,14 @@ class SodiumEncryptor implements IDataEncryptor {
     Map<String, dynamic> data, {
     List<String> blackListedKeys = const [],
   }) {
+    final nonce = sodium.randombytes.buf(sodium.crypto.aead.nonceBytes);
     for (final key in data.keys) {
       if (blackListedKeys.contains(key)) continue;
-      data[key] = data[key] == null ? data[key] : decrypt(data[key] as String);
+
+      data[key] = data[key] == null ? data[key] : decrypt(data[key] as String, nonce);
     }
+
+    data[KeyNames.nonce] = base64Encode(convertBytesToData(nonce).codeUnits);
 
     return data;
   }
