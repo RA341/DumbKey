@@ -35,7 +35,6 @@ dependencies:
   string_extensions: ^0.6.11
   connectivity_plus: ^4.0.1
   get_it: ^7.6.0
-  encrypt: ^5.0.1
   flutter_dotenv: ^5.1.0
   logger: 1.4.0
   firedart: ^0.9.5

@@ -99,13 +99,13 @@ class AuthController {
   }
 
   Future<void> initDatabaseHandlers() async {
-    GetIt.I.registerSingleton<DataEncryptor>(await DataEncryptor.create());
+    GetIt.I.registerSingleton<IDataEncryptor>(await SodiumEncryptor.create());
     GetIt.I.registerSingleton<DatabaseHandler>(DatabaseHandler());
   }
 
   void removeDatabaseHandlers() {
     GetIt.I.unregister<DatabaseHandler>();
-    GetIt.I.unregister<DataEncryptor>();
+    GetIt.I.unregister<IDataEncryptor>();
   }
 
   Future<void> deleteLocalCache() async {

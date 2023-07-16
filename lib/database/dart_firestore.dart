@@ -14,7 +14,7 @@ import 'package:get_it/get_it.dart';
 class DartFireStore {
   DartFireStore() {
     initFireDart();
-    encryptor = GetIt.I.get<DataEncryptor>();
+    encryptor = GetIt.I.get<IDataEncryptor>();
   }
 
   void initFireDart() {
@@ -30,7 +30,7 @@ class DartFireStore {
   }
 
   late final Firestore database;
-  late final DataEncryptor encryptor;
+  late final IDataEncryptor encryptor;
 
   Future<void> createData(Map<String, dynamic> data) async {
     try {
