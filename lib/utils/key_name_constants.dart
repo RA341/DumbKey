@@ -1,4 +1,4 @@
-class KeyNames{
+class KeyNames {
   static const String id = 'id';
   static const String dataType = 'dataType';
   static const String title = 'title';
@@ -16,4 +16,6 @@ class KeyNames{
   static const String expirationDate = 'expirationDate';
   static const String cvv = 'cvv';
   static const String notes = 'notes';
+
+  static const String nonce = 'nonce';
 }
