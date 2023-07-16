@@ -138,14 +138,28 @@ class SodiumEncryptor implements IDataEncryptor {
   }
 
   @override
-  Map<String, dynamic> decryptMap(Map<String, dynamic> data) {
-    // TODO: implement decryptMap
-    throw UnimplementedError();
+  Map<String, dynamic> decryptMap(
+    Map<String, dynamic> data, {
+    List<String> blackListedKeys = const [],
+  }) {
+    for (final key in data.keys) {
+      if (blackListedKeys.contains(key)) continue;
+      data[key] = data[key] == null ? data[key] : decrypt(data[key] as String);
+    }
+
+    return data;
   }
 
   @override
-  Map<String, dynamic> encryptMap(Map<String, dynamic> data) {
-    // TODO: implement encryptMap
-    throw UnimplementedError();
+  Map<String, dynamic> encryptMap(
+    Map<String, dynamic> data, {
+    List<String> blackListedKeys = const [],
+  }) {
+    for (final key in data.keys) {
+      if (blackListedKeys.contains(key)) continue;
+      data[key] = data[key] == null ? data[key] : decrypt(data[key] as String);
+    }
+
+    return data;
   }
 }
