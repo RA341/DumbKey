@@ -2,11 +2,7 @@ import 'package:dumbkey/logic/secure_storage_handler.dart';
 import 'package:firedart/auth/token_store.dart';
 import 'package:get_it/get_it.dart';
 
-class IsarStore extends TokenStore {
-  IsarStore() {
-    // TODO(IsarStore): get from Dependency Injection
-  }
-
+class AuthLocalStore extends TokenStore {
   String? userIdS;
 
   String? idTokenS;

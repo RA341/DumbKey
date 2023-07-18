@@ -10,11 +10,11 @@ class DatabaseAuth {
 
     if (apiKey == DumbData.noKey) throw Exception('No API key found');
 
-    _tokenStore = IsarStore();
+    _tokenStore = AuthLocalStore();
     _auth = FirebaseAuth(apiKey, _tokenStore);
   }
 
-  late final IsarStore _tokenStore;
+  late final AuthLocalStore _tokenStore;
   late final FirebaseAuth _auth;
 
   Future<void> signIn(String email, String password) async {
