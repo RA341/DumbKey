@@ -30,4 +30,7 @@ class DumbData {
   static const String nonce = 'nonce';
 
   static const String salt = 'salt';
+  static const String uuid = 'uuid';
+
+  static const String userCollection = 'users';
 }
