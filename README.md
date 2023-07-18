@@ -12,14 +12,14 @@ w@w.app
 # Currently working on
 
 ## Features
-- add authentication
-
+~~- add authentication~~
+- add syncing user data with firestore
+- break up database handler into smaller parts
+- look into putting offline syncing into a isolate
 
 ## Quality of life
 - centralize the CRUD operation for the ui
-- add setup for encryption key, randomize iv,
 - add password generator in input screen
-- maybe add separate encryption key for each data type
 
 ## UI stuff
 
