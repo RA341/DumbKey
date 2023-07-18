@@ -1,4 +1,4 @@
-import 'package:dumbkey/database/database_handler.dart';
+import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/ui/notes_tab/widgets/notes_list_view.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +12,6 @@ class NotesStreamBuilder extends StatefulWidget {
 }
 
 class _NotesStreamBuilderState extends State<NotesStreamBuilder> {
-
   late final Stream<List<Notes>> _notesStream;
 
   @override

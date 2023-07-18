@@ -1,6 +1,6 @@
-import 'package:dumbkey/database/database_handler.dart';
-import 'package:dumbkey/logic/database_auth.dart';
-import 'package:dumbkey/logic/secure_storage.dart';
+import 'package:dumbkey/api/auth/database_auth.dart';
+import 'package:dumbkey/logic/database_handler.dart';
+import 'package:dumbkey/logic/secure_storage_handler.dart';
 import 'package:dumbkey/logic/settings_handler.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';

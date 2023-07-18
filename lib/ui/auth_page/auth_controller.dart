@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:dumbkey/database/database_handler.dart';
-import 'package:dumbkey/logic/database_auth.dart';
-import 'package:dumbkey/logic/encryptor.dart';
-import 'package:dumbkey/logic/secure_storage.dart';
+import 'package:dumbkey/api/auth/database_auth.dart';
+import 'package:dumbkey/logic/database_handler.dart';
+import 'package:dumbkey/logic/encryption_handler.dart';
+import 'package:dumbkey/logic/secure_storage_handler.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
@@ -30,7 +30,7 @@ class AuthController {
     try {
       await auth.signIn(email, password);
       await GetIt.I.get<SecureStorageHandler>().writeData(password); // set encryption key
-      await initDatabaseHandlers();
+      await initDatabaseHandlers(false);
 
       if (!context.mounted) return;
       Navigator.of(context).popUntil((route) => false);
@@ -52,7 +52,7 @@ class AuthController {
     try {
       await auth.signUp(email, password);
       await GetIt.I.get<SecureStorageHandler>().writeData(password); // set encryption key
-      await initDatabaseHandlers();
+      await initDatabaseHandlers(true);
 
       if (!context.mounted) return;
 
@@ -98,8 +98,8 @@ class AuthController {
     }
   }
 
-  Future<void> initDatabaseHandlers() async {
-    GetIt.I.registerSingleton<IDataEncryptor>(await SodiumEncryptor.create());
+  Future<void> initDatabaseHandlers(bool signup) async {
+    GetIt.I.registerSingleton<IDataEncryptor>(await SodiumEncryptor.create(signup: signup));
     GetIt.I.registerSingleton<DatabaseHandler>(DatabaseHandler());
   }
 

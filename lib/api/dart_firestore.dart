@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dumbkey/logic/encryptor.dart';
+import 'package:dumbkey/logic/encryption_handler.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';

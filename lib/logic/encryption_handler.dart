@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dumbkey/logic/secure_storage.dart';
+import 'package:dumbkey/logic/secure_storage_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
@@ -20,7 +20,7 @@ class SodiumEncryptor implements IDataEncryptor {
   SodiumEncryptor.init({
     required this.sodium,
     required String key,
-    required String salt,
+    required Uint8List salt,
   }) {
     _encryptionKey = generateSecretKey(key, salt);
   }
@@ -28,12 +28,25 @@ class SodiumEncryptor implements IDataEncryptor {
   late final SecureKey _encryptionKey;
   late final Sodium sodium;
 
-  static Future<SodiumEncryptor> create() async {
+  static Future<SodiumEncryptor> create({required bool signup}) async {
     final encKey = await GetIt.I.get<SecureStorageHandler>().readData();
-    final salt = await GetIt.I.get<SecureStorageHandler>().readData(key: DumbData.salt);
-    if (encKey == null || salt == null) throw Exception('No key or salt found');
+    if (encKey == null) throw Exception('No key or salt found');
 
+    final Uint8List salt;
     final sodium = await SodiumInit.init();
+
+    if (signup) {
+      // generate new salt and save it
+      salt = sodium.randombytes.buf(16);
+      await GetIt.I.get<SecureStorageHandler>().writeData(
+            String.fromCharCodes(salt),
+            key: DumbData.salt,
+          );
+    } else {
+      final g = await GetIt.I.get<SecureStorageHandler>().readData(key: DumbData.salt);
+      if (g == null) throw Exception('salt found');
+      salt = Uint8List.fromList(g.codeUnits);
+    }
 
     return SodiumEncryptor.init(sodium: sodium, key: encKey, salt: salt);
   }
@@ -44,11 +57,11 @@ class SodiumEncryptor implements IDataEncryptor {
 
   String convertBytesToData(Uint8List messageBytes) => String.fromCharCodes(messageBytes);
 
-  SecureKey generateSecretKey(String password, String salt) {
+  SecureKey generateSecretKey(String password, Uint8List salt) {
     return sodium.crypto.pwhash.call(
       outLen: 32,
       password: password.toCharArray(),
-      salt: convertDataToBytes(salt),
+      salt: salt,
       opsLimit: sodium.crypto.pwhash.opsLimitSensitive,
       memLimit: sodium.crypto.pwhash.memLimitSensitive,
     );

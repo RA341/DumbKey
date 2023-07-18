@@ -1,4 +1,4 @@
-import 'package:dumbkey/logic/secure_storage.dart';
+import 'package:dumbkey/logic/secure_storage_handler.dart';
 import 'package:firedart/auth/token_store.dart';
 import 'package:get_it/get_it.dart';
 

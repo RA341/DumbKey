@@ -1,6 +1,6 @@
 // ignore_for_file: inference_failure_on_instance_creation
 
-import 'package:dumbkey/database/database_handler.dart';
+import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/ui/passwords_tab/details/password_details_screen.dart';
@@ -49,8 +49,7 @@ class PasskeyTitle extends StatelessWidget {
             ),
           ),
         ),
-        onDismissed: (direction) async =>
-            await GetIt.I.get<DatabaseHandler>().deleteData(passkey),
+        onDismissed: (direction) async => await GetIt.I.get<DatabaseHandler>().deleteData(passkey),
         confirmDismiss: (direction) => showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
@@ -89,10 +88,11 @@ class PasskeyTitle extends StatelessWidget {
               copyButton(context, isUserName: true),
               Padding(
                 padding: const EdgeInsets.all(5),
-                child: Text(passkey.username ?? passkey.email ?? 'No username',style: TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  color: passkey.syncStatus == SyncStatus.synced ? Colors.white : Colors.red,
-                )),
+                child: Text(passkey.username ?? passkey.email ?? 'No username',
+                    style: TextStyle(
+                      overflow: TextOverflow.ellipsis,
+                      color: passkey.syncStatus == SyncStatus.synced ? Colors.white : Colors.red,
+                    )),
               ),
               copyButton(context, isUserName: false),
             ],

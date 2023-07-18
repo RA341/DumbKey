@@ -1,4 +1,4 @@
-import 'package:dumbkey/database/database_handler.dart';
+import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/utils/constants.dart';

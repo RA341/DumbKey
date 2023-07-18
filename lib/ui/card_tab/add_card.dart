@@ -1,4 +1,4 @@
-import 'package:dumbkey/database/database_handler.dart';
+import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/ui/card_tab/widgets/form_widgets/card_holder_input.dart';

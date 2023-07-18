@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:dumbkey/database/dart_firestore.dart';
-import 'package:dumbkey/database/isar_mixin.dart';
+import 'package:dumbkey/api/dart_firestore.dart';
+import 'package:dumbkey/logic/isar_mixin.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';

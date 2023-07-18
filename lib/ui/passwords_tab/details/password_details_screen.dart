@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:dumbkey/database/database_handler.dart';
+import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/ui/passwords_tab/form/password_input.dart';
 import 'package:flutter/material.dart';
