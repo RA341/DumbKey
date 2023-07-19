@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/services/database/user_data_handler.dart';
 import 'package:dumbkey/services/encryption_handler.dart';
+import 'package:dumbkey/services/settings_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -76,4 +77,10 @@ void removeDatabaseHandlers() {
     ..unregister<DatabaseHandler>()
     ..unregister<IDataEncryptor>()
     ..unregister<UserDataHandler>();
+}
+
+String getUuid() {
+  final uuid = GetIt.I.get<SettingsHandler>().settingsInst.userId;
+  throwIf(uuid == null, 'uuid not found');
+  return uuid!;
 }

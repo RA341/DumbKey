@@ -119,10 +119,16 @@ class DatabaseHandler with IsarDbMixin {
           (documents) async {
             logger.d('firebase listening', documents.length);
             // deletes local data that is not present in remote
-            await deleteLocalNotInRemote(documents);
+            unawaited(
+              deleteLocalNotInRemote(documents).then((value) async {
+                unawaited(
+                  isarCreateOrUpdateAll(
+                    documents,
+                  ).whenComplete(() => null),
+                ); // possible optimization update only changed data
+              }),
+            );
             // updates local data from remote
-            await isarCreateOrUpdateAll(
-                documents); // possible optimization update only changed data
           },
           cancelOnError: true,
           onError: (Object error, StackTrace stackTrace) async {
@@ -228,9 +234,9 @@ class DatabaseHandler with IsarDbMixin {
           logger.i('current connection for syncing', status);
           if (status != ConnectivityResult.none) {
             if (passKey.syncStatus == SyncStatus.deleted) {
-              _deletePasskeyAsync(passKey);
+              _deleteDataAsync(passKey);
             } else {
-              _createPasskeyAsync(passKey);
+              _createDataAsync(passKey);
             }
           }
         }),
@@ -238,12 +244,12 @@ class DatabaseHandler with IsarDbMixin {
     }
   }
 
-  void _createPasskeyAsync(TypeBase passkey) {
+  void _createDataAsync(TypeBase passkey) {
     logger.i('adding to remote', passkey.toJson());
 
     passkey.syncStatus = SyncStatus.synced;
     firestore.createData(passkey.toJson()).then((value) async {
-      await isarCreateOrUpdate(passkey);
+      unawaited(isarCreateOrUpdate(passkey).whenComplete(() => null));
       logger.i('data added', passkey.toJson());
     }).onError((error, stackTrace) {
       logger
@@ -252,11 +258,11 @@ class DatabaseHandler with IsarDbMixin {
     });
   }
 
-  void _deletePasskeyAsync(TypeBase passKey) {
+  void _deleteDataAsync(TypeBase passKey) {
     logger.i('deleting from remote', passKey.toJson());
 
     firestore.deleteData(passKey.id).then((value) async {
-      await isarDelete(passKey.id, passKey.dataType);
+      unawaited(isarDelete(passKey.id, passKey.dataType).whenComplete(() => null));
       logger.i('data removed', passKey.toJson());
     }).onError((error, stackTrace) {
       logger

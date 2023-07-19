@@ -6,6 +6,7 @@ import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/services/encryption_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:firedart/firestore/firestore.dart';
 import 'package:get_it/get_it.dart';
 
@@ -13,8 +14,10 @@ class DartFireStore {
   DartFireStore() {
     encryptor = GetIt.I.get<IDataEncryptor>();
     database = Firestore.instance;
+    uuid = getUuid();
   }
 
+  late final String uuid;
   late final Firestore database;
   late final IDataEncryptor encryptor;
 
@@ -24,7 +27,7 @@ class DartFireStore {
     try {
       final encrypted = encryptor.encryptMap(data, blackListedKeys: blackListedKeys);
       await database
-          .collection(DumbData.mainCollection)
+          .collection(uuid)
           .document((encrypted[DumbData.id] as int).toString())
           .set(encrypted);
     } catch (e) {
@@ -36,7 +39,7 @@ class DartFireStore {
     try {
       final encrypted = encryptor.encryptMap(updateData, blackListedKeys: blackListedKeys);
       await database
-          .collection(DumbData.mainCollection)
+          .collection(uuid)
           .document((encrypted[DumbData.id] as int).toString())
           .update(encrypted);
     } catch (e) {
@@ -46,14 +49,14 @@ class DartFireStore {
 
   Future<void> deleteData(int docId) async {
     try {
-      await database.collection(DumbData.mainCollection).document(docId.toString()).delete();
+      await database.collection(uuid).document(docId.toString()).delete();
     } catch (e) {
       throw Exception('Error deleting passkey(docid:$docId): $e');
     }
   }
 
   Stream<List<TypeBase>> fetchAllPassKeys() {
-    return database.collection(DumbData.mainCollection).stream.map(
+    return database.collection(uuid).stream.map(
           (docs) => docs.map((doc) {
             final decrypted = encryptor.decryptMap(doc.map, blackListedKeys: blackListedKeys);
             final type = TypeBase.getDataType(decrypted[DumbData.dataType] as String);
