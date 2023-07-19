@@ -1,5 +1,5 @@
-import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
+import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/ui/card_tab/widgets/card_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';

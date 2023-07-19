@@ -1,4 +1,4 @@
-import 'package:dumbkey/api/auth/isar_auth_store.dart';
+import 'package:dumbkey/services/auth/isar_auth_store.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:firedart/auth/user_gateway.dart';
 import 'package:firedart/firedart.dart';

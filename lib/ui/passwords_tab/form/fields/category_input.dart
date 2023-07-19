@@ -1,4 +1,4 @@
-import 'package:dumbkey/logic/settings_handler.dart';
+import 'package:dumbkey/services/settings_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -32,7 +32,7 @@ class CategoryField extends StatelessWidget {
           focusNode: currFocusNode,
           onFieldSubmitted: (_) async {
             if (controller.text.isNotEmpty) {
-                await settings.addCategory(controller.text.toLowerCase());
+              await settings.addCategory(controller.text.toLowerCase());
             }
             currFocusNode.unfocus();
           },
@@ -51,6 +51,5 @@ class CategoryField extends StatelessWidget {
         controller.text = selection;
       },
     );
-
   }
 }

@@ -1,8 +1,8 @@
-import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
+import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/ui/card_tab/add_card.dart';
 import 'package:dumbkey/ui/card_tab/card_details_page.dart';
 import 'package:dumbkey/ui/notes_tab/add_notes.dart';

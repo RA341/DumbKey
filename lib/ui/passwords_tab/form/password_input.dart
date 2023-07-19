@@ -1,6 +1,6 @@
-import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
+import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/category_input.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/description_input.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/email_input.dart';

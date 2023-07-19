@@ -1,15 +1,19 @@
 import 'dart:math';
 
+import 'package:dumbkey/services/database/database_handler.dart';
+import 'package:dumbkey/services/database/user_data_handler.dart';
+import 'package:dumbkey/services/encryption_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 int idGenerator({int length = 15}) {
   final rnd = Random();
 
   var randomNum = 0;
   var multiple = 1;
-  for (var x = 1; x < length +1 ; x++) {
-   randomNum += rnd.nextInt(9) * multiple;
-   multiple *= 10;
+  for (var x = 1; x < length + 1; x++) {
+    randomNum += rnd.nextInt(9) * multiple;
+    multiple *= 10;
   }
 
   return randomNum;
@@ -18,7 +22,7 @@ int idGenerator({int length = 15}) {
 
 PasswordStrength testPasswordStrength(String password) {
   if (password.length < 8) {
-    return PasswordStrength.Weak;
+    return PasswordStrength.weak;
   }
 
   var hasUpperCase = false;
@@ -39,19 +43,33 @@ PasswordStrength testPasswordStrength(String password) {
   }
 
   if (hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar) {
-    return PasswordStrength.Strong;
+    return PasswordStrength.strong;
   } else if (hasUpperCase && hasLowerCase && hasDigit) {
-    return PasswordStrength.Medium;
+    return PasswordStrength.medium;
   } else if (hasUpperCase && hasLowerCase) {
-    return PasswordStrength.WeakMedium;
+    return PasswordStrength.weakMedium;
   } else {
-    return PasswordStrength.Weak;
+    return PasswordStrength.weak;
   }
 }
 
 enum PasswordStrength {
-  Weak,
-  WeakMedium,
-  Medium,
-  Strong,
+  weak,
+  weakMedium,
+  medium,
+  strong,
+}
+
+Future<void> initDatabaseHandlers({required bool signup}) async {
+  GetIt.I
+    ..registerSingleton<IDataEncryptor>(await SodiumEncryptor.create(signup: signup))
+    ..registerSingleton<DatabaseHandler>(DatabaseHandler())
+    ..registerSingleton(UserDataHandler());
+}
+
+void removeDatabaseHandlers() {
+  GetIt.I
+    ..unregister<UserDataHandler>()
+    ..unregister<DatabaseHandler>()
+    ..unregister<IDataEncryptor>();
 }

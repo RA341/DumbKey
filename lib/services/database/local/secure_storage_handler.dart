@@ -1,6 +1,14 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class SecureStorageHandler {
+abstract class ISecureStorage {
+  Future<void> writeData({required String key, required String? value});
+
+  Future<void> deleteData({required String key});
+
+  Future<String?> readData({required String key});
+}
+
+class SecureStorageHandler implements ISecureStorage {
   SecureStorageHandler() {
     const iosOptions = IOSOptions(accessibility: KeychainAccessibility.first_unlock);
     _secureDb = FlutterSecureStorage(
@@ -16,15 +24,16 @@ class SecureStorageHandler {
         encryptedSharedPreferences: true,
       );
 
-  static const String encryptionKey = 'encrypt';
-
-  Future<void> writeData(String? value, {String key = encryptionKey}) async {
-    await _secureDb.write(key: key, value: value);
-  }
-
-  Future<void> deleteData({String key = encryptionKey}) async {
+  @override
+  Future<void> deleteData({required String key}) async {
     await _secureDb.delete(key: key);
   }
 
-  Future<String?> readData({String key = encryptionKey}) async => _secureDb.read(key: key);
+  @override
+  Future<String?> readData({required String key}) => _secureDb.read(key: key);
+
+  @override
+  Future<void> writeData({required String key, required String? value}) async {
+    await _secureDb.write(key: key, value: value);
+  }
 }

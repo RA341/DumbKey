@@ -1,5 +1,5 @@
-import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
+import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/ui/notes_tab/widgets/notes_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';

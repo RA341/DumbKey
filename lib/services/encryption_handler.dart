@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dumbkey/logic/secure_storage_handler.dart';
+import 'package:dumbkey/services/database/local/secure_storage_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
@@ -29,8 +29,8 @@ class SodiumEncryptor implements IDataEncryptor {
   late final Sodium sodium;
 
   static Future<SodiumEncryptor> create({required bool signup}) async {
-    final encKey = await GetIt.I.get<SecureStorageHandler>().readData();
-    if (encKey == null) throw Exception('No key or salt found');
+    final encKey = await GetIt.I.get<SecureStorageHandler>().readData(key: DumbData.encryptionKey);
+    if (encKey == null) throw Exception('No key found');
 
     final Uint8List salt;
     final sodium = await SodiumInit.init();
@@ -39,12 +39,12 @@ class SodiumEncryptor implements IDataEncryptor {
       // generate new salt and save it
       salt = sodium.randombytes.buf(16);
       await GetIt.I.get<SecureStorageHandler>().writeData(
-            String.fromCharCodes(salt),
+            value: String.fromCharCodes(salt),
             key: DumbData.salt,
           );
     } else {
       final g = await GetIt.I.get<SecureStorageHandler>().readData(key: DumbData.salt);
-      if (g == null) throw Exception('salt found');
+      if (g == null) throw Exception('salt not found');
       salt = Uint8List.fromList(g.codeUnits);
     }
 

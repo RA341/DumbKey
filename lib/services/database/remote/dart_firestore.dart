@@ -1,30 +1,17 @@
 import 'dart:async';
 
-import 'package:dumbkey/logic/encryption_handler.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
+import 'package:dumbkey/services/encryption_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
-import 'package:firedart/firedart.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firedart/firestore/firestore.dart';
 import 'package:get_it/get_it.dart';
 
 class DartFireStore {
   DartFireStore() {
-    initFireDart();
     encryptor = GetIt.I.get<IDataEncryptor>();
-  }
-
-  void initFireDart() {
-    final projId = dotenv.get(
-      DumbData.firebaseProjID,
-      fallback: DumbData.noKey,
-    );
-
-    if (projId == DumbData.noKey) throw Exception('Firebase project ID not found in .env file');
-
-    Firestore.initialize(projId);
     database = Firestore.instance;
   }
 

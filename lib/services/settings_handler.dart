@@ -1,7 +1,6 @@
 import 'package:dumbkey/model/settings_model/settings.dart';
-import 'package:get_it/get_it.dart';
+import 'package:dumbkey/utils/logger.dart';
 import 'package:isar/isar.dart';
-import 'package:logger/logger.dart';
 
 class SettingsHandler {
   SettingsHandler._create({
@@ -34,7 +33,7 @@ class SettingsHandler {
     settingsInst = (await isarInst.settings.get(0))!;
 
     // settingsInst = tmp!;
-    GetIt.I.get<Logger>().i('New settings', settingsInst.categories);
+    logger.i('New settings', settingsInst.categories);
   }
 
   Future<void> addCategory(String category) async {

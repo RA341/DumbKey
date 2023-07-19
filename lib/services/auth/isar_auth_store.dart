@@ -1,4 +1,4 @@
-import 'package:dumbkey/logic/secure_storage_handler.dart';
+import 'package:dumbkey/services/database/local/secure_storage_handler.dart';
 import 'package:firedart/auth/token_store.dart';
 import 'package:get_it/get_it.dart';
 
@@ -24,10 +24,10 @@ class AuthLocalStore extends TokenStore {
   }
 
   Future<void> setValues() async {
-    await secDb.writeData(userIdS, key: userIdKey);
-    await secDb.writeData(idTokenS, key: idTokenKey);
-    await secDb.writeData(refreshTokenS, key: refreshTokenKey);
-    await secDb.writeData(expiryTokenS, key: expiryKey);
+    await secDb.writeData(value: userIdS, key: userIdKey);
+    await secDb.writeData(value: idTokenS, key: idTokenKey);
+    await secDb.writeData(value: refreshTokenS, key: refreshTokenKey);
+    await secDb.writeData(value: expiryTokenS, key: expiryKey);
   }
 
   SecureStorageHandler secDb = GetIt.I.get<SecureStorageHandler>();

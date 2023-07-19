@@ -1,8 +1,8 @@
 // ignore_for_file: inference_failure_on_instance_creation
 
-import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
+import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/ui/passwords_tab/details/password_details_screen.dart';
 import 'package:dumbkey/ui/passwords_tab/form/password_input.dart';
 import 'package:flutter/material.dart';

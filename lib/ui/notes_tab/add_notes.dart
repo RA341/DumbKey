@@ -1,6 +1,6 @@
-import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
+import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter/material.dart';

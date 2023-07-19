@@ -2,16 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:dumbkey/api/dart_firestore.dart';
-import 'package:dumbkey/logic/isar_mixin.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
+import 'package:dumbkey/services/database/local/isar_mixin.dart';
+import 'package:dumbkey/services/database/remote/dart_firestore.dart';
+import 'package:dumbkey/utils/logger.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
-import 'package:logger/logger.dart';
 
 class DatabaseHandler with IsarDbMixin {
   DatabaseHandler() {
@@ -30,7 +29,6 @@ class DatabaseHandler with IsarDbMixin {
 
   late final DartFireStore firestore;
   final connection = Connectivity();
-  final logger = GetIt.I.get<Logger>();
 
   StreamSubscription<List<TypeBase>>? fireListener;
 

@@ -33,4 +33,6 @@ class DumbData {
   static const String uuid = 'uuid';
 
   static const String userCollection = 'users';
+
+  static const String encryptionKey = 'encrypt';
 }

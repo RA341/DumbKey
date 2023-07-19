@@ -21,10 +21,10 @@ class _PasskeyFieldState extends State<PasskeyField> {
   bool isHidden = true;
 
   final passwordStrengthMap = <PasswordStrength, Color>{
-    PasswordStrength.Weak: Colors.red,
-    PasswordStrength.WeakMedium: Colors.orange,
-    PasswordStrength.Medium: Colors.yellow,
-    PasswordStrength.Strong: Colors.green,
+    PasswordStrength.weak: Colors.red,
+    PasswordStrength.weakMedium: Colors.orange,
+    PasswordStrength.medium: Colors.yellow,
+    PasswordStrength.strong: Colors.green,
   };
 
   @override
@@ -48,11 +48,11 @@ class _PasskeyFieldState extends State<PasskeyField> {
                 return 'Please enter the passkey';
               }
               final strength = testPasswordStrength(value);
-              if (strength == PasswordStrength.Weak) {
+              if (strength == PasswordStrength.weak) {
                 return 'Passkey is too small';
-              } else if (strength == PasswordStrength.WeakMedium) {
+              } else if (strength == PasswordStrength.weakMedium) {
                 return 'Passkey does not contain numbers';
-              } else if (strength == PasswordStrength.Medium) {
+              } else if (strength == PasswordStrength.medium) {
                 return 'Passkey does not contain special characters';
               }
               return null;

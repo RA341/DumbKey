@@ -1,9 +1,9 @@
-import 'package:dumbkey/logic/database_handler.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
+import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/ui/passwords_tab/widgets/passkey_view.dart';
+import 'package:dumbkey/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
 
 class PasswordStreamBuilder extends StatefulWidget {
   const PasswordStreamBuilder({
@@ -33,7 +33,7 @@ class _PasswordStreamBuilderState extends State<PasswordStreamBuilder> {
       initialData: const <Password>[],
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          GetIt.I.get<Logger>().e('Stream builder returned error', [snapshot.error]);
+          logger.e('Stream builder returned error', [snapshot.error]);
           return Text(snapshot.error.toString());
         } else if (snapshot.data == null) {
           return const Text('Stream returned is null');

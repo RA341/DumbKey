@@ -1,13 +1,10 @@
-import 'package:dumbkey/logic/settings_handler.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
+import 'package:dumbkey/services/settings_handler.dart';
 import 'package:dumbkey/ui/passwords_tab/widgets/passkey_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
 import 'package:string_extensions/string_extensions.dart';
-
-final logger = GetIt.I.get<Logger>();
 
 class PasskeyView extends StatelessWidget {
   const PasskeyView({

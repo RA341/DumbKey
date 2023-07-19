@@ -1,27 +1,22 @@
-import 'package:dumbkey/api/auth/database_auth.dart';
-import 'package:dumbkey/logic/database_handler.dart';
-import 'package:dumbkey/logic/secure_storage_handler.dart';
-import 'package:dumbkey/logic/settings_handler.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/settings_model/settings.dart';
-import 'package:dumbkey/ui/shared/test_homoe.dart';
+import 'package:dumbkey/services/auth/database_auth.dart';
+import 'package:dumbkey/services/database/local/secure_storage_handler.dart';
+import 'package:dumbkey/services/settings_handler.dart';
+import 'package:dumbkey/ui/auth_page/auth_page.dart';
+import 'package:dumbkey/ui/home.dart';
+import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/helper_func.dart';
+import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
-import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
-Future<void> initDatabase() async {
-  final log = Logger(
-    printer: PrettyPrinter(
-      methodCount: 0,
-      errorMethodCount: 3,
-      lineLength: 80,
-    ),
-  );
+Future<void> initServices() async {
   final dir = await getApplicationDocumentsDirectory();
   final isar = await Isar.open(
     [SettingsSchema, PasswordSchema, NotesSchema, CardDetailsSchema],
@@ -29,20 +24,35 @@ Future<void> initDatabase() async {
   );
 
   GetIt.I
-    ..registerSingleton<Logger>(log)
     ..registerLazySingleton(SecureStorageHandler.new)
     ..registerLazySingleton<Isar>(() => isar)
-    ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar))
+    ..registerSingletonAsync<SettingsHandler>(
+      () async => SettingsHandler.initSettings(isar),
+      dependsOn: [Isar],
+    )
     ..registerSingleton<DatabaseAuth>(DatabaseAuth());
 
-  if (GetIt.I.get<DatabaseAuth>().isSignedIn) GetIt.I.registerSingleton(DatabaseHandler());
+  if (GetIt.I.get<DatabaseAuth>().isSignedIn) {
+    await initDatabaseHandlers(signup: false);
+  }
+}
+
+void initFirebase() {
+  final projId = dotenv.get(
+    DumbData.firebaseProjID,
+    fallback: DumbData.noKey,
+  );
+
+  if (projId == DumbData.noKey) throw Exception('Firebase project ID not found in .env file');
+
+  Firestore.initialize(projId);
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load();
-  await initDatabase();
+  await initServices();
   runApp(const MyApp());
 }
 
@@ -72,9 +82,8 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: SafeArea(
-          child:
-              Hoome() //GetIt.I.get<DatabaseAuth>().isSignedIn ? const HomePage() : const LoginScreen(),
-          ),
+        child: GetIt.I.get<DatabaseAuth>().isSignedIn ? const HomePage() : const LoginScreen(),
+      ),
     );
   }
 }
