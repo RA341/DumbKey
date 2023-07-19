@@ -61,15 +61,19 @@ enum PasswordStrength {
 }
 
 Future<void> initDatabaseHandlers({required bool signup}) async {
+  GetIt.I.registerSingleton(UserDataHandler());
+  if (signup == false) await GetIt.I.get<UserDataHandler>().retrieveDataFromRemote();
+
   GetIt.I
     ..registerSingleton<IDataEncryptor>(await SodiumEncryptor.create(signup: signup))
-    ..registerSingleton<DatabaseHandler>(DatabaseHandler())
-    ..registerSingleton(UserDataHandler());
+    ..registerSingleton<DatabaseHandler>(DatabaseHandler());
 }
 
 void removeDatabaseHandlers() {
+  //TODO(removeDatabaseHandlers): clear local store when user logs out
+
   GetIt.I
-    ..unregister<UserDataHandler>()
     ..unregister<DatabaseHandler>()
-    ..unregister<IDataEncryptor>();
+    ..unregister<IDataEncryptor>()
+    ..unregister<UserDataHandler>();
 }

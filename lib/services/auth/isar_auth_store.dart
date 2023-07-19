@@ -1,71 +1,53 @@
-import 'package:dumbkey/services/database/local/secure_storage_handler.dart';
+import 'package:dumbkey/model/settings_model/settings.dart';
+import 'package:dumbkey/services/settings_handler.dart';
 import 'package:firedart/auth/token_store.dart';
 import 'package:get_it/get_it.dart';
 
 class AuthLocalStore extends TokenStore {
-  String? userIdS;
-
-  String? idTokenS;
-
-  String? refreshTokenS;
-
-  String? expiryTokenS;
+  Settings inst = GetIt.I.get<SettingsHandler>().settingsInst;
 
   static const String userIdKey = 'userId';
   static const String idTokenKey = 'idToken';
   static const String refreshTokenKey = 'refreshToken';
   static const String expiryKey = 'expiry';
 
-  Future<void> getValues() async {
-    userIdS = await secDb.readData(key: userIdKey);
-    idTokenS = await secDb.readData(key: idTokenKey);
-    refreshTokenS = await secDb.readData(key: refreshTokenKey);
-    expiryTokenS = await secDb.readData(key: expiryKey);
-  }
-
-  Future<void> setValues() async {
-    await secDb.writeData(value: userIdS, key: userIdKey);
-    await secDb.writeData(value: idTokenS, key: idTokenKey);
-    await secDb.writeData(value: refreshTokenS, key: refreshTokenKey);
-    await secDb.writeData(value: expiryTokenS, key: expiryKey);
-  }
-
-  SecureStorageHandler secDb = GetIt.I.get<SecureStorageHandler>();
-
   @override
-  Future<void> delete() async {
-    userIdS = null;
-    idTokenS = null;
-    refreshTokenS = null;
-    expiryTokenS = null;
+  void delete() {
+    inst
+      ..userId = null
+      ..idToken = null
+      ..refreshToken = null
+      ..expiry = null;
 
-    await setValues();
+    GetIt.I.get<SettingsHandler>().refreshSettings();
   }
 
   @override
   Token? read() {
-    if (userIdS == null || idTokenS == null || refreshTokenS == null || expiryTokenS == null) {
-      return null;
-    }
+    if (inst.userId == null ||
+        inst.idToken == null ||
+        inst.refreshToken == null ||
+        inst.expiry == null) return null;
 
-    return Token(
-      userIdS,
-      idTokenS!,
-      refreshTokenS!,
-      DateTime.parse(expiryTokenS!),
-    );
+    final userId = inst.userId;
+    final idToken = inst.idToken;
+    final refreshToken = inst.refreshToken;
+    final expiry = DateTime.parse(inst.expiry!);
+
+    return Token(userId, idToken!, refreshToken!, expiry);
   }
 
   @override
-  Future<void> write(Token? token) async {
+  void write(Token? token) {
     if (token == null) return;
     final data = token.toMap();
 
-    userIdS = data[userIdKey] as String;
-    idTokenS = data[idTokenKey] as String;
-    refreshTokenS = data[refreshTokenKey] as String;
-    expiryTokenS = data[expiryKey] as String;
+    inst
+      ..userId = data[userIdKey] as String
+      ..idToken = data[idTokenKey] as String
+      ..refreshToken = data[refreshTokenKey] as String
+      ..expiry = data[expiryKey] as String;
 
-    await setValues();
+    GetIt.I.get<SettingsHandler>().refreshSettings();
   }
 }

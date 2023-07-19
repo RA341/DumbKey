@@ -5,6 +5,8 @@ abstract class IRemoteUserDb {
   Future<void> addUserData({required String docId, required Map<String, dynamic> data});
 
   Future<void> deleteUserData({required String docId});
+
+  Future<Map<String, dynamic>> getUserData({required String docId});
 }
 
 // what data do we need to store for a user?
@@ -28,5 +30,11 @@ class FirebaseUser implements IRemoteUserDb {
   @override
   Future<void> deleteUserData({required String docId}) async {
     await userCollection.document(docId).delete();
+  }
+
+  @override
+  Future<Map<String, dynamic>> getUserData({required String docId}) async {
+    final data = await userCollection.document(docId).get();
+    return data.map;
   }
 }

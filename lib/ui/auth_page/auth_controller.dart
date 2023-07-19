@@ -32,6 +32,7 @@ class AuthController {
       await GetIt.I
           .get<SecureStorageHandler>()
           .writeData(key: DumbData.encryptionKey, value: password); // set encryption key
+
       await initDatabaseHandlers(signup: false);
 
       if (!context.mounted) return;

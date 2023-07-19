@@ -26,10 +26,7 @@ Future<void> initServices() async {
   GetIt.I
     ..registerLazySingleton(SecureStorageHandler.new)
     ..registerLazySingleton<Isar>(() => isar)
-    ..registerSingletonAsync<SettingsHandler>(
-      () async => SettingsHandler.initSettings(isar),
-      dependsOn: [Isar],
-    )
+    ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar))
     ..registerSingleton<DatabaseAuth>(DatabaseAuth());
 
   if (GetIt.I.get<DatabaseAuth>().isSignedIn) {
@@ -52,6 +49,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load();
+  initFirebase();
   await initServices();
   runApp(const MyApp());
 }

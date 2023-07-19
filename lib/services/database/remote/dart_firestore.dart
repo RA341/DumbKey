@@ -18,9 +18,11 @@ class DartFireStore {
   late final Firestore database;
   late final IDataEncryptor encryptor;
 
+  final blackListedKeys = [DumbData.id, DumbData.nonce];
+
   Future<void> createData(Map<String, dynamic> data) async {
     try {
-      final encrypted = encryptor.encryptMap(data);
+      final encrypted = encryptor.encryptMap(data, blackListedKeys: blackListedKeys);
       await database
           .collection(DumbData.mainCollection)
           .document((encrypted[DumbData.id] as int).toString())
@@ -32,7 +34,7 @@ class DartFireStore {
 
   Future<void> updateData(Map<String, dynamic> updateData) async {
     try {
-      final encrypted = encryptor.encryptMap(updateData);
+      final encrypted = encryptor.encryptMap(updateData, blackListedKeys: blackListedKeys);
       await database
           .collection(DumbData.mainCollection)
           .document((encrypted[DumbData.id] as int).toString())
@@ -53,7 +55,7 @@ class DartFireStore {
   Stream<List<TypeBase>> fetchAllPassKeys() {
     return database.collection(DumbData.mainCollection).stream.map(
           (docs) => docs.map((doc) {
-            final decrypted = encryptor.decryptMap(doc.map);
+            final decrypted = encryptor.decryptMap(doc.map, blackListedKeys: blackListedKeys);
             final type = TypeBase.getDataType(decrypted[DumbData.dataType] as String);
             return typeSelector(type, decrypted);
           }).toList(),

@@ -18,6 +18,11 @@ class _SignUpPageState extends State<SignUpPage> {
   void initState() {
     emailController = TextEditingController();
     passwordController = TextEditingController();
+
+    // TODO remove this when done testing
+    emailController.text = 'w@w.app';
+    passwordController.text = '12345678aB!';
+
     super.initState();
   }
 

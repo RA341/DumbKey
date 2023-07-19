@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dumbkey/services/database/local/secure_storage_handler.dart';
+import 'package:dumbkey/services/database/user_data_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
@@ -11,9 +11,15 @@ abstract class IDataEncryptor {
 
   String decrypt(String encryptedData, Uint8List nonce);
 
-  Map<String, dynamic> encryptMap(Map<String, dynamic> data);
+  Map<String, dynamic> encryptMap(
+    Map<String, dynamic> data, {
+    List<String> blackListedKeys = const [],
+  });
 
-  Map<String, dynamic> decryptMap(Map<String, dynamic> data);
+  Map<String, dynamic> decryptMap(
+    Map<String, dynamic> data, {
+    List<String> blackListedKeys = const [],
+  });
 }
 
 class SodiumEncryptor implements IDataEncryptor {
@@ -29,7 +35,7 @@ class SodiumEncryptor implements IDataEncryptor {
   late final Sodium sodium;
 
   static Future<SodiumEncryptor> create({required bool signup}) async {
-    final encKey = await GetIt.I.get<SecureStorageHandler>().readData(key: DumbData.encryptionKey);
+    final encKey = await GetIt.I.get<UserDataHandler>().getUserData(key: DumbData.encryptionKey);
     if (encKey == null) throw Exception('No key found');
 
     final Uint8List salt;
@@ -38,14 +44,14 @@ class SodiumEncryptor implements IDataEncryptor {
     if (signup) {
       // generate new salt and save it
       salt = sodium.randombytes.buf(16);
-      await GetIt.I.get<SecureStorageHandler>().writeData(
-            value: String.fromCharCodes(salt),
+      await GetIt.I.get<UserDataHandler>().addUserData(
             key: DumbData.salt,
+            value: base64Encode(String.fromCharCodes(salt).codeUnits),
           );
     } else {
-      final g = await GetIt.I.get<SecureStorageHandler>().readData(key: DumbData.salt);
+      final g = await GetIt.I.get<UserDataHandler>().getUserData(key: DumbData.salt);
       if (g == null) throw Exception('salt not found');
-      salt = Uint8List.fromList(g.codeUnits);
+      salt = Uint8List.fromList(base64Decode(g));
     }
 
     return SodiumEncryptor.init(sodium: sodium, key: encKey, salt: salt);
@@ -120,7 +126,7 @@ class SodiumEncryptor implements IDataEncryptor {
     for (final key in data.keys) {
       if (blackListedKeys.contains(key)) continue;
 
-      data[key] = data[key] == null ? data[key] : decrypt(data[key] as String, nonce);
+      data[key] = data[key] == null ? data[key] : encrypt(data[key] as String, nonce);
     }
 
     data[DumbData.nonce] = base64Encode(convertBytesToData(nonce).codeUnits);
