@@ -30,9 +30,9 @@ class CategoryField extends StatelessWidget {
         return TextFormField(
           autofillHints: settings.settingsInst.categories,
           focusNode: currFocusNode,
-          onFieldSubmitted: (_) async {
+          onFieldSubmitted: (_) {
             if (controller.text.isNotEmpty) {
-              await settings.addCategory(controller.text.toLowerCase());
+              settings.addCategory(controller.text.toLowerCase());
             }
             currFocusNode.unfocus();
           },
@@ -46,8 +46,8 @@ class CategoryField extends StatelessWidget {
           ),
         );
       },
-      onSelected: (String selection) async {
-        await settings.addCategory(selection.toLowerCase());
+      onSelected: (String selection) {
+        settings.addCategory(selection.toLowerCase());
         controller.text = selection;
       },
     );

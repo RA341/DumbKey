@@ -25,22 +25,22 @@ class SettingsHandler {
     return SettingsHandler._create(isar: isar, setInst: config);
   }
 
-  Future<void> refreshSettings() async {
-    await isarInst.writeTxn(() async {
-      await isarInst.settings.put(settingsInst);
+  void refreshSettings() {
+    isarInst.writeTxnSync(() {
+      isarInst.settings.putSync(settingsInst);
     });
 
-    settingsInst = (await isarInst.settings.get(0))!;
+    settingsInst = isarInst.settings.getSync(0)!;
 
     // settingsInst = tmp!;
     logger.i('New settings', settingsInst.idToken.toString());
   }
 
-  Future<void> addCategory(String category) async {
+  void addCategory(String category) {
     settingsInst.categories ??= [];
     if (settingsInst.categories!.contains(category.toLowerCase())) return;
 
     settingsInst.categories!.add(category);
-    await refreshSettings();
+    refreshSettings();
   }
 }

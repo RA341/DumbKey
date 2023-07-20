@@ -1,6 +1,7 @@
 import 'package:dumbkey/model/settings_model/settings.dart';
 import 'package:dumbkey/services/settings_handler.dart';
 import 'package:firedart/auth/token_store.dart';
+import 'package:firedart/firedart.dart';
 import 'package:get_it/get_it.dart';
 
 class AuthLocalStore extends TokenStore {
@@ -48,6 +49,6 @@ class AuthLocalStore extends TokenStore {
       ..refreshToken = data[refreshTokenKey] as String
       ..expiry = data[expiryKey] as String;
 
-    await GetIt.I.get<SettingsHandler>().refreshSettings();
+    GetIt.I.get<SettingsHandler>().refreshSettings();
   }
 }
