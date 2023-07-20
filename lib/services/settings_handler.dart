@@ -33,7 +33,7 @@ class SettingsHandler {
     settingsInst = (await isarInst.settings.get(0))!;
 
     // settingsInst = tmp!;
-    logger.i('New settings', settingsInst.categories);
+    logger.i('New settings', settingsInst.idToken.toString());
   }
 
   Future<void> addCategory(String category) async {

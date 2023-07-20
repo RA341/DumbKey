@@ -38,7 +38,7 @@ class AuthLocalStore extends TokenStore {
   }
 
   @override
-  void write(Token? token) {
+  Future<void> write(Token? token) async {
     if (token == null) return;
     final data = token.toMap();
 
@@ -48,6 +48,6 @@ class AuthLocalStore extends TokenStore {
       ..refreshToken = data[refreshTokenKey] as String
       ..expiry = data[expiryKey] as String;
 
-    GetIt.I.get<SettingsHandler>().refreshSettings();
+    await GetIt.I.get<SettingsHandler>().refreshSettings();
   }
 }
