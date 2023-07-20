@@ -1,8 +1,5 @@
 import 'dart:math';
 
-import 'package:dumbkey/services/database/database_handler.dart';
-import 'package:dumbkey/services/database/user_data_handler.dart';
-import 'package:dumbkey/services/encryption_handler.dart';
 import 'package:dumbkey/services/settings_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -59,30 +56,6 @@ enum PasswordStrength {
   weakMedium,
   medium,
   strong,
-}
-
-Future<void> initDatabaseHandlers({required bool signup}) async {
-  if (GetIt.I.isRegistered<UserDataHandler>() == false) {
-    GetIt.I.registerSingleton(UserDataHandler());
-  }
-
-  if (signup == false) await GetIt.I.get<UserDataHandler>().retrieveDataFromRemote();
-
-  if (GetIt.I.isRegistered<IDataEncryptor>() == false) {
-    GetIt.I.registerSingleton<IDataEncryptor>(await SodiumEncryptor.create(signup: signup));
-  }
-
-  if (GetIt.I.isRegistered<DatabaseHandler>() == false) {
-    GetIt.I.registerSingleton<DatabaseHandler>(DatabaseHandler());
-  }
-}
-
-void removeDatabaseHandlers() {
-  //TODO(removeDatabaseHandlers): clear local store when user logs out
-
-  if (GetIt.I.isRegistered<UserDataHandler>()) GetIt.I.unregister<UserDataHandler>();
-  if (GetIt.I.isRegistered<IDataEncryptor>()) GetIt.I.unregister<IDataEncryptor>();
-  if (GetIt.I.isRegistered<DatabaseHandler>()) GetIt.I.unregister<DatabaseHandler>();
 }
 
 String getUuid() {

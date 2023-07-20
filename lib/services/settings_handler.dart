@@ -18,14 +18,22 @@ class SettingsHandler {
     var config = await isar.settings.get(0);
 
     if (config == null) {
-      config = Settings(id: 0);
+      config = Settings();
       await isar.writeTxn(() async => await isar.settings.put(config!));
     }
 
     return SettingsHandler._create(isar: isar, setInst: config);
   }
 
+  void clearSettings() {
+    isarInst.writeTxnSync(() {
+      settingsInst = Settings();
+    });
+    refreshSettings();
+  }
+
   void refreshSettings() {
+    logger.i('Old settings', settingsInst.idToken.toString());
     isarInst.writeTxnSync(() {
       isarInst.settings.putSync(settingsInst);
     });
