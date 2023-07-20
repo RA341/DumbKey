@@ -5,6 +5,7 @@ import 'package:dumbkey/model/settings_model/settings.dart';
 import 'package:dumbkey/services/auth/database_auth.dart';
 import 'package:dumbkey/services/database/local/secure_storage_handler.dart';
 import 'package:dumbkey/services/settings_handler.dart';
+import 'package:dumbkey/ui/auth_page/auth_controller.dart';
 import 'package:dumbkey/ui/auth_page/auth_page.dart';
 import 'package:dumbkey/ui/home.dart';
 import 'package:dumbkey/utils/constants.dart';
@@ -83,5 +84,20 @@ class MyApp extends StatelessWidget {
         child: GetIt.I.get<DatabaseAuth>().isSignedIn ? const HomePage() : const LoginScreen(),
       ),
     );
+  }
+}
+
+class Test extends StatelessWidget {
+  const Test({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('appbarTitle'),
+        ),
+        body: ElevatedButton(
+            onPressed: () async => await AuthController.inst.signOut(context),
+            child: Text('log out')));
   }
 }

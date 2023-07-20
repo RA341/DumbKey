@@ -1,12 +1,9 @@
-import 'package:dumbkey/model/settings_model/settings.dart';
 import 'package:dumbkey/services/settings_handler.dart';
 import 'package:firedart/auth/token_store.dart';
 import 'package:firedart/firedart.dart';
 import 'package:get_it/get_it.dart';
 
 class AuthLocalStore extends TokenStore {
-  Settings inst = GetIt.I.get<SettingsHandler>().settingsInst;
-
   static const String userIdKey = 'userId';
   static const String idTokenKey = 'idToken';
   static const String refreshTokenKey = 'refreshToken';
@@ -14,7 +11,7 @@ class AuthLocalStore extends TokenStore {
 
   @override
   void delete() {
-    inst
+    GetIt.I.get<SettingsHandler>().settingsInst
       ..userId = null
       ..idToken = null
       ..refreshToken = null
@@ -25,15 +22,15 @@ class AuthLocalStore extends TokenStore {
 
   @override
   Token? read() {
-    if (inst.userId == null ||
-        inst.idToken == null ||
-        inst.refreshToken == null ||
-        inst.expiry == null) return null;
+    if (GetIt.I.get<SettingsHandler>().settingsInst.userId == null ||
+        GetIt.I.get<SettingsHandler>().settingsInst.idToken == null ||
+        GetIt.I.get<SettingsHandler>().settingsInst.refreshToken == null ||
+        GetIt.I.get<SettingsHandler>().settingsInst.expiry == null) return null;
 
-    final userId = inst.userId;
-    final idToken = inst.idToken;
-    final refreshToken = inst.refreshToken;
-    final expiry = DateTime.parse(inst.expiry!);
+    final userId = GetIt.I.get<SettingsHandler>().settingsInst.userId;
+    final idToken = GetIt.I.get<SettingsHandler>().settingsInst.idToken;
+    final refreshToken = GetIt.I.get<SettingsHandler>().settingsInst.refreshToken;
+    final expiry = DateTime.parse(GetIt.I.get<SettingsHandler>().settingsInst.expiry!);
 
     return Token(userId, idToken!, refreshToken!, expiry);
   }
@@ -43,7 +40,7 @@ class AuthLocalStore extends TokenStore {
     if (token == null) return;
     final data = token.toMap();
 
-    inst
+    GetIt.I.get<SettingsHandler>().settingsInst
       ..userId = data[userIdKey] as String
       ..idToken = data[idTokenKey] as String
       ..refreshToken = data[refreshTokenKey] as String
