@@ -21,29 +21,32 @@ class DatabaseHandler with IsarDbMixin {
       fireListener?.cancel();
       logger.e('No connection canceling listener', e);
     }
-    // syncing.addListener(() {
-    //   logger.w('Syncing status:', syncing.value);
-    // });
     _listenToConnectionState();
   }
 
   late final DartFireStore firestore;
   final connection = Connectivity();
-
   StreamSubscription<List<TypeBase>>? fireListener;
-
   ValueNotifier<ConnectivityResult> connectionState = ValueNotifier(ConnectivityResult.none);
-  ValueNotifier<bool> syncing = ValueNotifier(false);
+
+  bool get isOnline => connectionState.value != ConnectivityResult.none;
 
   Future<void> createData(TypeBase data) async {
     logger.w('Creating Data', data.toJson());
+
+    if (isOnline == false) {
+      data.syncStatus = SyncStatus.notSynced;
+      await isarCreateOrUpdate(data);
+      logger.w('data created offline', data.id);
+      return;
+    }
 
     try {
       await firestore.createData(data.toJson());
     } catch (e) {
       logger
         ..e('Error adding Data to firebase', e)
-        ..d('data to be locally stored', data.toJson());
+        ..d('data to be locally stored', data.id);
       data.syncStatus = SyncStatus.notSynced;
     }
     await isarCreateOrUpdate(data);
@@ -56,6 +59,13 @@ class DatabaseHandler with IsarDbMixin {
       !updateData.containsValue(null),
       'update data contains null,$updateData',
     );
+
+    if (isOnline == false) {
+      updatedModel.syncStatus = SyncStatus.notSynced;
+      await isarCreateOrUpdate(updatedModel);
+      logger.w('data updated offline', updatedModel.id);
+      return;
+    }
 
     try {
       await firestore.updateData(updateData);
@@ -74,14 +84,20 @@ class DatabaseHandler with IsarDbMixin {
 
     if (data.syncStatus == SyncStatus.notSynced) {
       await isarDelete(data.id, data.dataType);
-      logger.i('Deleting local only data', data.toJson());
+      logger.i('Deleting local only data', data.id);
+      return;
+    }
+
+    if (isOnline == false) {
+      data.syncStatus = SyncStatus.deleted; // temp status until device gets online and deletes
+      await isarCreateOrUpdate(data);
       return;
     }
 
     try {
       await firestore.deleteData(data.id);
       await isarDelete(data.id, data.dataType); // let the fire store complete first
-      logger.i('Deleted Data', data.toJson());
+      logger.i('Deleted Data', data.id);
     } catch (e) {
       logger.e('Error deleting Data from firebase', e);
       data.syncStatus = SyncStatus.deleted; // temp status until device gets online and deletes
@@ -114,47 +130,42 @@ class DatabaseHandler with IsarDbMixin {
       .build()
       .watch(fireImmediately: true);
 
-  StreamSubscription<List<TypeBase>> _listenToChangesFromFireBase() {
-    return firestore.fetchAllPassKeys().distinct().listen(
-          (documents) async {
-            logger.d('firebase listening', documents.length);
-            // deletes local data that is not present in remote
-            unawaited(
-              deleteLocalNotInRemote(documents).then((value) async {
-                unawaited(
-                  isarCreateOrUpdateAll(
-                    documents,
-                  ).whenComplete(() => null),
-                ); // possible optimization update only changed data
-              }),
-            );
-            // updates local data from remote
-          },
-          cancelOnError: true,
-          onError: (Object error, StackTrace stackTrace) async {
-            await fireListener?.cancel();
-            firestore.dispose();
-            fireListener = null;
-            logger.e('firebase offline', error, stackTrace);
-          },
-        );
-  }
-
   FutureOr<void> _listenToConnectionState() async {
     connection.onConnectivityChanged.distinct().listen((status) async {
       connectionState.value = status;
-      // if (unSyncPasskeysListener.isPaused) unSyncPasskeysListener.resume();
-      logger.d('firelistener type', fireListener.runtimeType);
       if (status != ConnectivityResult.none) {
-        fireListener ??= _listenToChangesFromFireBase();
-        listenToDeSyncPasskeys();
-        listenToDeSyncNotes();
-        listenToDeSyncCardDetails();
+        fireListener?.resume();
+        _listenToDeSyncPasskeys();
+        _listenToDeSyncNotes();
+        _listenToDeSyncCardDetails();
         logger.d('Online starting firestore', status);
       } else {
         logger.d('Offline canceling firestore', status);
       }
     });
+  }
+
+  StreamSubscription<List<TypeBase>> _listenToChangesFromFireBase() {
+    return firestore.fetchAllPassKeys().distinct().listen(
+      (documents) async {
+        logger.d('firebase listening', documents.length);
+        // deletes local data that is not present in remote
+        unawaited(
+          deleteLocalNotInRemote(documents).then((value) async {
+            unawaited(
+              isarCreateOrUpdateAll(
+                documents,
+              ).whenComplete(() => null),
+            ); // possible optimization update only changed data
+          }),
+        );
+        // updates local data from remote
+      },
+      onError: (Object error, StackTrace stackTrace) async {
+        fireListener?.pause();
+        logger.e('firebase paused', error, stackTrace);
+      },
+    );
   }
 
   Future<void> deleteLocalNotInRemote(List<TypeBase> remoteData) async {
@@ -171,7 +182,7 @@ class DatabaseHandler with IsarDbMixin {
     }
   }
 
-  void listenToDeSyncPasskeys() {
+  void _listenToDeSyncPasskeys() {
     isarDb.passwords
         .filter()
         .syncStatusEqualTo(SyncStatus.notSynced)
@@ -189,7 +200,7 @@ class DatabaseHandler with IsarDbMixin {
     });
   }
 
-  void listenToDeSyncCardDetails() {
+  void _listenToDeSyncCardDetails() {
     isarDb.cardDetails
         .filter()
         .syncStatusEqualTo(SyncStatus.notSynced)
@@ -207,7 +218,7 @@ class DatabaseHandler with IsarDbMixin {
     });
   }
 
-  void listenToDeSyncNotes() {
+  void _listenToDeSyncNotes() {
     isarDb.notes
         .filter()
         .syncStatusEqualTo(SyncStatus.notSynced)
@@ -244,30 +255,31 @@ class DatabaseHandler with IsarDbMixin {
     }
   }
 
-  void _createDataAsync(TypeBase passkey) {
-    logger.i('adding to remote', passkey.toJson());
+  void _createDataAsync(TypeBase data) {
+    logger.i('adding to remote', data.id);
 
-    passkey.syncStatus = SyncStatus.synced;
-    firestore.createData(passkey.toJson()).then((value) async {
-      unawaited(isarCreateOrUpdate(passkey).whenComplete(() => null));
-      logger.i('data added', passkey.toJson());
+    data.syncStatus = SyncStatus.synced;
+    firestore.createData(data.toJson()).then((value) {
+      unawaited(
+        isarCreateOrUpdate(data).whenComplete(() => logger.i('data added', data.id)),
+      );
     }).onError((error, stackTrace) {
       logger
         ..e('Error adding offline Data to firebase', [error, stackTrace])
-        ..d('data not updated', passkey.toJson());
+        ..d('data not updated', data.id);
     });
   }
 
-  void _deleteDataAsync(TypeBase passKey) {
-    logger.i('deleting from remote', passKey.toJson());
-
-    firestore.deleteData(passKey.id).then((value) async {
-      unawaited(isarDelete(passKey.id, passKey.dataType).whenComplete(() => null));
-      logger.i('data removed', passKey.toJson());
+  void _deleteDataAsync(TypeBase data) {
+    logger.i('deleting from remote', data.id);
+    firestore.deleteData(data.id).then((value) {
+      unawaited(
+        isarDelete(data.id, data.dataType).whenComplete(() => logger.i('data removed', data.id)),
+      );
     }).onError((error, stackTrace) {
       logger
         ..e('Error deleting from remote', [error, stackTrace])
-        ..d('data not deleted', passKey.toJson());
+        ..d('data not deleted', data.id);
     });
   }
 }
