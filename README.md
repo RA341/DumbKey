@@ -11,6 +11,9 @@ w@w.app
 
 # Currently working on
 
+# Note
+- On login and signup ui freezes because of pwhash memlimit and opslimit
+
 ## Features
 ~~- add authentication~~
 - add syncing user data with firestore

@@ -40,7 +40,6 @@ class SodiumEncryptor implements IDataEncryptor {
 
     final Uint8List salt;
     final sodium = await SodiumInit.init();
-
     if (signup) {
       // generate new salt and save it
       salt = sodium.randombytes.buf(16);
@@ -63,13 +62,14 @@ class SodiumEncryptor implements IDataEncryptor {
 
   String convertBytesToData(Uint8List messageBytes) => String.fromCharCodes(messageBytes);
 
+  /// On login and signup ui freezes here because of pwhash memlimit and opslimit
   SecureKey generateSecretKey(String password, Uint8List salt) {
     return sodium.crypto.pwhash.call(
       outLen: 32,
       password: password.toCharArray(),
       salt: salt,
-      opsLimit: sodium.crypto.pwhash.opsLimitSensitive,
-      memLimit: sodium.crypto.pwhash.memLimitSensitive,
+      opsLimit: sodium.crypto.pwhash.opsLimitModerate,
+      memLimit: sodium.crypto.pwhash.memLimitModerate,
     );
   }
 
