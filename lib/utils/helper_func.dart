@@ -62,21 +62,27 @@ enum PasswordStrength {
 }
 
 Future<void> initDatabaseHandlers({required bool signup}) async {
-  GetIt.I.registerSingleton(UserDataHandler());
+  if (GetIt.I.isRegistered<UserDataHandler>() == false) {
+    GetIt.I.registerSingleton(UserDataHandler());
+  }
+
   if (signup == false) await GetIt.I.get<UserDataHandler>().retrieveDataFromRemote();
 
-  GetIt.I
-    ..registerSingleton<IDataEncryptor>(await SodiumEncryptor.create(signup: signup))
-    ..registerSingleton<DatabaseHandler>(DatabaseHandler());
+  if (GetIt.I.isRegistered<IDataEncryptor>() == false) {
+    GetIt.I.registerSingleton<IDataEncryptor>(await SodiumEncryptor.create(signup: signup));
+  }
+
+  if (GetIt.I.isRegistered<DatabaseHandler>() == false) {
+    GetIt.I.registerSingleton<DatabaseHandler>(DatabaseHandler());
+  }
 }
 
 void removeDatabaseHandlers() {
   //TODO(removeDatabaseHandlers): clear local store when user logs out
 
-  GetIt.I
-    ..unregister<DatabaseHandler>()
-    ..unregister<IDataEncryptor>()
-    ..unregister<UserDataHandler>();
+  if (GetIt.I.isRegistered<UserDataHandler>()) GetIt.I.unregister<UserDataHandler>();
+  if (GetIt.I.isRegistered<IDataEncryptor>()) GetIt.I.unregister<IDataEncryptor>();
+  if (GetIt.I.isRegistered<DatabaseHandler>()) GetIt.I.unregister<DatabaseHandler>();
 }
 
 String getUuid() {

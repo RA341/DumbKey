@@ -44,6 +44,9 @@ class AuthController {
       // TODO(signIn): handle different exceptions
       logger.e('failed to login $e');
       displaySnackBar(context, 'Failed to login\n$e');
+    } finally {
+      removeDatabaseHandlers();
+      await auth.signOut();
     }
     isLoading.value = false;
   }
@@ -73,6 +76,8 @@ class AuthController {
     } catch (e) {
       displaySnackBar(context, 'Failed to sign up\n$e');
       logger.e('failed to sign in', e);
+    } finally {
+      removeDatabaseHandlers();
     }
     isLoading.value = false;
   }
@@ -85,7 +90,7 @@ class AuthController {
       await auth.signOut();
       await GetIt.I
           .get<SecureStorageHandler>()
-          .writeData(key: DumbData.encryptionKey, value: ''); // clear ut encryption key
+          .writeData(key: DumbData.encryptionKey, value: ''); // clear out encryption key
       removeDatabaseHandlers();
       await deleteLocalCache();
 
