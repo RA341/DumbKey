@@ -4,9 +4,8 @@ part 'settings.g.dart';
 
 @collection
 class Settings {
-
   Settings({
-    this.id,
+    this.id = 0,
     this.backupPath,
     this.backupFileName,
     this.lastBackupDate,
