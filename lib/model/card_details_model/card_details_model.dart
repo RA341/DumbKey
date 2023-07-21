@@ -32,23 +32,24 @@ class CardDetails extends TypeBase {
     );
   }
 
-  CardDetails copyWith(Map<String, dynamic> cardDetails) {
+  @override
+  CardDetails copyWith(Map<String, dynamic> update) {
     return CardDetails(
-      id: (cardDetails[DumbData.id] as int?) ?? id,
-      dataType: cardDetails[DumbData.dataType] == null
-          ? TypeBase.getDataType(cardDetails[DumbData.dataType]! as String)
+      id: (update[DumbData.id] as int?) ?? id,
+      dataType: update[DumbData.dataType] == null
+          ? TypeBase.getDataType(update[DumbData.dataType]! as String)
           : dataType,
-      syncStatus: cardDetails[DumbData.syncStatus] == null
-          ? TypeBase.getSyncStatus(cardDetails[DumbData.syncStatus]! as String)
+      syncStatus: update[DumbData.syncStatus] == null
+          ? TypeBase.getSyncStatus(update[DumbData.syncStatus]! as String)
           : syncStatus,
-      dateAdded: cardDetails[DumbData.dateAdded] == null
-          ? TypeBase.getDateTime(cardDetails[DumbData.dateAdded]! as String)
+      dateAdded: update[DumbData.dateAdded] == null
+          ? TypeBase.getDateTime(update[DumbData.dateAdded]! as String)
           : dateAdded,
-      title: (cardDetails[DumbData.title] as String?) ?? title,
-      cardNumber: (cardDetails[DumbData.cardNumber] as String?) ?? cardNumber,
-      cardHolderName: (cardDetails[DumbData.cardHolderName] as String?) ?? cardHolderName,
-      expirationDate: (cardDetails[DumbData.expirationDate] as String?) ?? expirationDate,
-      cvv: (cardDetails[DumbData.cvv] as String?) ?? cvv,
+      title: (update[DumbData.title] as String?) ?? title,
+      cardNumber: (update[DumbData.cardNumber] as String?) ?? cardNumber,
+      cardHolderName: (update[DumbData.cardHolderName] as String?) ?? cardHolderName,
+      expirationDate: (update[DumbData.expirationDate] as String?) ?? expirationDate,
+      cvv: (update[DumbData.cvv] as String?) ?? cvv,
     );
   }
 

@@ -26,20 +26,21 @@ class Notes extends TypeBase {
     );
   }
 
-  Notes copyWith(Map<String, dynamic> updatedData) {
+  @override
+  Notes copyWith(Map<String, dynamic> update) {
     return Notes(
-      id: updatedData[DumbData.id] as int? ?? id,
-      dataType: updatedData[DumbData.dataType] != null
-          ? TypeBase.getDataType(updatedData[DumbData.dataType] as String)
+      id: update[DumbData.id] as int? ?? id,
+      dataType: update[DumbData.dataType] != null
+          ? TypeBase.getDataType(update[DumbData.dataType] as String)
           : dataType,
-      syncStatus: updatedData[DumbData.syncStatus] != null
-          ? TypeBase.getSyncStatus(updatedData[DumbData.syncStatus] as String)
+      syncStatus: update[DumbData.syncStatus] != null
+          ? TypeBase.getSyncStatus(update[DumbData.syncStatus] as String)
           : syncStatus,
-      dateAdded: updatedData[DumbData.dateAdded] != null
-          ? TypeBase.getDateTime(updatedData[DumbData.dateAdded] as String)
+      dateAdded: update[DumbData.dateAdded] != null
+          ? TypeBase.getDateTime(update[DumbData.dateAdded] as String)
           : dateAdded,
-      title: updatedData[DumbData.title] as String? ?? title,
-      notes: updatedData[DumbData.notes] as String? ?? notes,
+      title: update[DumbData.title] as String? ?? title,
+      notes: update[DumbData.notes] as String? ?? notes,
     );
   }
 

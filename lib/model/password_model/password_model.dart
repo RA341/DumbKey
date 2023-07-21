@@ -34,24 +34,25 @@ class Password extends TypeBase {
     );
   }
 
-  Password copyWith(Map<String, dynamic> updatedData) {
+  @override
+  Password copyWith(Map<String, dynamic> update) {
     return Password(
-      id: updatedData[DumbData.id] as int? ?? id,
-      dataType: updatedData[DumbData.dataType] != null
-          ? TypeBase.getDataType(updatedData[DumbData.dataType] as String)
+      id: update[DumbData.id] as int? ?? id,
+      dataType: update[DumbData.dataType] != null
+          ? TypeBase.getDataType(update[DumbData.dataType] as String)
           : dataType,
-      syncStatus: updatedData[DumbData.syncStatus] != null
-          ? TypeBase.getSyncStatus(updatedData[DumbData.syncStatus] as String)
+      syncStatus: update[DumbData.syncStatus] != null
+          ? TypeBase.getSyncStatus(update[DumbData.syncStatus] as String)
           : syncStatus,
-      dateAdded: updatedData[DumbData.dateAdded] != null
-          ? TypeBase.getDateTime(updatedData[DumbData.dateAdded] as String)
+      dateAdded: update[DumbData.dateAdded] != null
+          ? TypeBase.getDateTime(update[DumbData.dateAdded] as String)
           : dateAdded,
-      title: updatedData[DumbData.title] as String? ?? title,
-      email: updatedData[DumbData.email] as String? ?? email,
-      username: updatedData[DumbData.username] as String? ?? username,
-      password: updatedData[DumbData.password] as String? ?? password,
-      description: updatedData[DumbData.description] as String? ?? description,
-      category: updatedData[DumbData.category] as String? ?? category,
+      title: update[DumbData.title] as String? ?? title,
+      email: update[DumbData.email] as String? ?? email,
+      username: update[DumbData.username] as String? ?? username,
+      password: update[DumbData.password] as String? ?? password,
+      description: update[DumbData.description] as String? ?? description,
+      category: update[DumbData.category] as String? ?? category,
     );
   }
 

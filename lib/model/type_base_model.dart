@@ -34,6 +34,22 @@ class TypeBase {
         DumbData.dateAdded: dateAdded.toIso8601String(),
       };
 
+  TypeBase copyWith(Map<String, dynamic> update) {
+    return TypeBase(
+      id: (update[DumbData.id] as int?) ?? id,
+      dataType: update[DumbData.dataType] == null
+          ? getDataType(update[DumbData.dataType]! as String)
+          : dataType,
+      syncStatus: update[DumbData.syncStatus] == null
+          ? getSyncStatus(update[DumbData.syncStatus]! as String)
+          : syncStatus,
+      dateAdded: update[DumbData.dateAdded] == null
+          ? getDateTime(update[DumbData.dateAdded]! as String)
+          : dateAdded,
+      title: (update[DumbData.title] as String?) ?? title,
+    );
+  }
+
   Id id;
   @enumerated
   DataType dataType;
