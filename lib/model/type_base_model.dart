@@ -1,6 +1,9 @@
 import 'package:dumbkey/utils/constants.dart';
 import 'package:isar/isar.dart';
 
+///flutter pub run build_runner build -d
+///run this command to generate the files
+
 class TypeBase {
   TypeBase({
     required this.id,
@@ -8,10 +11,12 @@ class TypeBase {
     required this.title,
     required this.dateAdded,
     required this.syncStatus,
+    required this.nonce,
   });
 
   factory TypeBase.fromMap(Map<String, dynamic> map) {
     return TypeBase(
+      nonce: map[DumbData.nonce] as String,
       id: map[DumbData.id] as int,
       dataType: getDataType(map[DumbData.dataType] as String),
       syncStatus: getSyncStatus(map[DumbData.syncStatus] as String),
@@ -31,6 +36,7 @@ class TypeBase {
         DumbData.dataType: dataType.index.toString(),
         DumbData.syncStatus: syncStatus.index.toString(),
         DumbData.title: title,
+        DumbData.nonce: nonce,
         DumbData.dateAdded: dateAdded.toIso8601String(),
       };
 
@@ -46,6 +52,7 @@ class TypeBase {
       dateAdded: update[DumbData.dateAdded] == null
           ? getDateTime(update[DumbData.dateAdded]! as String)
           : dateAdded,
+      nonce: update[DumbData.nonce] as String? ?? nonce,
       title: (update[DumbData.title] as String?) ?? title,
     );
   }
@@ -57,6 +64,7 @@ class TypeBase {
   SyncStatus syncStatus;
   String title;
   DateTime dateAdded;
+  String nonce;
 }
 
 enum DataType {

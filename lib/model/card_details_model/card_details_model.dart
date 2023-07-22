@@ -12,6 +12,7 @@ class CardDetails extends TypeBase {
     required super.title,
     required super.dateAdded,
     required super.syncStatus,
+    required super.nonce,
     required this.cardNumber,
     required this.cardHolderName,
     required this.expirationDate,
@@ -21,6 +22,7 @@ class CardDetails extends TypeBase {
   factory CardDetails.fromMap(Map<String, dynamic> map) {
     return CardDetails(
       id: map[DumbData.id] as int,
+      nonce: map[DumbData.nonce] as String,
       dataType: TypeBase.getDataType(map[DumbData.dataType] as String),
       syncStatus: TypeBase.getSyncStatus(map[DumbData.syncStatus] as String),
       dateAdded: TypeBase.getDateTime(map[DumbData.dateAdded] as String),
@@ -32,9 +34,25 @@ class CardDetails extends TypeBase {
     );
   }
 
+  factory CardDetails.empty() {
+    return CardDetails(
+      nonce: '',
+      id: 0,
+      dataType: DataType.card,
+      title: '',
+      dateAdded: DateTime.now(),
+      syncStatus: SyncStatus.synced,
+      cardNumber: '',
+      cardHolderName: '',
+      expirationDate: '',
+      cvv: '',
+    );
+  }
+
   @override
   CardDetails copyWith(Map<String, dynamic> update) {
     return CardDetails(
+      nonce: update[DumbData.nonce] as String? ?? nonce,
       id: (update[DumbData.id] as int?) ?? id,
       dataType: update[DumbData.dataType] == null
           ? TypeBase.getDataType(update[DumbData.dataType]! as String)

@@ -28,19 +28,24 @@ const NotesSchema = CollectionSchema(
       name: r'dateAdded',
       type: IsarType.dateTime,
     ),
-    r'notes': PropertySchema(
+    r'nonce': PropertySchema(
       id: 2,
+      name: r'nonce',
+      type: IsarType.string,
+    ),
+    r'notes': PropertySchema(
+      id: 3,
       name: r'notes',
       type: IsarType.string,
     ),
     r'syncStatus': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'syncStatus',
       type: IsarType.byte,
       enumMap: _NotessyncStatusEnumValueMap,
     ),
     r'title': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'title',
       type: IsarType.string,
     )
@@ -65,6 +70,7 @@ int _notesEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.nonce.length * 3;
   bytesCount += 3 + object.notes.length * 3;
   bytesCount += 3 + object.title.length * 3;
   return bytesCount;
@@ -78,9 +84,10 @@ void _notesSerialize(
 ) {
   writer.writeByte(offsets[0], object.dataType.index);
   writer.writeDateTime(offsets[1], object.dateAdded);
-  writer.writeString(offsets[2], object.notes);
-  writer.writeByte(offsets[3], object.syncStatus.index);
-  writer.writeString(offsets[4], object.title);
+  writer.writeString(offsets[2], object.nonce);
+  writer.writeString(offsets[3], object.notes);
+  writer.writeByte(offsets[4], object.syncStatus.index);
+  writer.writeString(offsets[5], object.title);
 }
 
 Notes _notesDeserialize(
@@ -94,11 +101,12 @@ Notes _notesDeserialize(
         DataType.card,
     dateAdded: reader.readDateTime(offsets[1]),
     id: id,
-    notes: reader.readString(offsets[2]),
+    nonce: reader.readString(offsets[2]),
+    notes: reader.readString(offsets[3]),
     syncStatus:
-        _NotessyncStatusValueEnumMap[reader.readByteOrNull(offsets[3])] ??
+        _NotessyncStatusValueEnumMap[reader.readByteOrNull(offsets[4])] ??
             SyncStatus.notSynced,
-    title: reader.readString(offsets[4]),
+    title: reader.readString(offsets[5]),
   );
   return object;
 }
@@ -118,9 +126,11 @@ P _notesDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
+      return (reader.readString(offset)) as P;
+    case 4:
       return (_NotessyncStatusValueEnumMap[reader.readByteOrNull(offset)] ??
           SyncStatus.notSynced) as P;
-    case 4:
+    case 5:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -390,6 +400,134 @@ extension NotesQueryFilter on QueryBuilder<Notes, Notes, QFilterCondition> {
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> nonceEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> nonceGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> nonceLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> nonceBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'nonce',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> nonceStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> nonceEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> nonceContains(String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> nonceMatches(String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'nonce',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> nonceIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'nonce',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterFilterCondition> nonceIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'nonce',
+        value: '',
       ));
     });
   }
@@ -733,6 +871,18 @@ extension NotesQuerySortBy on QueryBuilder<Notes, Notes, QSortBy> {
     });
   }
 
+  QueryBuilder<Notes, Notes, QAfterSortBy> sortByNonce() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterSortBy> sortByNonceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.desc);
+    });
+  }
+
   QueryBuilder<Notes, Notes, QAfterSortBy> sortByNotes() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.asc);
@@ -807,6 +957,18 @@ extension NotesQuerySortThenBy on QueryBuilder<Notes, Notes, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Notes, Notes, QAfterSortBy> thenByNonce() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Notes, Notes, QAfterSortBy> thenByNonceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.desc);
+    });
+  }
+
   QueryBuilder<Notes, Notes, QAfterSortBy> thenByNotes() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'notes', Sort.asc);
@@ -857,6 +1019,13 @@ extension NotesQueryWhereDistinct on QueryBuilder<Notes, Notes, QDistinct> {
     });
   }
 
+  QueryBuilder<Notes, Notes, QDistinct> distinctByNonce(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'nonce', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Notes, Notes, QDistinct> distinctByNotes(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -894,6 +1063,12 @@ extension NotesQueryProperty on QueryBuilder<Notes, Notes, QQueryProperty> {
   QueryBuilder<Notes, DateTime, QQueryOperations> dateAddedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dateAdded');
+    });
+  }
+
+  QueryBuilder<Notes, String, QQueryOperations> nonceProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'nonce');
     });
   }
 

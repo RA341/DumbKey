@@ -12,6 +12,7 @@ class Password extends TypeBase {
     required super.title,
     required super.dateAdded,
     required super.syncStatus,
+    required super.nonce,
     this.email,
     this.username,
     this.password,
@@ -25,12 +26,24 @@ class Password extends TypeBase {
       dataType: TypeBase.getDataType(map[DumbData.dataType] as String),
       syncStatus: TypeBase.getSyncStatus(map[DumbData.syncStatus] as String),
       dateAdded: TypeBase.getDateTime(map[DumbData.dateAdded] as String),
+      nonce: map[DumbData.nonce] as String,
       title: map[DumbData.title] as String,
       email: map[DumbData.email] as String?,
       username: map[DumbData.username] as String?,
       password: map[DumbData.password] as String?,
       description: map[DumbData.description] as String?,
       category: map[DumbData.category] as String?,
+    );
+  }
+
+  factory Password.empty() {
+    return Password(
+      id: 0,
+      dataType: DataType.password,
+      nonce: '',
+      title: '',
+      dateAdded: DateTime.now(),
+      syncStatus: SyncStatus.synced,
     );
   }
 
@@ -47,6 +60,7 @@ class Password extends TypeBase {
       dateAdded: update[DumbData.dateAdded] != null
           ? TypeBase.getDateTime(update[DumbData.dateAdded] as String)
           : dateAdded,
+      nonce: update[DumbData.nonce] as String? ?? nonce,
       title: update[DumbData.title] as String? ?? title,
       email: update[DumbData.email] as String? ?? email,
       username: update[DumbData.username] as String? ?? username,

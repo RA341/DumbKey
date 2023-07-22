@@ -43,24 +43,29 @@ const PasswordSchema = CollectionSchema(
       name: r'email',
       type: IsarType.string,
     ),
-    r'password': PropertySchema(
+    r'nonce': PropertySchema(
       id: 5,
+      name: r'nonce',
+      type: IsarType.string,
+    ),
+    r'password': PropertySchema(
+      id: 6,
       name: r'password',
       type: IsarType.string,
     ),
     r'syncStatus': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'syncStatus',
       type: IsarType.byte,
       enumMap: _PasswordsyncStatusEnumValueMap,
     ),
     r'title': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'title',
       type: IsarType.string,
     ),
     r'username': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'username',
       type: IsarType.string,
     )
@@ -103,6 +108,7 @@ int _passwordEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.nonce.length * 3;
   {
     final value = object.password;
     if (value != null) {
@@ -130,10 +136,11 @@ void _passwordSerialize(
   writer.writeDateTime(offsets[2], object.dateAdded);
   writer.writeString(offsets[3], object.description);
   writer.writeString(offsets[4], object.email);
-  writer.writeString(offsets[5], object.password);
-  writer.writeByte(offsets[6], object.syncStatus.index);
-  writer.writeString(offsets[7], object.title);
-  writer.writeString(offsets[8], object.username);
+  writer.writeString(offsets[5], object.nonce);
+  writer.writeString(offsets[6], object.password);
+  writer.writeByte(offsets[7], object.syncStatus.index);
+  writer.writeString(offsets[8], object.title);
+  writer.writeString(offsets[9], object.username);
 }
 
 Password _passwordDeserialize(
@@ -151,12 +158,13 @@ Password _passwordDeserialize(
     description: reader.readStringOrNull(offsets[3]),
     email: reader.readStringOrNull(offsets[4]),
     id: id,
-    password: reader.readStringOrNull(offsets[5]),
+    nonce: reader.readString(offsets[5]),
+    password: reader.readStringOrNull(offsets[6]),
     syncStatus:
-        _PasswordsyncStatusValueEnumMap[reader.readByteOrNull(offsets[6])] ??
+        _PasswordsyncStatusValueEnumMap[reader.readByteOrNull(offsets[7])] ??
             SyncStatus.notSynced,
-    title: reader.readString(offsets[7]),
-    username: reader.readStringOrNull(offsets[8]),
+    title: reader.readString(offsets[8]),
+    username: reader.readStringOrNull(offsets[9]),
   );
   return object;
 }
@@ -180,13 +188,15 @@ P _passwordDeserializeProp<P>(
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 6:
+      return (reader.readStringOrNull(offset)) as P;
+    case 7:
       return (_PasswordsyncStatusValueEnumMap[reader.readByteOrNull(offset)] ??
           SyncStatus.notSynced) as P;
-    case 7:
-      return (reader.readString(offset)) as P;
     case 8:
+      return (reader.readString(offset)) as P;
+    case 9:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -902,6 +912,136 @@ extension PasswordQueryFilter
     });
   }
 
+  QueryBuilder<Password, Password, QAfterFilterCondition> nonceEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> nonceGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> nonceLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> nonceBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'nonce',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> nonceStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> nonceEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> nonceContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> nonceMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'nonce',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> nonceIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'nonce',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> nonceIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'nonce',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Password, Password, QAfterFilterCondition> passwordIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1445,6 +1585,18 @@ extension PasswordQuerySortBy on QueryBuilder<Password, Password, QSortBy> {
     });
   }
 
+  QueryBuilder<Password, Password, QAfterSortBy> sortByNonce() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterSortBy> sortByNonceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.desc);
+    });
+  }
+
   QueryBuilder<Password, Password, QAfterSortBy> sortByPassword() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'password', Sort.asc);
@@ -1568,6 +1720,18 @@ extension PasswordQuerySortThenBy
     });
   }
 
+  QueryBuilder<Password, Password, QAfterSortBy> thenByNonce() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterSortBy> thenByNonceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.desc);
+    });
+  }
+
   QueryBuilder<Password, Password, QAfterSortBy> thenByPassword() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'password', Sort.asc);
@@ -1652,6 +1816,13 @@ extension PasswordQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Password, Password, QDistinct> distinctByNonce(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'nonce', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Password, Password, QDistinct> distinctByPassword(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1715,6 +1886,12 @@ extension PasswordQueryProperty
   QueryBuilder<Password, String?, QQueryOperations> emailProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'email');
+    });
+  }
+
+  QueryBuilder<Password, String, QQueryOperations> nonceProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'nonce');
     });
   }
 

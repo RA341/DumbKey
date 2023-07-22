@@ -12,6 +12,7 @@ class Notes extends TypeBase {
     required super.title,
     required super.dateAdded,
     required super.syncStatus,
+    required super.nonce,
     required this.notes,
   });
 
@@ -21,8 +22,21 @@ class Notes extends TypeBase {
       dataType: TypeBase.getDataType(map[DumbData.dataType] as String),
       syncStatus: TypeBase.getSyncStatus(map[DumbData.syncStatus] as String),
       dateAdded: TypeBase.getDateTime(map[DumbData.dateAdded] as String),
+      nonce: map[DumbData.nonce] as String,
       title: map[DumbData.title] as String,
       notes: map[DumbData.notes] as String,
+    );
+  }
+
+  factory Notes.empty() {
+    return Notes(
+      id: 0,
+      dataType: DataType.notes,
+      nonce: '',
+      title: '',
+      dateAdded: DateTime.now(),
+      syncStatus: SyncStatus.synced,
+      notes: '',
     );
   }
 
@@ -33,6 +47,7 @@ class Notes extends TypeBase {
       dataType: update[DumbData.dataType] != null
           ? TypeBase.getDataType(update[DumbData.dataType] as String)
           : dataType,
+      nonce: update[DumbData.nonce] as String? ?? nonce,
       syncStatus: update[DumbData.syncStatus] != null
           ? TypeBase.getSyncStatus(update[DumbData.syncStatus] as String)
           : syncStatus,

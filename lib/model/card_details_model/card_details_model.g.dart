@@ -48,14 +48,19 @@ const CardDetailsSchema = CollectionSchema(
       name: r'expirationDate',
       type: IsarType.string,
     ),
-    r'syncStatus': PropertySchema(
+    r'nonce': PropertySchema(
       id: 6,
+      name: r'nonce',
+      type: IsarType.string,
+    ),
+    r'syncStatus': PropertySchema(
+      id: 7,
       name: r'syncStatus',
       type: IsarType.byte,
       enumMap: _CardDetailssyncStatusEnumValueMap,
     ),
     r'title': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'title',
       type: IsarType.string,
     )
@@ -84,6 +89,7 @@ int _cardDetailsEstimateSize(
   bytesCount += 3 + object.cardNumber.length * 3;
   bytesCount += 3 + object.cvv.length * 3;
   bytesCount += 3 + object.expirationDate.length * 3;
+  bytesCount += 3 + object.nonce.length * 3;
   bytesCount += 3 + object.title.length * 3;
   return bytesCount;
 }
@@ -100,8 +106,9 @@ void _cardDetailsSerialize(
   writer.writeByte(offsets[3], object.dataType.index);
   writer.writeDateTime(offsets[4], object.dateAdded);
   writer.writeString(offsets[5], object.expirationDate);
-  writer.writeByte(offsets[6], object.syncStatus.index);
-  writer.writeString(offsets[7], object.title);
+  writer.writeString(offsets[6], object.nonce);
+  writer.writeByte(offsets[7], object.syncStatus.index);
+  writer.writeString(offsets[8], object.title);
 }
 
 CardDetails _cardDetailsDeserialize(
@@ -120,10 +127,11 @@ CardDetails _cardDetailsDeserialize(
     dateAdded: reader.readDateTime(offsets[4]),
     expirationDate: reader.readString(offsets[5]),
     id: id,
+    nonce: reader.readString(offsets[6]),
     syncStatus:
-        _CardDetailssyncStatusValueEnumMap[reader.readByteOrNull(offsets[6])] ??
+        _CardDetailssyncStatusValueEnumMap[reader.readByteOrNull(offsets[7])] ??
             SyncStatus.notSynced,
-    title: reader.readString(offsets[7]),
+    title: reader.readString(offsets[8]),
   );
   return object;
 }
@@ -149,10 +157,12 @@ P _cardDetailsDeserializeProp<P>(
     case 5:
       return (reader.readString(offset)) as P;
     case 6:
+      return (reader.readString(offset)) as P;
+    case 7:
       return (_CardDetailssyncStatusValueEnumMap[
               reader.readByteOrNull(offset)] ??
           SyncStatus.notSynced) as P;
-    case 7:
+    case 8:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -976,6 +986,138 @@ extension CardDetailsQueryFilter
     });
   }
 
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> nonceEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
+      nonceGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> nonceLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> nonceBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'nonce',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> nonceStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> nonceEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> nonceContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'nonce',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> nonceMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'nonce',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> nonceIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'nonce',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
+      nonceIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'nonce',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
       syncStatusEqualTo(SyncStatus value) {
     return QueryBuilder.apply(this, (query) {
@@ -1247,6 +1389,18 @@ extension CardDetailsQuerySortBy
     });
   }
 
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortByNonce() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortByNonceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.desc);
+    });
+  }
+
   QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortBySyncStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'syncStatus', Sort.asc);
@@ -1360,6 +1514,18 @@ extension CardDetailsQuerySortThenBy
     });
   }
 
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenByNonce() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenByNonceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nonce', Sort.desc);
+    });
+  }
+
   QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenBySyncStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'syncStatus', Sort.asc);
@@ -1429,6 +1595,13 @@ extension CardDetailsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<CardDetails, CardDetails, QDistinct> distinctByNonce(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'nonce', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<CardDetails, CardDetails, QDistinct> distinctBySyncStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'syncStatus');
@@ -1484,6 +1657,12 @@ extension CardDetailsQueryProperty
   QueryBuilder<CardDetails, String, QQueryOperations> expirationDateProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'expirationDate');
+    });
+  }
+
+  QueryBuilder<CardDetails, String, QQueryOperations> nonceProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'nonce');
     });
   }
 
