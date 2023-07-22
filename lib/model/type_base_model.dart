@@ -1,4 +1,5 @@
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:isar/isar.dart';
 
 ///flutter pub run build_runner build -d
@@ -11,7 +12,7 @@ class TypeBase {
     required this.title,
     required this.dateAdded,
     required this.syncStatus,
-    required this.nonce,
+    this.nonce = '',
   });
 
   factory TypeBase.fromMap(Map<String, dynamic> map) {
@@ -55,6 +56,26 @@ class TypeBase {
       nonce: update[DumbData.nonce] as String? ?? nonce,
       title: (update[DumbData.title] as String?) ?? title,
     );
+  }
+
+  static Map<String, dynamic> defaultMap(DataType type) {
+    final data = <String, dynamic>{};
+    data[DumbData.id] = idGenerator();
+    data[DumbData.dataType] = type.index.toString();
+    data[DumbData.syncStatus] = SyncStatus.synced.index.toString();
+    data[DumbData.dateAdded] = DateTime.now().toIso8601String();
+    data[DumbData.nonce] = '';
+    return data;
+  }
+
+  Map<String, dynamic> defaultUpdateMap() {
+    final data = <String, dynamic>{};
+    data[DumbData.id] = id;
+    data[DumbData.nonce] = nonce;
+    data[DumbData.dataType] = dataType.index.toString();
+    data[DumbData.syncStatus] = null;
+    data[DumbData.dateAdded] = null;
+    return data;
   }
 
   Id id;

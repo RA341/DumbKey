@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
@@ -8,22 +8,59 @@ import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/services/database/local/isar_mixin.dart';
 import 'package:dumbkey/services/database/remote/dart_firestore.dart';
+import 'package:dumbkey/services/encryption_handler.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/logger.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
+
+Map<String, dynamic> cryptMap(
+  Map<String, dynamic> data,
+  Map<String, dynamic> Function(Map<String, dynamic>, {List<String> blackListedKeys}) cryptor,
+) {
+  return cryptor(
+    data,
+    blackListedKeys: [...DumbData.blackListedKeys, ...DumbData.blackListedKeysLocal],
+  );
+}
+
+Map<String, dynamic> cryptValue(
+  Map<String, dynamic> data,
+  String Function(String, Uint8List) cryptor,
+) {
+  assert(
+    data.containsKey(DumbData.nonce),
+    'nonce is missing,$data',
+  );
+  final remote = Map<String, dynamic>.from(data);
+
+  final nonce = base64Decode(remote[DumbData.nonce] as String);
+  // encrypt data that was not encrypted locally and reuse rest of the data
+  for (final key in DumbData.blackListedKeysLocal) {
+    remote[key] = cryptor(remote[key] as String, nonce);
+  }
+  return remote;
+}
 
 class DatabaseHandler with IsarDbMixin {
   DatabaseHandler() {
     firestore = DartFireStore();
+    encryptor = GetIt.I.get<IDataEncryptor>();
     try {
       fireListener ??= _listenToChangesFromFireBase();
-    } on SocketException catch (e) {
-      fireListener?.cancel();
+    } catch (e) {
+      fireListener?.pause();
       logger.e('No connection canceling listener', e);
     }
     _listenToConnectionState();
   }
 
+  late final Stream<List<Notes>> notesStream;
+  late final Stream<List<Password>> passwordStream;
+  late final Stream<List<CardDetails>> cardDetailsStream;
+
+  late final IDataEncryptor encryptor;
   late final DartFireStore firestore;
   final connection = Connectivity();
   StreamSubscription<List<TypeBase>>? fireListener;
@@ -34,22 +71,26 @@ class DatabaseHandler with IsarDbMixin {
   Future<void> createData(TypeBase data) async {
     logger.w('Creating Data', data.toJson());
 
+    final encryptedLocal = cryptMap(data.toJson(), encryptor.encryptMap);
+
     if (isOnline == false) {
-      data.syncStatus = SyncStatus.notSynced;
+      data
+        ..copyWith(encryptedLocal)
+        ..syncStatus = SyncStatus.notSynced;
       await isarCreateOrUpdate(data);
       logger.w('data created offline', data.id);
       return;
     }
 
     try {
-      await firestore.createData(data.toJson());
+      await firestore.createData(cryptValue(encryptedLocal, encryptor.encrypt));
     } catch (e) {
       logger
         ..e('Error adding Data to firebase', e)
         ..d('data to be locally stored', data.id);
       data.syncStatus = SyncStatus.notSynced;
     }
-    await isarCreateOrUpdate(data);
+    await isarCreateOrUpdate(data.copyWith(encryptedLocal));
   }
 
   Future<void> updateData(Map<String, dynamic> updateData, TypeBase updatedModel) async {
@@ -60,23 +101,29 @@ class DatabaseHandler with IsarDbMixin {
       'update data contains null,$updateData',
     );
 
+    final encryptedLocal = cryptMap(updatedModel.toJson(), encryptor.encryptMap);
+
     if (isOnline == false) {
-      updatedModel.syncStatus = SyncStatus.notSynced;
+      updatedModel
+        ..copyWith(encryptedLocal)
+        ..syncStatus = SyncStatus.notSynced;
       await isarCreateOrUpdate(updatedModel);
       logger.w('data updated offline', updatedModel.id);
       return;
     }
 
     try {
-      await firestore.updateData(updateData);
-      logger.i('Updated Data', updateData);
+      final remote = cryptValue(updateData, encryptor.encrypt);
+      await firestore.updateData(remote);
+      logger.i('Updated Data', remote);
     } catch (e) {
       logger.e('Error updating Data to firebase', e);
       updatedModel.syncStatus = SyncStatus.notSynced;
     }
 
-    logger.w('Update Data', updateData);
-    await isarCreateOrUpdate(updatedModel);
+    final encModel = updatedModel.copyWith(encryptedLocal);
+    logger.w('Update Data', encModel);
+    await isarCreateOrUpdate(encModel);
   }
 
   Future<void> deleteData(TypeBase data) async {
@@ -106,13 +153,20 @@ class DatabaseHandler with IsarDbMixin {
     }
   }
 
+  T decryptLocalStream<T>(TypeBase e) {
+    final decrypted = cryptMap(e.toJson(), encryptor.decryptMap);
+    return e.copyWith(decrypted) as T;
+  }
+
   Stream<List<Password>> fetchAllPassKeys() => isarDb.passwords
       .where()
       .filter()
       .not()
       .syncStatusEqualTo(SyncStatus.deleted)
       .build()
-      .watch(fireImmediately: true);
+      .watch(fireImmediately: true)
+      .distinct()
+      .map((event) => event.map((e) => decryptLocalStream<Password>(e)).toList());
 
   Stream<List<Notes>> fetchAllNotes() => isarDb.notes
       .where()
@@ -120,7 +174,9 @@ class DatabaseHandler with IsarDbMixin {
       .not()
       .syncStatusEqualTo(SyncStatus.deleted)
       .build()
-      .watch(fireImmediately: true);
+      .watch(fireImmediately: true)
+      .distinct()
+      .map((event) => event.map((e) => decryptLocalStream<Notes>(e)).toList());
 
   Stream<List<CardDetails>> fetchAllCardDetails() => isarDb.cardDetails
       .where()
@@ -128,7 +184,9 @@ class DatabaseHandler with IsarDbMixin {
       .not()
       .syncStatusEqualTo(SyncStatus.deleted)
       .build()
-      .watch(fireImmediately: true);
+      .watch(fireImmediately: true)
+      .distinct()
+      .map((event) => event.map((e) => decryptLocalStream<CardDetails>(e)).toList());
 
   FutureOr<void> _listenToConnectionState() async {
     connection.onConnectivityChanged.distinct().listen((status) async {
@@ -140,6 +198,7 @@ class DatabaseHandler with IsarDbMixin {
         _listenToDeSyncCardDetails();
         logger.d('Online starting firestore', status);
       } else {
+        fireListener?.pause();
         logger.d('Offline canceling firestore', status);
       }
     });

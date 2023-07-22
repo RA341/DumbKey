@@ -4,6 +4,7 @@ import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
+import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/services/encryption_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
@@ -12,24 +13,16 @@ import 'package:get_it/get_it.dart';
 
 class DartFireStore {
   DartFireStore() {
-    encryptor = GetIt.I.get<IDataEncryptor>();
     database = Firestore.instance;
     uuid = getUuid();
   }
 
   late final String uuid;
   late final Firestore database;
-  late final IDataEncryptor encryptor;
-
-  final blackListedKeys = [DumbData.id, DumbData.nonce];
 
   Future<void> createData(Map<String, dynamic> data) async {
     try {
-      final encrypted = encryptor.encryptMap(data, blackListedKeys: blackListedKeys);
-      await database
-          .collection(uuid)
-          .document((encrypted[DumbData.id] as int).toString())
-          .set(encrypted);
+      await database.collection(uuid).document((data[DumbData.id] as int).toString()).set(data);
     } catch (e) {
       throw Exception('Error creating passkey($data): $e');
     }
@@ -37,11 +30,10 @@ class DartFireStore {
 
   Future<void> updateData(Map<String, dynamic> updateData) async {
     try {
-      final encrypted = encryptor.encryptMap(updateData, blackListedKeys: blackListedKeys);
       await database
           .collection(uuid)
-          .document((encrypted[DumbData.id] as int).toString())
-          .update(encrypted);
+          .document((updateData[DumbData.id] as int).toString())
+          .update(updateData);
     } catch (e) {
       throw Exception('Error updating passkey($updateData): $e');
     }
@@ -55,12 +47,14 @@ class DartFireStore {
     }
   }
 
+  /// this stream will got to local storage
   Stream<List<TypeBase>> fetchAllPassKeys() {
+    final encryptor = GetIt.I.get<IDataEncryptor>();
     return database.collection(uuid).stream.map(
           (docs) => docs.map((doc) {
-            final decrypted = encryptor.decryptMap(doc.map, blackListedKeys: blackListedKeys);
-            final type = TypeBase.getDataType(decrypted[DumbData.dataType] as String);
-            return typeSelector(type, decrypted);
+            final local = cryptValue(doc.map, encryptor.decrypt);
+            final type = TypeBase.getDataType(local[DumbData.dataType] as String);
+            return typeSelector(type, local);
           }).toList(),
         );
   }

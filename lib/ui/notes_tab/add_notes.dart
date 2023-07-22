@@ -2,7 +2,6 @@ import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
-import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -111,11 +110,8 @@ class _AddNotesState extends State<AddNotes> {
   }
 
   Future<void> _createNote() async {
-    final data = retrieveData();
-    data[DumbData.id] = idGenerator();
-    data[DumbData.dataType] = DataType.notes.index.toString();
-    data[DumbData.syncStatus] = SyncStatus.synced.index.toString();
-    data[DumbData.dateAdded] = DateTime.now().toIso8601String();
+    final data = retrieveData()
+      ..addAll(TypeBase.defaultMap(DataType.notes)); // adds default required values for typebase
 
     final newPasskey = Notes.fromMap(data);
 
@@ -131,12 +127,7 @@ class _AddNotesState extends State<AddNotes> {
   }
 
   Future<void> _updateNote() async {
-    final updateData = retrieveData();
-    updateData[DumbData.id] = widget.savedNote!.id;
-    updateData[DumbData.dataType] = null;
-    updateData[DumbData.syncStatus] = null;
-    updateData[DumbData.dateAdded] = null;
-
+    final updateData = retrieveData()..addAll(widget.savedNote!.defaultUpdateMap());
     final updatedNote = widget.savedNote!.copyWith(updateData);
 
     updateData.removeWhere((key, value) => value == null || value == '');

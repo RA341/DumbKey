@@ -8,7 +8,6 @@ import 'package:dumbkey/ui/card_tab/widgets/form_widgets/expiry_input.dart';
 import 'package:dumbkey/ui/card_tab/widgets/form_widgets/mock_card.dart';
 import 'package:dumbkey/ui/shared/title_input.dart';
 import 'package:dumbkey/utils/constants.dart';
-import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -165,13 +164,8 @@ class _AddCardState extends State<AddCard> {
   }
 
   Future<void> addNewCard() async {
-    final data = retrieveData();
-
-    // required fields
-    data[DumbData.id] = idGenerator();
-    data[DumbData.dataType] = DataType.card.index.toString();
-    data[DumbData.syncStatus] = SyncStatus.synced.index.toString();
-    data[DumbData.dateAdded] = DateTime.now().toIso8601String();
+    final data = retrieveData()
+      ..addAll(TypeBase.defaultMap(DataType.card)); // adds default required values for typebase
 
     try {
       await GetIt.I.get<DatabaseHandler>().createData(CardDetails.fromMap(data));
@@ -185,18 +179,13 @@ class _AddCardState extends State<AddCard> {
   }
 
   Future<void> updateCard() async {
-    final updatedData = retrieveData();
+    final updateData = retrieveData()..addAll(widget.savedCard!.defaultUpdateMap());
 
-    // required fields
-    updatedData[DumbData.id] = widget.savedCard!.id;
-    updatedData[DumbData.syncStatus] = widget.savedCard!.syncStatus.index.toString();
-    updatedData[DumbData.dataType] = null;
-
-    final updatedModel = widget.savedCard!.copyWith(updatedData);
-    updatedData.removeWhere((key, value) => value == null || value == '');
+    final updatedModel = widget.savedCard!.copyWith(updateData);
+    updateData.removeWhere((key, value) => value == null || value == '');
 
     try {
-      await GetIt.I.get<DatabaseHandler>().updateData(updatedData, updatedModel);
+      await GetIt.I.get<DatabaseHandler>().updateData(updateData, updatedModel);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

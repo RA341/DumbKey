@@ -33,4 +33,10 @@ class DumbData {
 
   // fields for notes
   static const String notes = 'notes';
+
+  ///keys that are not to be encrypted or decrypted anywhere
+  static const blackListedKeys = [id, nonce];
+
+  ///keys that are not to be encrypted or decrypted locally (helps in searching and syncing)
+  static const blackListedKeysLocal = [syncStatus, dataType, dateAdded];
 }

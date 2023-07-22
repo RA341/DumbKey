@@ -8,7 +8,6 @@ import 'package:dumbkey/ui/passwords_tab/form/fields/password_input.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/username_input.dart';
 import 'package:dumbkey/ui/shared/title_input.dart';
 import 'package:dumbkey/utils/constants.dart';
-import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -180,10 +179,8 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
   }
 
   Future<void> createFunc(Map<String, dynamic> data) async {
-    data[DumbData.id] = idGenerator();
-    data[DumbData.dataType] = DataType.password.index.toString();
-    data[DumbData.syncStatus] = SyncStatus.synced.index.toString();
-    data[DumbData.dateAdded] = DateTime.now().toIso8601String();
+    data.addAll(
+        TypeBase.defaultMap(DataType.password)); // adds default required values for typebase
 
     final newPasskey = Password.fromMap(data);
 
@@ -199,11 +196,7 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
   }
 
   Future<void> updateKeyFunc(Map<String, dynamic> updateData) async {
-    updateData[DumbData.id] = widget.savedKey?.id;
-    updateData[DumbData.syncStatus] = null;
-    updateData[DumbData.dataType] = null;
-    updateData[DumbData.dateAdded] = null;
-
+    updateData.addAll(widget.savedKey!.defaultUpdateMap());
     final updatedPasskey = widget.savedKey!.copyWith(updateData);
 
     updateData.removeWhere((key, value) => value == null || value == '');

@@ -68,8 +68,8 @@ class SodiumEncryptor implements IDataEncryptor {
       outLen: 32,
       password: password.toCharArray(),
       salt: salt,
-      opsLimit: sodium.crypto.pwhash.opsLimitModerate,
-      memLimit: sodium.crypto.pwhash.memLimitModerate,
+      opsLimit: sodium.crypto.pwhash.opsLimitInteractive,
+      memLimit: sodium.crypto.pwhash.memLimitInteractive,
     );
   }
 
