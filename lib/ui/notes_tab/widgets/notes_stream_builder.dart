@@ -1,6 +1,7 @@
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/ui/notes_tab/widgets/notes_list_view.dart';
+import 'package:dumbkey/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -26,6 +27,7 @@ class _NotesStreamBuilderState extends State<NotesStreamBuilder> {
       stream: _notesStream,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
+          logger.e(snapshot.error, [snapshot.stackTrace]);
           return Text(snapshot.error.toString());
         } else if (snapshot.data == null) {
           return const Text('Stream returned is null');
