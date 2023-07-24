@@ -38,7 +38,9 @@ Map<String, dynamic> cryptValue(
   final nonce = base64Decode(remote[DumbData.nonce] as String);
   // encrypt data that was not encrypted locally and reuse rest of the data
   for (final key in DumbData.blackListedKeysLocal) {
-    remote[key] = cryptor(remote[key] as String, nonce);
+    if (remote.containsKey(key)) {
+      remote[key] = cryptor(remote[key] as String, nonce);
+    }
   }
   return remote;
 }
@@ -113,6 +115,10 @@ class DatabaseHandler with IsarDbMixin {
     }
 
     try {
+      // update only changed data
+      for (final key in updateData.keys) {
+        updateData[key] = encryptedLocal[key];
+      }
       final remote = cryptValue(updateData, encryptor.encrypt);
       await firestore.updateData(remote);
       logger.i('Updated Data', remote);
@@ -122,7 +128,7 @@ class DatabaseHandler with IsarDbMixin {
     }
 
     final encModel = updatedModel.copyWith(encryptedLocal);
-    logger.w('Update Data', encModel);
+    logger.w('Update Data', encModel.toJson());
     await isarCreateOrUpdate(encModel);
   }
 
@@ -205,24 +211,27 @@ class DatabaseHandler with IsarDbMixin {
   }
 
   StreamSubscription<List<TypeBase>> _listenToChangesFromFireBase() {
-    return firestore.fetchAllPassKeys().distinct().listen(
+    return firestore.fetchAllData().distinct().listen(
       (documents) async {
         logger.d('firebase listening', documents.length);
         // deletes local data that is not present in remote
         unawaited(
           deleteLocalNotInRemote(documents).then((value) async {
             unawaited(
-              isarCreateOrUpdateAll(
-                documents,
-              ).whenComplete(() => null),
+              isarCreateOrUpdateAll(documents).whenComplete(() => null),
             ); // possible optimization update only changed data
           }),
         );
         // updates local data from remote
       },
       onError: (Object error, StackTrace stackTrace) async {
-        fireListener?.pause();
-        logger.e('firebase paused', error, stackTrace);
+        if (!isOnline) {
+          // pause stream only if device is offline
+          fireListener?.pause();
+          logger.e('firebase paused', error, stackTrace);
+          return;
+        }
+        logger.e('error reading firebase stream', error, stackTrace);
       },
     );
   }
@@ -235,14 +244,14 @@ class DatabaseHandler with IsarDbMixin {
     final allNotes = await isarDb.notes.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
 
     for (final passkey in [...allPassKeys, ...allCards, ...allNotes]) {
-      if (!remoteData.contains(passkey)) {
+      if (remoteData.contains(passkey) == false) {
         await isarDelete(passkey.id, passkey.dataType);
       }
     }
   }
 
   void _listenToDeSyncPasskeys() {
-    isarDb.passwords
+    collectionSwitcher2<Password>()
         .filter()
         .syncStatusEqualTo(SyncStatus.notSynced)
         .or()
@@ -301,7 +310,6 @@ class DatabaseHandler with IsarDbMixin {
     for (final passKey in deSyncData) {
       unawaited(
         connection.checkConnectivity().then((status) {
-          logger.i('current connection for syncing', status);
           if (status != ConnectivityResult.none) {
             if (passKey.syncStatus == SyncStatus.deleted) {
               _deleteDataAsync(passKey);
@@ -318,7 +326,8 @@ class DatabaseHandler with IsarDbMixin {
     logger.i('adding to remote', data.id);
 
     data.syncStatus = SyncStatus.synced;
-    firestore.createData(data.toJson()).then((value) {
+    final remote = cryptValue(data.toJson(), encryptor.encrypt);
+    firestore.createData(remote).then((value) {
       unawaited(
         isarCreateOrUpdate(data).whenComplete(() => logger.i('data added', data.id)),
       );
