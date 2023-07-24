@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dumbkey/services/database/user_data_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sodium_libs/sodium_libs.dart';
@@ -75,31 +76,42 @@ class SodiumEncryptor implements IDataEncryptor {
 
   @override
   String encrypt(String data, Uint8List nonce) {
-    final messageBytes = convertDataToBytes(data);
+    try {
+      final messageBytes = convertDataToBytes(data);
 
-    final encryptedList = sodium.crypto.aead.encrypt(
-      message: messageBytes,
-      nonce: nonce,
-      key: _encryptionKey,
-    );
+      final encryptedList = sodium.crypto.aead.encrypt(
+        message: messageBytes,
+        nonce: nonce,
+        key: _encryptionKey,
+      );
 
-    // convert back to string and encode to base64
-    final str = convertBytesToData(encryptedList);
-    return base64Encode(str.codeUnits);
+      // convert back to string and encode to base64
+      final str = convertBytesToData(encryptedList);
+      logger.d('encrypted data $data');
+      return base64Encode(str.codeUnits);
+    } catch (e) {
+      logger.e('error encrypting data: $data');
+      rethrow;
+    }
   }
 
   @override
   String decrypt(String encryptedData, Uint8List nonce) {
-    // data is stored as base64 encoded string
-    final messageBytes = base64Decode(encryptedData);
+    try {
+      // data is stored as base64 encoded string
+      final messageBytes = base64Decode(encryptedData);
 
-    final decryptedList = sodium.crypto.aead.decrypt(
-      cipherText: messageBytes,
-      nonce: nonce,
-      key: _encryptionKey,
-    ); // convert back to string
-
-    return convertBytesToData(decryptedList);
+      final decryptedList = sodium.crypto.aead.decrypt(
+        cipherText: messageBytes,
+        nonce: nonce,
+        key: _encryptionKey,
+      ); // convert back to string
+      logger.d('decrypted data $encryptedData');
+      return convertBytesToData(decryptedList);
+    } catch (e) {
+      logger.e('error decrypting data: $encryptedData');
+      rethrow;
+    }
   }
 
   @override
@@ -111,6 +123,7 @@ class SodiumEncryptor implements IDataEncryptor {
 
     for (final key in data.keys) {
       if (blackListedKeys.contains(key)) continue;
+
       data[key] = data[key] == null ? data[key] : decrypt(data[key] as String, nonce);
     }
 
@@ -122,7 +135,14 @@ class SodiumEncryptor implements IDataEncryptor {
     Map<String, dynamic> data, {
     List<String> blackListedKeys = const [],
   }) {
-    final nonce = sodium.randombytes.buf(sodium.crypto.aead.nonceBytes);
+    final Uint8List nonce;
+    final tmp = data[DumbData.nonce] as String;
+    if (tmp.isNotEmpty) {
+      nonce = base64Decode(tmp);
+    } else {
+      nonce = sodium.randombytes.buf(sodium.crypto.aead.nonceBytes);
+    }
+
     for (final key in data.keys) {
       if (blackListedKeys.contains(key)) continue;
 
