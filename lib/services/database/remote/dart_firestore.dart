@@ -26,9 +26,9 @@ class DartFireStore {
   Future<void> createData(Map<String, dynamic> data) async {
     try {
       await database.collection(uuid).document((data[DumbData.id] as int).toString()).set(data);
-      logger.i('added data to remote', [updateData]);
+      logger.d('added data to remote', [data]);
     } catch (e) {
-      logger.e('failed to add data to remote', [updateData]);
+      logger.e('failed to add data to remote', [data]);
       throw Exception('Error creating passkey($data): $e');
     }
   }
@@ -39,7 +39,7 @@ class DartFireStore {
           .collection(uuid)
           .document((updateData[DumbData.id] as int).toString())
           .update(updateData);
-      logger.i('updated data to remote', [updateData]);
+      logger.d('updated data to remote', [updateData]);
     } on Exception catch (e) {
       logger.e('failed data to remote', [updateData]);
       throw Exception('Error updating data: $e');
@@ -68,7 +68,7 @@ class DartFireStore {
       return typeSelector(type, local);
     } catch (e) {
       logger.e('error decrypting data', [doc.map]);
-      throw Exception('Error decrypting data: $e');
+      throw Exception('Error decrypting remote: $e');
     }
   }
 

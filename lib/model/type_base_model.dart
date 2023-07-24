@@ -72,7 +72,7 @@ class TypeBase {
     final data = <String, dynamic>{};
     data[DumbData.id] = id;
     data[DumbData.nonce] = nonce;
-    data[DumbData.dataType] = dataType.index.toString();
+    data[DumbData.dataType] = null;
     data[DumbData.syncStatus] = null;
     data[DumbData.dateAdded] = null;
     return data;
