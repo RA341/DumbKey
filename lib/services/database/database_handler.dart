@@ -1,3 +1,5 @@
+// ignore_for_file: cascade_invocations
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -49,12 +51,7 @@ class DatabaseHandler with IsarDbMixin {
   DatabaseHandler() {
     firestore = DartFireStore();
     encryptor = GetIt.I.get<IDataEncryptor>();
-    try {
-      fireListener ??= _listenToChangesFromFireBase();
-    } catch (e) {
-      fireListener?.pause();
-      logger.e('No connection canceling listener', e);
-    }
+    fireListener ??= _listenToChangesFromFireBase();
     _listenToConnectionState();
   }
 
@@ -74,12 +71,11 @@ class DatabaseHandler with IsarDbMixin {
     logger.w('Creating Data', data.toJson());
 
     final encryptedLocal = cryptMap(data.toJson(), encryptor.encryptMap);
+    final enc = data.copyWith(encryptedLocal);
 
     if (isOnline == false) {
-      data
-        ..copyWith(encryptedLocal)
-        ..syncStatus = SyncStatus.notSynced;
-      await isarCreateOrUpdate(data);
+      enc.syncStatus = SyncStatus.notSynced;
+      await isarCreateOrUpdate(enc);
       logger.w('data created offline', data.id);
       return;
     }
@@ -90,9 +86,9 @@ class DatabaseHandler with IsarDbMixin {
       logger
         ..e('Error adding Data to firebase', e)
         ..d('data to be locally stored', data.id);
-      data.syncStatus = SyncStatus.notSynced;
+      enc.syncStatus = SyncStatus.notSynced;
     }
-    await isarCreateOrUpdate(data.copyWith(encryptedLocal));
+    await isarCreateOrUpdate(enc);
   }
 
   Future<void> updateData(Map<String, dynamic> updateData, TypeBase updatedModel) async {
@@ -104,12 +100,11 @@ class DatabaseHandler with IsarDbMixin {
     );
 
     final encryptedLocal = cryptMap(updatedModel.toJson(), encryptor.encryptMap);
+    final encModel = updatedModel.copyWith(encryptedLocal);
 
     if (isOnline == false) {
-      updatedModel
-        ..copyWith(encryptedLocal)
-        ..syncStatus = SyncStatus.notSynced;
-      await isarCreateOrUpdate(updatedModel);
+      encModel.syncStatus = SyncStatus.notSynced;
+      await isarCreateOrUpdate(encModel);
       logger.w('data updated offline', updatedModel.id);
       return;
     }
@@ -124,10 +119,9 @@ class DatabaseHandler with IsarDbMixin {
       logger.i('Updated Data', remote);
     } catch (e) {
       logger.e('Error updating Data to firebase', e);
-      updatedModel.syncStatus = SyncStatus.notSynced;
+      encModel.syncStatus = SyncStatus.notSynced;
     }
 
-    final encModel = updatedModel.copyWith(encryptedLocal);
     logger.w('Update Data', encModel.toJson());
     await isarCreateOrUpdate(encModel);
   }
@@ -327,6 +321,7 @@ class DatabaseHandler with IsarDbMixin {
 
     data.syncStatus = SyncStatus.synced;
     final remote = cryptValue(data.toJson(), encryptor.encrypt);
+
     firestore.createData(remote).then((value) {
       unawaited(
         isarCreateOrUpdate(data).whenComplete(() => logger.i('data added', data.id)),
