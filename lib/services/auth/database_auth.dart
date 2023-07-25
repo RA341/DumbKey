@@ -1,20 +1,11 @@
-import 'package:dumbkey/services/auth/isar_auth_store.dart';
-import 'package:dumbkey/utils/constants.dart';
 import 'package:firedart/auth/user_gateway.dart';
 import 'package:firedart/firedart.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DatabaseAuth {
   DatabaseAuth() {
-    final apiKey = dotenv.get(DumbData.firebaseApiKey, fallback: DumbData.noKey);
-
-    if (apiKey == DumbData.noKey) throw Exception('No API key found');
-
-    _tokenStore = AuthLocalStore();
-    _auth = FirebaseAuth(apiKey, _tokenStore);
+    _auth = FirebaseAuth.instance;
   }
 
-  late final AuthLocalStore _tokenStore;
   late final FirebaseAuth _auth;
 
   Future<void> signIn(String email, String password) async {
