@@ -4,12 +4,11 @@ import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/settings_model/settings.dart';
 import 'package:dumbkey/services/auth/database_auth.dart';
 import 'package:dumbkey/services/database/local/secure_storage_handler.dart';
+import 'package:dumbkey/services/firebase.dart';
 import 'package:dumbkey/services/settings_handler.dart';
 import 'package:dumbkey/ui/auth_page/auth_controller.dart';
 import 'package:dumbkey/ui/auth_page/auth_page.dart';
 import 'package:dumbkey/ui/home.dart';
-import 'package:dumbkey/utils/constants.dart';
-import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
@@ -26,30 +25,21 @@ Future<void> initServices() async {
   GetIt.I
     ..registerLazySingleton(SecureStorageHandler.new)
     ..registerLazySingleton<Isar>(() => isar)
-    ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar))
-    ..registerSingleton<DatabaseAuth>(DatabaseAuth());
+    ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar));
+
+  // TODO(initFirebaseServices) : depends on settings handler refactor it so it does not
+  initFirebaseServices();
+  GetIt.I.registerSingleton<DatabaseAuth>(DatabaseAuth());
 
   if (GetIt.I.get<DatabaseAuth>().isSignedIn) {
     await initDatabaseHandlers(signup: false);
   }
 }
 
-void initFirebase() {
-  final projId = dotenv.get(
-    DumbData.firebaseProjID,
-    fallback: DumbData.noKey,
-  );
-
-  if (projId == DumbData.noKey) throw Exception('Firebase project ID not found in .env file');
-
-  Firestore.initialize(projId);
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load();
-  initFirebase();
   await initServices();
   runApp(const MyApp());
 }

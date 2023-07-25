@@ -15,7 +15,7 @@ import 'package:get_it/get_it.dart';
 
 class DartFireStore {
   DartFireStore() {
-    database = Firestore.instance;
+    database = GetIt.I.get<Firestore>();
     uuid = getUuid();
   }
 
