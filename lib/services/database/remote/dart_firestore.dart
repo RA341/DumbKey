@@ -23,9 +23,12 @@ class DartFireStore {
   late final String uuid;
   late final Firestore database;
 
+  CollectionReference get getDataCollection =>
+      database.collection(DumbData.userCollection).document(uuid).collection(DumbData.userData);
+
   Future<void> createData(Map<String, dynamic> data) async {
     try {
-      await database.collection(uuid).document((data[DumbData.id] as int).toString()).set(data);
+      await getDataCollection.document((data[DumbData.id] as int).toString()).set(data);
       logger.d('added data to remote', [data]);
     } catch (e) {
       logger.e('failed to add data to remote', [data]);
@@ -35,8 +38,7 @@ class DartFireStore {
 
   Future<void> updateData(Map<String, dynamic> updateData) async {
     try {
-      await database
-          .collection(uuid)
+      await getDataCollection
           .document((updateData[DumbData.id] as int).toString())
           .update(updateData);
       logger.d('updated data to remote', [updateData]);
@@ -48,7 +50,7 @@ class DartFireStore {
 
   Future<void> deleteData(int docId) async {
     try {
-      await database.collection(uuid).document(docId.toString()).delete();
+      await getDataCollection.document(docId.toString()).delete();
       logger.i('deleted from remote', [docId]);
     } catch (e) {
       logger.e('error deleting from remote', [docId]);
@@ -58,7 +60,7 @@ class DartFireStore {
 
   /// this stream will got to local storage
   Stream<List<TypeBase>> fetchAllData() {
-    return database.collection(uuid).stream.map((docs) => docs.map(decryptForLocal).toList());
+    return getDataCollection.stream.map((docs) => docs.map(decryptForLocal).toList());
   }
 
   TypeBase decryptForLocal(Document doc) {

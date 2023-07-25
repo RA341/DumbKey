@@ -39,4 +39,6 @@ class DumbData {
 
   ///keys that are not to be encrypted or decrypted locally (helps in searching and syncing)
   static const blackListedKeysLocal = [syncStatus, dataType, dateAdded];
+
+  static const userData = 'data';
 }
