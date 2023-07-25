@@ -9,7 +9,6 @@ import 'package:dumbkey/ui/auth_page/auth_controller.dart';
 import 'package:dumbkey/ui/auth_page/auth_page.dart';
 import 'package:dumbkey/ui/home.dart';
 import 'package:dumbkey/utils/constants.dart';
-import 'package:dumbkey/utils/helper_func.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

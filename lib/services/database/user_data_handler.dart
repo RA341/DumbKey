@@ -1,6 +1,7 @@
 import 'package:dumbkey/services/auth/isar_auth_store.dart';
 import 'package:dumbkey/services/database/local/secure_storage_handler.dart';
 import 'package:dumbkey/services/database/remote/remote_user_data.dart';
+import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
 import 'package:dumbkey/utils/logger.dart';
 import 'package:get_it/get_it.dart';
@@ -15,10 +16,26 @@ class UserDataHandler {
   late final ISecureStorage local;
 
   Future<void> retrieveDataFromRemote() async {
-    final uuid = getUuid();
-    final data = await remote.getUserData(docId: uuid);
-    for (final entry in data.entries) {
-      await local.writeData(key: entry.key, value: entry.value.toString());
+    try {
+      final data = await remote.getUserData(docId: getUuid());
+      for (final entry in data.entries) {
+        await local.writeData(key: entry.key, value: entry.value.toString());
+      }
+    } on Exception catch (e) {
+      logger.e('Error retrieving user data from remote', e);
+      rethrow;
+    }
+  }
+
+  Future<void> syncUserData() async {
+    final userDataKeys = [DumbData.salt];
+    for (final key in userDataKeys) {
+      final keyExists = await local.checkKey(key);
+      if (keyExists == false) {
+        logger.i('key $key not found locally, retrieving from remote');
+        await retrieveDataFromRemote();
+        break;
+      }
     }
   }
 

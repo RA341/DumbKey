@@ -32,7 +32,7 @@ Future<void> initDatabaseHandlers({required bool signup}) async {
   if (GetIt.I.isRegistered<UserDataHandler>() == false) {
     GetIt.I.registerSingleton(UserDataHandler());
   }
-  if (signup == false) await GetIt.I.get<UserDataHandler>().retrieveDataFromRemote();
+  if (signup == false) await GetIt.I.get<UserDataHandler>().syncUserData();
 
   if (GetIt.I.isRegistered<IDataEncryptor>() == false) {
     GetIt.I.registerSingleton<IDataEncryptor>(await SodiumEncryptor.create(signup: signup));
