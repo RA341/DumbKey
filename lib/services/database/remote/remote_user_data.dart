@@ -1,5 +1,6 @@
 import 'package:dumbkey/utils/constants.dart';
 import 'package:firedart/firedart.dart';
+import 'package:get_it/get_it.dart';
 
 abstract class IRemoteUserDb {
   Future<void> addUserData({required String docId, required Map<String, dynamic> data});
@@ -15,7 +16,7 @@ abstract class IRemoteUserDb {
 
 class FirebaseUser implements IRemoteUserDb {
   FirebaseUser() {
-    userDb = Firestore.instance;
+    userDb = GetIt.I.get<Firestore>();
   }
 
   late final Firestore userDb;

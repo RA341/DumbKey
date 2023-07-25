@@ -8,6 +8,7 @@ import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/services/database/local/secure_storage_handler.dart';
 import 'package:dumbkey/services/database/user_data_handler.dart';
 import 'package:dumbkey/services/encryption_handler.dart';
+import 'package:dumbkey/services/firebase.dart';
 import 'package:dumbkey/services/settings_handler.dart';
 import 'package:dumbkey/ui/auth_page/auth_page.dart';
 import 'package:dumbkey/ui/home.dart';
@@ -15,6 +16,7 @@ import 'package:dumbkey/ui/shared/util.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/logger.dart';
 import 'package:firedart/auth/exceptions.dart';
+import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
@@ -29,6 +31,10 @@ Future<void> cleanUpOnSignOut() async {
 }
 
 Future<void> initDatabaseHandlers({required bool signup}) async {
+  if (GetIt.I.isRegistered<Firestore>() == false) {
+    initFireStore();
+  }
+
   if (GetIt.I.isRegistered<UserDataHandler>() == false) {
     GetIt.I.registerSingleton(UserDataHandler());
   }
@@ -47,6 +53,7 @@ void removeDatabaseHandlers() {
   if (GetIt.I.isRegistered<UserDataHandler>()) GetIt.I.unregister<UserDataHandler>();
   if (GetIt.I.isRegistered<IDataEncryptor>()) GetIt.I.unregister<IDataEncryptor>();
   if (GetIt.I.isRegistered<DatabaseHandler>()) GetIt.I.unregister<DatabaseHandler>();
+  if (GetIt.I.isRegistered<Firestore>()) GetIt.I.unregister<Firestore>();
 }
 
 Future<void> deleteLocalCache() async {
