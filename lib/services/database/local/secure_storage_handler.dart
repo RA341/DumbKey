@@ -7,6 +7,8 @@ abstract class ISecureStorage {
   Future<void> deleteData({required String key});
 
   Future<String?> readData({required String key});
+
+  Future<bool> checkKey(String key);
 }
 
 class SecureStorageHandler implements ISecureStorage {
@@ -29,6 +31,9 @@ class SecureStorageHandler implements ISecureStorage {
 
   @override
   Future<String?> readData({required String key}) => _secureDb.read(key: key);
+
+  @override
+  Future<bool> checkKey(String key) async => _secureDb.containsKey(key: key);
 
   @override
   Future<void> writeData({required String key, required String? value}) async {
