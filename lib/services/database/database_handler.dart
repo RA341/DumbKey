@@ -1,7 +1,6 @@
 // ignore_for_file: cascade_invocations
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
@@ -11,41 +10,10 @@ import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/services/database/local/isar_mixin.dart';
 import 'package:dumbkey/services/database/remote/dart_firestore.dart';
 import 'package:dumbkey/services/encryption_handler.dart';
-import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
-
-Map<String, dynamic> cryptMap(
-  Map<String, dynamic> data,
-  Map<String, dynamic> Function(Map<String, dynamic>, {List<String> blackListedKeys}) cryptor,
-) {
-  return cryptor(
-    data,
-    blackListedKeys: [...DumbData.blackListedKeys, ...DumbData.blackListedKeysLocal],
-  );
-}
-
-Map<String, dynamic> cryptValue(
-  Map<String, dynamic> data,
-  String Function(String, Uint8List) cryptor,
-) {
-  assert(
-    data.containsKey(DumbData.nonce),
-    'nonce is missing,$data',
-  );
-  final remote = Map<String, dynamic>.from(data);
-
-  final nonce = base64Decode(remote[DumbData.nonce] as String);
-  // encrypt data that was not encrypted locally and reuse rest of the data
-  for (final key in DumbData.blackListedKeysLocal) {
-    if (remote.containsKey(key)) {
-      remote[key] = cryptor(remote[key] as String, nonce);
-    }
-  }
-  return remote;
-}
 
 class DatabaseHandler with IsarDbMixin {
   DatabaseHandler() {
@@ -61,12 +29,15 @@ class DatabaseHandler with IsarDbMixin {
 
   late final IDataEncryptor encryptor;
   late final DartFireStore firestore;
-  final connection = Connectivity();
   StreamSubscription<List<TypeBase>>? fireListener;
+
+  // conncection stuff
+  final connection = Connectivity();
   ValueNotifier<ConnectivityResult> connectionState = ValueNotifier(ConnectivityResult.none);
 
   bool get isOnline => connectionState.value != ConnectivityResult.none;
 
+  // crud functions
   Future<void> createData(TypeBase data) async {
     logger.w('Creating Data', data.toJson());
 
@@ -129,12 +100,6 @@ class DatabaseHandler with IsarDbMixin {
   Future<void> deleteData(TypeBase data) async {
     logger.w('Deleting Data', data.toJson());
 
-    if (data.syncStatus == SyncStatus.notSynced) {
-      await isarDelete(data.id, data.dataType);
-      logger.i('Deleting local only data', data.id);
-      return;
-    }
-
     if (isOnline == false) {
       data.syncStatus = SyncStatus.deleted; // temp status until device gets online and deletes
       await isarCreateOrUpdate(data);
@@ -143,7 +108,6 @@ class DatabaseHandler with IsarDbMixin {
 
     try {
       await firestore.deleteData(data.id);
-      await isarDelete(data.id, data.dataType); // let the fire store complete first
       logger.i('Deleted Data', data.id);
     } catch (e) {
       logger.e('Error deleting Data from firebase', e);
@@ -151,63 +115,15 @@ class DatabaseHandler with IsarDbMixin {
       await isarCreateOrUpdate(data);
       return;
     }
+
+    await isarDelete(data.id, data.dataType);
   }
 
-  T decryptLocalStream<T>(TypeBase e) {
-    final decrypted = cryptMap(e.toJson(), encryptor.decryptMap);
-    return e.copyWith(decrypted) as T;
-  }
-
-  Stream<List<Password>> fetchAllPassKeys() => isarDb.passwords
-      .where()
-      .filter()
-      .not()
-      .syncStatusEqualTo(SyncStatus.deleted)
-      .build()
-      .watch(fireImmediately: true)
-      .distinct()
-      .map((event) => event.map((e) => decryptLocalStream<Password>(e)).toList());
-
-  Stream<List<Notes>> fetchAllNotes() => isarDb.notes
-      .where()
-      .filter()
-      .not()
-      .syncStatusEqualTo(SyncStatus.deleted)
-      .build()
-      .watch(fireImmediately: true)
-      .distinct()
-      .map((event) => event.map((e) => decryptLocalStream<Notes>(e)).toList());
-
-  Stream<List<CardDetails>> fetchAllCardDetails() => isarDb.cardDetails
-      .where()
-      .filter()
-      .not()
-      .syncStatusEqualTo(SyncStatus.deleted)
-      .build()
-      .watch(fireImmediately: true)
-      .distinct()
-      .map((event) => event.map((e) => decryptLocalStream<CardDetails>(e)).toList());
-
-  FutureOr<void> _listenToConnectionState() async {
-    connection.onConnectivityChanged.distinct().listen((status) async {
-      connectionState.value = status;
-      if (status != ConnectivityResult.none) {
-        fireListener?.resume();
-        _listenToDeSyncPasskeys();
-        _listenToDeSyncNotes();
-        _listenToDeSyncCardDetails();
-        logger.d('Online starting firestore', status);
-      } else {
-        fireListener?.pause();
-        logger.d('Offline canceling firestore', status);
-      }
-    });
-  }
-
+  // sync functions
   StreamSubscription<List<TypeBase>> _listenToChangesFromFireBase() {
     return firestore.fetchAllData().distinct().listen(
       (documents) async {
-        logger.d('firebase listening', documents.length);
+        logger.wtf('firebase listening', documents.length);
         // deletes local data that is not present in remote
         unawaited(
           deleteLocalNotInRemote(documents).then((value) async {
@@ -244,8 +160,26 @@ class DatabaseHandler with IsarDbMixin {
     }
   }
 
+  // sync de-synchronized data functions
+
+  FutureOr<void> _listenToConnectionState() async {
+    connection.onConnectivityChanged.distinct().listen((status) async {
+      connectionState.value = status;
+      if (status != ConnectivityResult.none) {
+        fireListener?.resume();
+        _listenToDeSyncPasskeys();
+        _listenToDeSyncNotes();
+        _listenToDeSyncCardDetails();
+        logger.d('Online starting firestore', status);
+      } else {
+        fireListener?.pause();
+        logger.d('Offline canceling firestore', status);
+      }
+    });
+  }
+
   void _listenToDeSyncPasskeys() {
-    collectionSwitcher2<Password>()
+    isarDb.passwords
         .filter()
         .syncStatusEqualTo(SyncStatus.notSynced)
         .or()
@@ -258,7 +192,7 @@ class DatabaseHandler with IsarDbMixin {
         _syncOfflineItems(dataList);
       }
     }).onError((error, stackTrace) {
-      logger.e('Error fetching desync items', error, stackTrace);
+      logger.e('Error fetching desync passkeys', error, stackTrace);
     });
   }
 
@@ -276,7 +210,7 @@ class DatabaseHandler with IsarDbMixin {
         _syncOfflineItems(dataList);
       }
     }).onError((error, stackTrace) {
-      logger.e('Error fetching desync items', error, stackTrace);
+      logger.e('Error fetching desync card dets', error, stackTrace);
     });
   }
 
@@ -294,7 +228,7 @@ class DatabaseHandler with IsarDbMixin {
         _syncOfflineItems(dataList);
       }
     }).onError((error, stackTrace) {
-      logger.e('Error fetching desync items', error, stackTrace);
+      logger.e('Error fetching desync notes', error, stackTrace);
     });
   }
 

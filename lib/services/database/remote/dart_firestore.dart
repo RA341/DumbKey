@@ -58,9 +58,8 @@ class DartFireStore {
   }
 
   /// this stream will got to local storage
-  Stream<List<TypeBase>> fetchAllData() {
-    return getDataCollection.stream.distinct().map((docs) => docs.map(decryptForLocal).toList());
-  }
+  Stream<List<TypeBase>> fetchAllData() =>
+      getDataCollection.stream.distinct().map((docs) => docs.map(decryptForLocal).toList());
 
   TypeBase decryptForLocal(Document doc) {
     try {
