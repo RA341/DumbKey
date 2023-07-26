@@ -23,10 +23,6 @@ class DatabaseHandler with IsarDbMixin {
     _listenToConnectionState();
   }
 
-  late final Stream<List<Notes>> notesStream;
-  late final Stream<List<Password>> passwordStream;
-  late final Stream<List<CardDetails>> cardDetailsStream;
-
   late final IDataEncryptor encryptor;
   late final DartFireStore firestore;
   StreamSubscription<List<TypeBase>>? fireListener;
@@ -121,18 +117,19 @@ class DatabaseHandler with IsarDbMixin {
 
   // sync functions
   StreamSubscription<List<TypeBase>> _listenToChangesFromFireBase() {
-    return firestore.fetchAllData().distinct().listen(
+    return firestore.fetchAllData().listen(
       (documents) async {
-        logger.wtf('firebase listening', documents.length);
+        logger.i('firebase listening', documents.length);
         // deletes local data that is not present in remote
+        /// known bug here on initial listen it will delete and rewrite all data
+        /// after that it will work fine
         unawaited(
           deleteLocalNotInRemote(documents).then((value) async {
             unawaited(
               isarCreateOrUpdateAll(documents).whenComplete(() => null),
-            ); // possible optimization update only changed data
+            );
           }),
-        );
-        // updates local data from remote
+        ); // updates local data from remote
       },
       onError: (Object error, StackTrace stackTrace) async {
         if (!isOnline) {
@@ -236,17 +233,13 @@ class DatabaseHandler with IsarDbMixin {
     if (deSyncData.isEmpty) return;
     logger.i('No of items to be synced', deSyncData);
     for (final passKey in deSyncData) {
-      unawaited(
-        connection.checkConnectivity().then((status) {
-          if (status != ConnectivityResult.none) {
-            if (passKey.syncStatus == SyncStatus.deleted) {
-              _deleteDataAsync(passKey);
-            } else {
-              _createDataAsync(passKey);
-            }
-          }
-        }),
-      );
+      if (isOnline) {
+        if (passKey.syncStatus == SyncStatus.deleted) {
+          _deleteDataAsync(passKey);
+        } else {
+          _createDataAsync(passKey);
+        }
+      }
     }
   }
 
