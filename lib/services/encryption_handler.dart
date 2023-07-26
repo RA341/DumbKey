@@ -7,6 +7,36 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sodium_libs/sodium_libs.dart';
 
+Map<String, dynamic> cryptMap(
+  Map<String, dynamic> data,
+  Map<String, dynamic> Function(Map<String, dynamic>, {List<String> blackListedKeys}) cryptor,
+) {
+  return cryptor(
+    data,
+    blackListedKeys: [...DumbData.blackListedKeys, ...DumbData.blackListedKeysLocal],
+  );
+}
+
+Map<String, dynamic> cryptValue(
+  Map<String, dynamic> data,
+  String Function(String, Uint8List) cryptor,
+) {
+  assert(
+    data.containsKey(DumbData.nonce),
+    'nonce is missing,$data',
+  );
+  final remote = Map<String, dynamic>.from(data);
+
+  final nonce = base64Decode(remote[DumbData.nonce] as String);
+  // encrypt data that was not encrypted locally and reuse rest of the data
+  for (final key in DumbData.blackListedKeysLocal) {
+    if (remote.containsKey(key)) {
+      remote[key] = cryptor(remote[key] as String, nonce);
+    }
+  }
+  return remote;
+}
+
 abstract class IDataEncryptor {
   String encrypt(String data, Uint8List nonce);
 
