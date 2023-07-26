@@ -1,4 +1,4 @@
-import 'package:dumbkey/ui/auth_page/auth_controller.dart';
+import 'package:dumbkey/controllers/auth_controller.dart';
 import 'package:dumbkey/ui/auth_page/signup_page.dart';
 import 'package:flutter/material.dart';
 

@@ -1,3 +1,4 @@
+import 'package:dumbkey/controllers/auth_controller.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
@@ -6,7 +7,6 @@ import 'package:dumbkey/services/auth/database_auth.dart';
 import 'package:dumbkey/services/database/local/secure_storage_handler.dart';
 import 'package:dumbkey/services/firebase.dart';
 import 'package:dumbkey/services/settings_handler.dart';
-import 'package:dumbkey/ui/auth_page/auth_controller.dart';
 import 'package:dumbkey/ui/auth_page/auth_page.dart';
 import 'package:dumbkey/ui/home.dart';
 import 'package:flutter/material.dart';

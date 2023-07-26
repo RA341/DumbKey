@@ -1,4 +1,4 @@
-import 'package:dumbkey/ui/auth_page/auth_controller.dart';
+import 'package:dumbkey/controllers/auth_controller.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/email_input.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/password_input.dart';
 import 'package:flutter/material.dart';
