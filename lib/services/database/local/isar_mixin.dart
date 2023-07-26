@@ -21,9 +21,9 @@ mixin IsarDbMixin {
       await isarDb.writeTxn(() async {
         await collectionSwitcher(data.dataType).put(data);
       });
-      logger.d('added data to local', [data]);
+      // logger.d('added data to local', [data]);
     } catch (e) {
-      logger.e('error adding data to local', [data]);
+      logger.e('error deleting data from local ${data.id}');
       throw Exception('Error adding data to local: $e');
     }
   }
@@ -33,9 +33,9 @@ mixin IsarDbMixin {
       await isarDb.writeTxn(() async {
         await collectionSwitcher(type).delete(id);
       });
-      logger.d('deleted from local', [id]);
+      // logger.d('deleted from local', [id]);
     } catch (e) {
-      logger.e('error deleting data from local', [id]);
+      logger.e('error deleting data from local $id');
       throw Exception('Error deleting data from local: $e');
     }
   }
