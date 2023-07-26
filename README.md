@@ -15,10 +15,13 @@ w@w.app
 - On login and signup ui freezes because of pwhash memlimit and opslimit
 
 ## Features
-~~- add authentication~~
-- add syncing user data with firestore
-- break up database handler into smaller parts
-- look into putting offline syncing into a isolate
+- [ ] lazy load isar results
+- [ ] encrypted index and searching
+- [ ] fix caching issues in database handler
+- [ ] break up database handler into smaller parts
+- [ ] look into putting offline syncing into a isolate
+- [x] add syncing user data with firestore
+- [x]  add authentication
 
 ## Quality of life
 - centralize the CRUD operation for the ui
