@@ -2,6 +2,7 @@ import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
+import 'package:dumbkey/services/encryption_handler.dart';
 import 'package:dumbkey/utils/logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
@@ -62,4 +63,39 @@ mixin IsarDbMixin {
         throw Exception('Invalid type');
     }
   }
+
+  T decryptLocalStream<T>(TypeBase e) {
+    final decrypted = cryptMap(e.toJson(), GetIt.I.get<IDataEncryptor>().decryptMap);
+    return e.copyWith(decrypted) as T;
+  }
+
+  Stream<List<Password>> fetchAllPassKeys() => isarDb.passwords
+      .where()
+      .filter()
+      .not()
+      .syncStatusEqualTo(SyncStatus.deleted)
+      .build()
+      .watch(fireImmediately: true)
+      .distinct()
+      .map((event) => event.map((e) => decryptLocalStream<Password>(e)).toList());
+
+  Stream<List<Notes>> fetchAllNotes() => isarDb.notes
+      .where()
+      .filter()
+      .not()
+      .syncStatusEqualTo(SyncStatus.deleted)
+      .build()
+      .watch(fireImmediately: true)
+      .distinct()
+      .map((event) => event.map((e) => decryptLocalStream<Notes>(e)).toList());
+
+  Stream<List<CardDetails>> fetchAllCardDetails() => isarDb.cardDetails
+      .where()
+      .filter()
+      .not()
+      .syncStatusEqualTo(SyncStatus.deleted)
+      .build()
+      .watch(fireImmediately: true)
+      .distinct()
+      .map((event) => event.map((e) => decryptLocalStream<CardDetails>(e)).toList());
 }
