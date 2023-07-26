@@ -56,13 +56,10 @@ abstract class IDataEncryptor {
 class SodiumEncryptor implements IDataEncryptor {
   SodiumEncryptor.init({
     required this.sodium,
-    required String key,
-    required Uint8List salt,
-  }) {
-    _encryptionKey = generateSecretKey(key, salt);
-  }
+    required this.encryptionKey,
+  });
 
-  late final SecureKey _encryptionKey;
+  late final SecureKey encryptionKey;
   late final Sodium sodium;
 
   static Future<SodiumEncryptor> create({required bool signup}) async {
@@ -71,6 +68,7 @@ class SodiumEncryptor implements IDataEncryptor {
 
     final Uint8List salt;
     final sodium = await SodiumInit.init();
+
     if (signup) {
       // generate new salt and save it
       salt = sodium.randombytes.buf(16);
@@ -84,7 +82,20 @@ class SodiumEncryptor implements IDataEncryptor {
       salt = Uint8List.fromList(base64Decode(g));
     }
 
-    return SodiumEncryptor.init(sodium: sodium, key: encKey, salt: salt);
+    // run in separate isolate as it is cpu intensive
+    final key = await sodium.runIsolated<SecureKey>((sodium, secureKeys, keyPairs) {
+      final password = encKey;
+      final key = sodium.crypto.pwhash.call(
+        outLen: 32,
+        password: password.toCharArray(),
+        salt: salt,
+        opsLimit: sodium.crypto.pwhash.opsLimitSensitive,
+        memLimit: sodium.crypto.pwhash.memLimitSensitive,
+      );
+      return key;
+    });
+
+    return SodiumEncryptor.init(sodium: sodium, encryptionKey: key);
   }
 
   /// convert data to bytes for sodium encryption
@@ -92,17 +103,6 @@ class SodiumEncryptor implements IDataEncryptor {
   Uint8List convertDataToBytes(String data) => Uint8List.fromList(data.codeUnits);
 
   String convertBytesToData(Uint8List messageBytes) => String.fromCharCodes(messageBytes);
-
-  /// On login and signup ui freezes here because of pwhash memlimit and opslimit
-  SecureKey generateSecretKey(String password, Uint8List salt) {
-    return sodium.crypto.pwhash.call(
-      outLen: 32,
-      password: password.toCharArray(),
-      salt: salt,
-      opsLimit: sodium.crypto.pwhash.opsLimitInteractive,
-      memLimit: sodium.crypto.pwhash.memLimitInteractive,
-    );
-  }
 
   @override
   String encrypt(String data, Uint8List nonce) {
@@ -112,7 +112,7 @@ class SodiumEncryptor implements IDataEncryptor {
       final encryptedList = sodium.crypto.aead.encrypt(
         message: messageBytes,
         nonce: nonce,
-        key: _encryptionKey,
+        key: encryptionKey,
       );
 
       // convert back to string and encode to base64
@@ -134,7 +134,7 @@ class SodiumEncryptor implements IDataEncryptor {
       final decryptedList = sodium.crypto.aead.decrypt(
         cipherText: messageBytes,
         nonce: nonce,
-        key: _encryptionKey,
+        key: encryptionKey,
       ); // convert back to string
       logger.d('decrypted data $encryptedData');
       return convertBytesToData(decryptedList);
