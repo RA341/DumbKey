@@ -4,7 +4,6 @@ import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
-import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/services/encryption_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
@@ -60,7 +59,7 @@ class DartFireStore {
 
   /// this stream will got to local storage
   Stream<List<TypeBase>> fetchAllData() {
-    return getDataCollection.stream.map((docs) => docs.map(decryptForLocal).toList());
+    return getDataCollection.stream.distinct().map((docs) => docs.map(decryptForLocal).toList());
   }
 
   TypeBase decryptForLocal(Document doc) {
