@@ -1,9 +1,7 @@
+import 'package:dumbkey/controllers/data_crud_controller.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
-import 'package:dumbkey/model/type_base_model.dart';
-import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
 class AddNotes extends StatefulWidget {
   const AddNotes({super.key, this.savedNote});
@@ -19,7 +17,7 @@ class _AddNotesState extends State<AddNotes> {
   late TextEditingController _contentsController;
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
-
+  final controller = DataCrudController();
   @override
   void initState() {
     super.initState();
@@ -66,24 +64,27 @@ class _AddNotesState extends State<AddNotes> {
                 ),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () async {
-                  if (isLoading) return;
-                  setState(() => isLoading = true);
-
-                  if (_formKey.currentState!.validate()) {
-                    if (widget.savedNote != null) {
-                      await _updateNote();
-                    } else {
-                      await _createNote();
-                    }
-                  }
-
-                  setState(() => isLoading = false);
-                  if (!context.mounted) return;
-                  Navigator.of(context).pop();
+              ValueListenableBuilder(
+                valueListenable: controller.isLoading,
+                builder: (context, value, child) {
+                  return ElevatedButton(
+                    onPressed: value
+                        ? () {}
+                        : () async {
+                            await controller.submitFunction<Notes>(
+                              context: context,
+                              formKey: _formKey,
+                              convertToMapFunc: retrieveData,
+                              savedKey: widget.savedNote,
+                            );
+                          },
+                    child: value
+                        ? const CircularProgressIndicator()
+                        : widget.savedNote == null
+                            ? const Text('Submit')
+                            : const Text('Update'),
+                  );
                 },
-                child: isLoading ? const CircularProgressIndicator() : const Text('Submit'),
               ),
             ],
           ),
@@ -107,39 +108,5 @@ class _AddNotesState extends State<AddNotes> {
     }
 
     return data;
-  }
-
-  Future<void> _createNote() async {
-    final data = retrieveData()
-      ..addAll(TypeBase.defaultMap(DataType.notes)); // adds default required values for typebase
-
-    final newPasskey = Notes.fromMap(data);
-
-    try {
-      await GetIt.I<DatabaseHandler>().createData(newPasskey);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Could not add $e'),
-        ),
-      );
-    }
-  }
-
-  Future<void> _updateNote() async {
-    final updateData = retrieveData()..addAll(widget.savedNote!.defaultUpdateMap());
-    final updatedNote = widget.savedNote!.copyWith(updateData);
-
-    updateData.removeWhere((key, value) => value == null || value == '');
-
-    try {
-      await GetIt.I<DatabaseHandler>().updateData(updateData, updatedNote);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Could not update $e'),
-        ),
-      );
-    }
   }
 }

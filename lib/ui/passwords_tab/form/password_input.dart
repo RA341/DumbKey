@@ -1,6 +1,5 @@
+import 'package:dumbkey/controllers/data_crud_controller.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
-import 'package:dumbkey/model/type_base_model.dart';
-import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/category_input.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/description_input.dart';
 import 'package:dumbkey/ui/passwords_tab/form/fields/email_input.dart';
@@ -9,7 +8,6 @@ import 'package:dumbkey/ui/passwords_tab/form/fields/username_input.dart';
 import 'package:dumbkey/ui/shared/title_input.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
 class AddUpdatePassword extends StatefulWidget {
   const AddUpdatePassword({
@@ -39,7 +37,7 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
   final FocusNode _descriptionFocusNode = FocusNode();
   final FocusNode _categoryFocusNode = FocusNode();
 
-  bool isLoading = false;
+  final controller = DataCrudController();
 
   @override
   void initState() {
@@ -121,25 +119,27 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
                   currFocusNode: _categoryFocusNode,
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (isLoading) return;
-                    setState(() => isLoading = true);
-
-                    if (_formKey.currentState!.validate()) {
-                      final data = convertInputToList();
-                      if (widget.savedKey != null) {
-                        await updateKeyFunc(data);
-                      } else {
-                        await createFunc(data);
-                      }
-                    }
-
-                    setState(() => isLoading = false);
-                    if (!context.mounted) return;
-                    Navigator.of(context).pop();
+                ValueListenableBuilder(
+                  valueListenable: controller.isLoading,
+                  builder: (context, value, child) {
+                    return ElevatedButton(
+                      onPressed: value
+                          ? () {}
+                          : () async {
+                              await controller.submitFunction<Password>(
+                                context: context,
+                                formKey: _formKey,
+                                convertToMapFunc: convertInputToList,
+                                savedKey: widget.savedKey,
+                              );
+                            },
+                      child: value
+                          ? const CircularProgressIndicator()
+                          : widget.savedKey == null
+                              ? const Text('Submit')
+                              : const Text('Update'),
+                    );
                   },
-                  child: isLoading ? const CircularProgressIndicator() : const Text('Submit'),
                 ),
               ],
             ),
@@ -176,39 +176,5 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
     }
 
     return data;
-  }
-
-  Future<void> createFunc(Map<String, dynamic> data) async {
-    data.addAll(
-        TypeBase.defaultMap(DataType.password)); // adds default required values for typebase
-
-    final newPasskey = Password.fromMap(data);
-
-    try {
-      await GetIt.I<DatabaseHandler>().createData(newPasskey);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Could not add $e'),
-        ),
-      );
-    }
-  }
-
-  Future<void> updateKeyFunc(Map<String, dynamic> updateData) async {
-    updateData.addAll(widget.savedKey!.defaultUpdateMap());
-    final updatedPasskey = widget.savedKey!.copyWith(updateData);
-
-    updateData.removeWhere((key, value) => value == null || value == '');
-
-    try {
-      await GetIt.I<DatabaseHandler>().updateData(updateData, updatedPasskey);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Could not update $e'),
-        ),
-      );
-    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:dumbkey/controllers/data_crud_controller.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/services/database/database_handler.dart';
@@ -31,7 +32,7 @@ class _AddCardState extends State<AddCard> {
   late TextEditingController titleController;
 
   final _formKey = GlobalKey<FormState>();
-
+  final controller = DataCrudController();
   bool isLoading = false;
 
   @override
@@ -110,24 +111,27 @@ class _AddCardState extends State<AddCard> {
                 ],
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () async {
-                  if (isLoading) return;
-                  setState(() => isLoading = true);
-
-                  if (_formKey.currentState!.validate()) {
-                    if (widget.savedCard == null) {
-                      await addNewCard();
-                    } else {
-                      await updateCard();
-                    }
-                  }
-
-                  setState(() => isLoading = false);
-                  if (!context.mounted) return;
-                  Navigator.of(context).pop();
+              ValueListenableBuilder(
+                valueListenable: controller.isLoading,
+                builder: (context, value, child) {
+                  return ElevatedButton(
+                    onPressed: value
+                        ? () {}
+                        : () async {
+                            await controller.submitFunction<CardDetails>(
+                              context: context,
+                              formKey: _formKey,
+                              convertToMapFunc: retrieveData,
+                              savedKey: widget.savedCard,
+                            );
+                          },
+                    child: value
+                        ? const CircularProgressIndicator()
+                        : widget.savedCard == null
+                            ? const Text('Submit')
+                            : const Text('Update'),
+                  );
                 },
-                child: isLoading ? const CircularProgressIndicator() : const Text('Submit'),
               ),
             ],
           ),
