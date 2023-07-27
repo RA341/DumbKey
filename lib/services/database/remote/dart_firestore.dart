@@ -27,7 +27,7 @@ class DartFireStore {
 
   Future<void> createData(Map<String, dynamic> data) async {
     try {
-      await getDataCollection.document((data[DumbData.id] as int).toString()).set(data);
+      await getDataCollection.document((data[DumbData.id] as int).toString()).create(data);
       logger.d('added data to remote', [data]);
     } catch (e) {
       logger.e('failed to add data to remote', [data]);
@@ -50,7 +50,7 @@ class DartFireStore {
   Future<void> deleteData(int docId) async {
     try {
       await getDataCollection.document(docId.toString()).delete();
-      logger.i('deleted from remote', [docId]);
+      logger.wtf('deleted from remote', docId);
     } catch (e) {
       logger.e('error deleting from remote', [docId]);
       throw Exception('Error deleting data: $e');
@@ -60,8 +60,6 @@ class DartFireStore {
   /// this stream will got to local storage
   Stream<List<TypeBase>> fetchAllData() =>
       getDataCollection.stream.map((docs) => docs.map(decryptForLocal).toList());
-
-  Stream<int> checkForDataChanges() => getDataCollection.stream.map((event) => event.length);
 
   Future<List<TypeBase>> getAllDocs() async {
     final docs = await getDataCollection.get();

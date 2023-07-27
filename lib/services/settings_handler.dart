@@ -1,5 +1,4 @@
 import 'package:dumbkey/model/settings_model/settings.dart';
-import 'package:dumbkey/utils/logger.dart';
 import 'package:isar/isar.dart';
 
 class SettingsHandler {
@@ -33,7 +32,7 @@ class SettingsHandler {
   }
 
   void refreshSettings() {
-    logger.i('Old settings', settingsInst.idToken.toString());
+    // logger.d('Old settings', settingsInst.idToken.toString());
     isarInst.writeTxnSync(() {
       isarInst.settings.putSync(settingsInst);
     });
@@ -41,7 +40,7 @@ class SettingsHandler {
     settingsInst = isarInst.settings.getSync(0)!;
 
     // settingsInst = tmp!;
-    logger.i('New settings', settingsInst.idToken.toString());
+    // logger.d('New settings', settingsInst.idToken.toString());
   }
 
   void addCategory(String category) {

@@ -172,15 +172,6 @@ class DatabaseHandler with IsarDbMixin {
     final allNotes =
         await isarDb.notes.filter().syncStatusEqualTo(SyncStatus.synced).idProperty().findAll();
     await _checkForId(allNotes, remoteId, DataType.notes);
-
-    // for (final passkey in [...allPassKeys, ...allCards, ...allNotes]) {
-    //   if (remoteId.contains(passkey) == false) {
-    //     final datatype =
-    //         await isarDb.passwords.where().idEqualTo(passkey).dataTypeProperty().findFirst();
-    //
-    //     await isarDelete(passkey, datatype!);
-    //   }
-    // }
   }
 
   // sync de-synchronized data functions
