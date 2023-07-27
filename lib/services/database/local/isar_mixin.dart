@@ -31,9 +31,10 @@ mixin IsarDbMixin {
   Future<void> isarDelete(int id, DataType type) async {
     try {
       await isarDb.writeTxn(() async {
-        await collectionSwitcher(type).delete(id);
+        final as = await collectionSwitcher(type).delete(id);
+        logger.d('deleted from local $id: $as');
       });
-      // logger.d('deleted from local', [id]);
+      //
     } catch (e) {
       logger.e('error deleting data from local $id');
       throw Exception('Error deleting data from local: $e');

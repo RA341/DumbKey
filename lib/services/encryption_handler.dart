@@ -64,7 +64,7 @@ class SodiumEncryptor implements IDataEncryptor {
 
   static Future<SodiumEncryptor> create({required bool signup}) async {
     final encKey = await GetIt.I.get<UserDataHandler>().getUserData(key: DumbData.encryptionKey);
-    if (encKey == null) throw Exception('No key found');
+    if (encKey == null) throw Exception('No  key found');
 
     final Uint8List salt;
     final sodium = await SodiumInit.init();
@@ -117,7 +117,6 @@ class SodiumEncryptor implements IDataEncryptor {
 
       // convert back to string and encode to base64
       final str = convertBytesToData(encryptedList);
-      logger.d('encrypted data $data');
       return base64Encode(str.codeUnits);
     } catch (e) {
       logger.e('error encrypting data: $data');
@@ -136,7 +135,6 @@ class SodiumEncryptor implements IDataEncryptor {
         nonce: nonce,
         key: encryptionKey,
       ); // convert back to string
-      logger.d('decrypted data $encryptedData');
       return convertBytesToData(decryptedList);
     } catch (e) {
       logger.e('error decrypting data: $encryptedData');

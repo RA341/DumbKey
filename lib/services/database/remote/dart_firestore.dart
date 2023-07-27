@@ -40,9 +40,9 @@ class DartFireStore {
       await getDataCollection
           .document((updateData[DumbData.id] as int).toString())
           .update(updateData);
-      logger.d('updated data to remote', [updateData]);
+      logger.d('updated data to remote $updateData');
     } on Exception catch (e) {
-      logger.e('failed data to remote', [updateData]);
+      logger.e('failed data to remote $updateData');
       throw Exception('Error updating data: $e');
     }
   }
@@ -59,7 +59,14 @@ class DartFireStore {
 
   /// this stream will got to local storage
   Stream<List<TypeBase>> fetchAllData() =>
-      getDataCollection.stream.distinct().map((docs) => docs.map(decryptForLocal).toList());
+      getDataCollection.stream.map((docs) => docs.map(decryptForLocal).toList());
+
+  Stream<int> checkForDataChanges() => getDataCollection.stream.map((event) => event.length);
+
+  Future<List<TypeBase>> getAllDocs() async {
+    final docs = await getDataCollection.get();
+    return docs.map(decryptForLocal).toList();
+  }
 
   TypeBase decryptForLocal(Document doc) {
     try {
