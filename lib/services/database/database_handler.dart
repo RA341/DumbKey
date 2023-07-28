@@ -11,7 +11,6 @@ import 'package:dumbkey/services/database/local/isar_mixin.dart';
 import 'package:dumbkey/services/database/remote/dart_firestore.dart';
 import 'package:dumbkey/services/encryption_handler.dart';
 import 'package:dumbkey/utils/logger.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 
@@ -20,18 +19,24 @@ class DatabaseHandler with IsarDbMixin {
     firestore = DartFireStore();
     encryptor = GetIt.I.get<IDataEncryptor>();
     fireListener = _listenToChangesFromFireBase();
-    _listenToConnectionState();
+    connectivityListener = _listenToConnectionState();
   }
 
   late final IDataEncryptor encryptor;
   late final DartFireStore firestore;
   late final StreamSubscription<List<TypeBase>> fireListener;
+  late final StreamSubscription<ConnectivityResult> connectivityListener;
 
   // conncection stuff
-  final connection = Connectivity();
-  ValueNotifier<ConnectivityResult> connectionState = ValueNotifier(ConnectivityResult.none);
+  ConnectivityResult connectionState = ConnectivityResult.none;
 
-  bool get isOnline => connectionState.value != ConnectivityResult.none;
+  /// bug here on logout and then login again osOnline is always false
+  bool get isOnline => connectionState != ConnectivityResult.none;
+
+  Future<void> dispose() async {
+    await fireListener.cancel();
+    await connectivityListener.cancel();
+  }
 
   // crud functions
   Future<void> createData(TypeBase data) async {
@@ -119,18 +124,20 @@ class DatabaseHandler with IsarDbMixin {
   StreamSubscription<List<TypeBase>> _listenToChangesFromFireBase() {
     return firestore.fetchAllData().listen(
       (documents) async {
-        logger.i('firebase listening', documents.length);
-        // deletes local data that is not present in remote
+        logger.wtf('firebase listening', documents.length);
+
         /// known bug here on initial listen as firebase needs to accumulate data
         /// it will delete and rewrite all local data
         /// after that it will work fine
+        // deletes local data that is not present in remote
         unawaited(
           deleteLocalNotInRemote(documents).then((value) async {
+            // updates local data from remote
             unawaited(
               isarCreateOrUpdateAll(documents).whenComplete(() => null),
             );
           }),
-        ); // updates local data from remote
+        );
       },
       onError: (Object error, StackTrace stackTrace) async {
         if (!isOnline) {
@@ -176,21 +183,27 @@ class DatabaseHandler with IsarDbMixin {
 
   // sync de-synchronized data functions
 
-  FutureOr<void> _listenToConnectionState() async {
-    connection.onConnectivityChanged.distinct().listen((status) async {
-      connectionState.value = status;
-      if (isOnline) {
-        fireListener.resume();
-        logger.wtf(fireListener.isPaused);
-        _listenToDeSyncPasskeys();
-        _listenToDeSyncNotes();
-        _listenToDeSyncCardDetails();
-        logger.d('Online starting firestore', status);
-      } else {
-        fireListener.pause();
-        logger.d('Offline canceling firestore', status);
-      }
-    });
+  StreamSubscription<ConnectivityResult> _listenToConnectionState() {
+    return Connectivity().onConnectivityChanged.distinct().listen(
+          (status) async {
+            logger.wtf('starting connection listener');
+            connectionState = status;
+            if (isOnline) {
+              fireListener.resume();
+              _listenToDeSyncPasskeys();
+              _listenToDeSyncNotes();
+              _listenToDeSyncCardDetails();
+              logger.d('Online starting firestore', status);
+            } else {
+              fireListener.pause();
+              logger.d('Offline canceling firestore', status);
+            }
+          },
+          cancelOnError: true,
+          onError: (error, StackTrace stackTrace) {
+            logger.e('Error listening to connection', error, stackTrace);
+          },
+        );
   }
 
   void _listenToDeSyncPasskeys() {

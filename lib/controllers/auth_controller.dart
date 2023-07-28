@@ -52,7 +52,9 @@ Future<void> initDatabaseHandlers({required bool signup}) async {
 void removeDatabaseHandlers() {
   if (GetIt.I.isRegistered<UserDataHandler>()) GetIt.I.unregister<UserDataHandler>();
   if (GetIt.I.isRegistered<IDataEncryptor>()) GetIt.I.unregister<IDataEncryptor>();
-  if (GetIt.I.isRegistered<DatabaseHandler>()) GetIt.I.unregister<DatabaseHandler>();
+  if (GetIt.I.isRegistered<DatabaseHandler>()) {
+    GetIt.I.unregister<DatabaseHandler>(disposingFunction: (db) => db.dispose());
+  }
   if (GetIt.I.isRegistered<Firestore>()) GetIt.I.unregister<Firestore>();
 }
 
