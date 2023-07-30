@@ -40,7 +40,7 @@ class DatabaseHandler with IsarDbMixin {
 
   // crud functions
   Future<void> createData(TypeBase data) async {
-    logger.w('Creating Data', data.toJson());
+    logger.w('Creating Data ${data.id}');
 
     final encryptedLocal = cryptMap(data.toJson(), encryptor.encryptMap);
     final enc = data.copyWith(encryptedLocal);
@@ -48,7 +48,7 @@ class DatabaseHandler with IsarDbMixin {
     if (isOnline == false) {
       enc.syncStatus = SyncStatus.notSynced;
       await isarCreateOrUpdate(enc);
-      logger.w('data created offline', data.id);
+      logger.w('data created offline ${data.id}');
       return;
     }
 
@@ -57,7 +57,7 @@ class DatabaseHandler with IsarDbMixin {
     } catch (e) {
       logger
         ..e('Error adding Data to firebase', e)
-        ..d('data to be locally stored', data.id);
+        ..d('data to be locally stored ${data.id}');
       enc.syncStatus = SyncStatus.notSynced;
     }
     await isarCreateOrUpdate(enc);
@@ -94,12 +94,11 @@ class DatabaseHandler with IsarDbMixin {
       encModel.syncStatus = SyncStatus.notSynced;
     }
 
-    logger.w('Update Data', encModel.toJson());
     await isarCreateOrUpdate(encModel);
   }
 
   Future<void> deleteData(TypeBase data) async {
-    logger.w('Deleting Data', data.toJson());
+    logger.w('Deleting Data ${data.id}');
 
     if (isOnline == false) {
       data.syncStatus = SyncStatus.deleted; // temp status until device gets online and deletes
@@ -109,7 +108,7 @@ class DatabaseHandler with IsarDbMixin {
 
     try {
       await firestore.deleteData(data.id);
-      logger.i('Deleted Data', data.id);
+      logger.i('Deleted Data ${data.id}');
     } catch (e) {
       logger.e('Error deleting Data from firebase', e);
       data.syncStatus = SyncStatus.deleted; // temp status until device gets online and deletes
@@ -124,7 +123,7 @@ class DatabaseHandler with IsarDbMixin {
   StreamSubscription<List<TypeBase>> _listenToChangesFromFireBase() {
     return firestore.fetchAllData().listen(
       (documents) async {
-        logger.wtf('firebase listening', documents.length);
+        logger.wtf('documents:${documents.length}');
 
         /// known bug here on initial listen as firebase needs to accumulate data
         /// it will delete and rewrite all local data
@@ -146,10 +145,9 @@ class DatabaseHandler with IsarDbMixin {
           logger.e('firebase paused', error, stackTrace);
           return;
         }
-        logger.e('error reading firebase stream', error, stackTrace);
       },
       onDone: () {
-        logger.v('firebase done');
+        logger.d('firebase done');
       },
     );
   }
@@ -193,13 +191,14 @@ class DatabaseHandler with IsarDbMixin {
               _listenToDeSyncPasskeys();
               _listenToDeSyncNotes();
               _listenToDeSyncCardDetails();
-              logger.d('Online starting firestore', status);
+              logger.d('Online listening', status);
             } else {
               fireListener.pause();
-              logger.d('Offline canceling firestore', status);
+              logger.d('Offline pausing', status);
             }
           },
           cancelOnError: true,
+          // ignore: inference_failure_on_untyped_parameter
           onError: (error, StackTrace stackTrace) {
             logger.e('Error listening to connection', error, stackTrace);
           },
@@ -262,7 +261,6 @@ class DatabaseHandler with IsarDbMixin {
 
   void _syncOfflineItems(List<TypeBase> deSyncData) {
     if (deSyncData.isEmpty) return;
-    logger.i('No of items to be synced', deSyncData);
     for (final passKey in deSyncData) {
       if (isOnline) {
         if (passKey.syncStatus == SyncStatus.deleted) {
@@ -275,32 +273,32 @@ class DatabaseHandler with IsarDbMixin {
   }
 
   void _createDataAsync(TypeBase data) {
-    logger.i('adding to remote', data.id);
+    logger.i('adding to remote ${data.id}');
 
     data.syncStatus = SyncStatus.synced;
     final remote = cryptValue(data.toJson(), encryptor.encrypt);
 
     firestore.createData(remote).then((value) {
       unawaited(
-        isarCreateOrUpdate(data).whenComplete(() => logger.i('data added', data.id)),
+        isarCreateOrUpdate(data).whenComplete(() => logger.i('data added ${data.id}')),
       );
     }).onError((error, stackTrace) {
       logger
         ..e('Error adding offline Data to firebase', [error, stackTrace])
-        ..d('data not updated', data.id);
+        ..d('data not updated ${data.id}');
     });
   }
 
   void _deleteDataAsync(TypeBase data) {
-    logger.i('deleting from remote', data.id);
+    logger.i('deleting from remote ${data.id}');
     firestore.deleteData(data.id).then((value) {
       unawaited(
-        isarDelete(data.id, data.dataType).whenComplete(() => logger.i('data removed', data.id)),
+        isarDelete(data.id, data.dataType).whenComplete(() => logger.i('data removed ${data.id}')),
       );
     }).onError((error, stackTrace) {
       logger
         ..e('Error deleting from remote', [error, stackTrace])
-        ..d('data not deleted', data.id);
+        ..d('data not deleted ${data.id}');
     });
   }
 }

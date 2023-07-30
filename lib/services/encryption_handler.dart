@@ -85,11 +85,14 @@ class SodiumEncryptor implements IDataEncryptor {
     // run in separate isolate as it is cpu intensive
     final key = await sodium.runIsolated<SecureKey>((sodium, secureKeys, keyPairs) {
       final password = encKey;
+      // ignore: deprecated_member_use
       final key = sodium.crypto.pwhash.call(
         outLen: 32,
         password: password.toCharArray(),
         salt: salt,
+        // ignore: deprecated_member_use
         opsLimit: sodium.crypto.pwhash.opsLimitSensitive,
+        // ignore: deprecated_member_use
         memLimit: sodium.crypto.pwhash.memLimitSensitive,
       );
       return key;

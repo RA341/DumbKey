@@ -1,4 +1,3 @@
-import 'package:dumbkey/utils/logger.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 abstract class ISecureStorage {
@@ -38,9 +37,6 @@ class SecureStorageHandler implements ISecureStorage {
   @override
   Future<void> writeData({required String key, required String? value}) async {
     await _secureDb.write(key: key, value: value);
-
-    final data = await _secureDb.read(key: key);
-
-    logger.wtf('writeData: $data');
+    // logger.v('writing: $data');
   }
 }

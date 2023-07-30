@@ -28,10 +28,10 @@ class DartFireStore {
   Future<void> createData(Map<String, dynamic> data) async {
     try {
       await getDataCollection.document((data[DumbData.id] as int).toString()).create(data);
-      logger.d('added data to remote', [data]);
+      logger.i('added data to remote ${data[DumbData.id]}');
     } catch (e) {
-      logger.e('failed to add data to remote', [data]);
-      throw Exception('Error creating passkey($data): $e');
+      logger.e('failed to add data to remote ${data[DumbData.id]}');
+      rethrow;
     }
   }
 
@@ -40,20 +40,20 @@ class DartFireStore {
       await getDataCollection
           .document((updateData[DumbData.id] as int).toString())
           .update(updateData);
-      logger.d('updated data to remote $updateData');
-    } on Exception catch (e) {
-      logger.e('failed data to remote $updateData');
-      throw Exception('Error updating data: $e');
+      logger.i('updated data to remote ${updateData[DumbData.id]}');
+    } catch (e) {
+      logger.e('failed data to remote ${updateData[DumbData.id]}');
+      rethrow;
     }
   }
 
   Future<void> deleteData(int docId) async {
     try {
       await getDataCollection.document(docId.toString()).delete();
-      logger.wtf('deleted from remote', docId);
+      logger.i('deleted from remote $docId');
     } catch (e) {
-      logger.e('error deleting from remote', [docId]);
-      throw Exception('Error deleting data: $e');
+      logger.e('error deleting from remote $docId');
+      rethrow;
     }
   }
 
@@ -72,7 +72,7 @@ class DartFireStore {
       final type = TypeBase.getDataType(local[DumbData.dataType] as String);
       return typeSelector(type, local);
     } catch (e) {
-      logger.e('error decrypting data', [doc.map]);
+      logger.e('error decrypting data ${doc.map}');
       throw Exception('Error decrypting remote: $e');
     }
   }

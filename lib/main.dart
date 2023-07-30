@@ -27,7 +27,6 @@ Future<void> initServices() async {
     ..registerLazySingleton<Isar>(() => isar)
     ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar));
 
-  // TODO(initFirebaseServices) : depends on settings handler refactor it so it does not
   initFirebaseServices();
   GetIt.I.registerSingleton<DatabaseAuth>(DatabaseAuth());
 
@@ -73,20 +72,5 @@ class MyApp extends StatelessWidget {
         child: GetIt.I.get<DatabaseAuth>().isSignedIn ? const HomePage() : const LoginScreen(),
       ),
     );
-  }
-}
-
-class Test extends StatelessWidget {
-  const Test({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('appbarTitle'),
-        ),
-        body: ElevatedButton(
-            onPressed: () async => await AuthController.inst.signOut(context),
-            child: Text('log out')));
   }
 }
