@@ -101,7 +101,7 @@ Notes _notesDeserialize(
         DataType.card,
     dateAdded: reader.readDateTime(offsets[1]),
     id: id,
-    nonce: reader.readString(offsets[2]),
+    nonce: reader.readStringOrNull(offsets[2]) ?? '',
     notes: reader.readString(offsets[3]),
     syncStatus:
         _NotessyncStatusValueEnumMap[reader.readByteOrNull(offsets[4])] ??
@@ -124,7 +124,7 @@ P _notesDeserializeProp<P>(
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
@@ -166,9 +166,7 @@ List<IsarLinkBase<dynamic>> _notesGetLinks(Notes object) {
   return [];
 }
 
-void _notesAttach(IsarCollection<dynamic> col, Id id, Notes object) {
-  object.id = id;
-}
+void _notesAttach(IsarCollection<dynamic> col, Id id, Notes object) {}
 
 extension NotesQueryWhereSort on QueryBuilder<Notes, Notes, QWhere> {
   QueryBuilder<Notes, Notes, QAfterWhere> anyId() {

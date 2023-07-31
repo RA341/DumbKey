@@ -49,7 +49,7 @@ class DataCrudController {
     TypeBase prevData,
   ) async {
     updateData.addAll(prevData.defaultUpdateMap());
-    final updatedPasskey = prevData.copyWith(updateData);
+    final updatedPasskey = prevData.copyWithFromMap(updateData);
 
     updateData.removeWhere((key, value) => value == null || value == '');
 

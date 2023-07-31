@@ -6,7 +6,7 @@ part 'password_model.g.dart';
 
 @collection
 class Password extends TypeBase {
-  Password({
+  const Password({
     required super.id,
     required super.dataType,
     required super.title,
@@ -48,7 +48,67 @@ class Password extends TypeBase {
   }
 
   @override
-  Password copyWith(Map<String, dynamic> update) {
+  Password copyWith({
+    int? id,
+    DataType? dataType,
+    String? title,
+    DateTime? dateAdded,
+    SyncStatus? syncStatus,
+    String? nonce,
+    String? email,
+    String? username,
+    String? password,
+    String? description,
+    String? category,
+  }) {
+    return Password(
+      id: id ?? this.id,
+      dataType: dataType ?? this.dataType,
+      title: title ?? this.title,
+      dateAdded: dateAdded ?? this.dateAdded,
+      syncStatus: syncStatus ?? this.syncStatus,
+      nonce: nonce ?? this.nonce,
+      email: email ?? this.email,
+      username: username ?? this.username,
+      password: password ?? this.password,
+      description: description ?? this.description,
+      category: category ?? this.category,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Password &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          dataType == other.dataType &&
+          title == other.title &&
+          dateAdded == other.dateAdded &&
+          syncStatus == other.syncStatus &&
+          nonce == other.nonce &&
+          email == other.email &&
+          username == other.username &&
+          password == other.password &&
+          description == other.description &&
+          category == other.category;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      dataType.hashCode ^
+      title.hashCode ^
+      dateAdded.hashCode ^
+      syncStatus.hashCode ^
+      nonce.hashCode ^
+      email.hashCode ^
+      username.hashCode ^
+      password.hashCode ^
+      description.hashCode ^
+      category.hashCode;
+
+  @override
+  Password copyWithFromMap(Map<String, dynamic> update) {
     return Password(
       id: update[DumbData.id] as int? ?? id,
       dataType: update[DumbData.dataType] != null
@@ -81,9 +141,9 @@ class Password extends TypeBase {
     return data;
   }
 
-  String? email;
-  String? username;
-  String? password;
-  String? description;
-  String? category;
+  final String? email;
+  final String? username;
+  final String? password;
+  final String? description;
+  final String? category;
 }

@@ -6,7 +6,7 @@ part 'card_details_model.g.dart';
 
 @collection
 class CardDetails extends TypeBase {
-  CardDetails({
+  const CardDetails({
     required super.id,
     required super.dataType,
     required super.title,
@@ -50,7 +50,7 @@ class CardDetails extends TypeBase {
   }
 
   @override
-  CardDetails copyWith(Map<String, dynamic> update) {
+  CardDetails copyWithFromMap(Map<String, dynamic> update) {
     return CardDetails(
       nonce: update[DumbData.nonce] as String? ?? nonce,
       id: (update[DumbData.id] as int?) ?? id,
@@ -81,8 +81,64 @@ class CardDetails extends TypeBase {
     return data;
   }
 
-  String cardNumber;
-  String cardHolderName;
-  String expirationDate;
-  String cvv;
+  @override
+  CardDetails copyWith({
+    int? id,
+    DataType? dataType,
+    String? title,
+    DateTime? dateAdded,
+    SyncStatus? syncStatus,
+    String? nonce,
+    String? cardNumber,
+    String? cardHolderName,
+    String? expirationDate,
+    String? cvv,
+  }) {
+    return CardDetails(
+      id: id ?? this.id,
+      dataType: dataType ?? this.dataType,
+      title: title ?? this.title,
+      dateAdded: dateAdded ?? this.dateAdded,
+      syncStatus: syncStatus ?? this.syncStatus,
+      nonce: nonce ?? this.nonce,
+      cardNumber: cardNumber ?? this.cardNumber,
+      cardHolderName: cardHolderName ?? this.cardHolderName,
+      expirationDate: expirationDate ?? this.expirationDate,
+      cvv: cvv ?? this.cvv,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CardDetails &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          dataType == other.dataType &&
+          title == other.title &&
+          dateAdded == other.dateAdded &&
+          syncStatus == other.syncStatus &&
+          nonce == other.nonce &&
+          cardNumber == other.cardNumber &&
+          cardHolderName == other.cardHolderName &&
+          expirationDate == other.expirationDate &&
+          cvv == other.cvv;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      dataType.hashCode ^
+      title.hashCode ^
+      dateAdded.hashCode ^
+      syncStatus.hashCode ^
+      nonce.hashCode ^
+      cardNumber.hashCode ^
+      cardHolderName.hashCode ^
+      expirationDate.hashCode ^
+      cvv.hashCode;
+
+  final String cardNumber;
+  final String cardHolderName;
+  final String expirationDate;
+  final String cvv;
 }

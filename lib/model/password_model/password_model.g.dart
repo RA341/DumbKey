@@ -158,7 +158,7 @@ Password _passwordDeserialize(
     description: reader.readStringOrNull(offsets[3]),
     email: reader.readStringOrNull(offsets[4]),
     id: id,
-    nonce: reader.readString(offsets[5]),
+    nonce: reader.readStringOrNull(offsets[5]) ?? '',
     password: reader.readStringOrNull(offsets[6]),
     syncStatus:
         _PasswordsyncStatusValueEnumMap[reader.readByteOrNull(offsets[7])] ??
@@ -188,7 +188,7 @@ P _passwordDeserializeProp<P>(
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 6:
       return (reader.readStringOrNull(offset)) as P;
     case 7:
@@ -232,9 +232,7 @@ List<IsarLinkBase<dynamic>> _passwordGetLinks(Password object) {
   return [];
 }
 
-void _passwordAttach(IsarCollection<dynamic> col, Id id, Password object) {
-  object.id = id;
-}
+void _passwordAttach(IsarCollection<dynamic> col, Id id, Password object) {}
 
 extension PasswordQueryWhereSort on QueryBuilder<Password, Password, QWhere> {
   QueryBuilder<Password, Password, QAfterWhere> anyId() {

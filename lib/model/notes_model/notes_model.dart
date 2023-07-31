@@ -6,7 +6,7 @@ part 'notes_model.g.dart';
 
 @collection
 class Notes extends TypeBase {
-  Notes({
+  const Notes({
     required super.id,
     required super.dataType,
     required super.title,
@@ -41,7 +41,51 @@ class Notes extends TypeBase {
   }
 
   @override
-  Notes copyWith(Map<String, dynamic> update) {
+  Notes copyWith({
+    int? id,
+    DataType? dataType,
+    String? title,
+    DateTime? dateAdded,
+    SyncStatus? syncStatus,
+    String? nonce,
+    String? notes,
+  }) {
+    return Notes(
+      id: id ?? this.id,
+      dataType: dataType ?? this.dataType,
+      title: title ?? this.title,
+      dateAdded: dateAdded ?? this.dateAdded,
+      syncStatus: syncStatus ?? this.syncStatus,
+      nonce: nonce ?? this.nonce,
+      notes: notes ?? this.notes,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Notes &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          dataType == other.dataType &&
+          title == other.title &&
+          dateAdded == other.dateAdded &&
+          syncStatus == other.syncStatus &&
+          nonce == other.nonce &&
+          notes == other.notes;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      dataType.hashCode ^
+      title.hashCode ^
+      dateAdded.hashCode ^
+      syncStatus.hashCode ^
+      nonce.hashCode ^
+      notes.hashCode;
+
+  @override
+  Notes copyWithFromMap(Map<String, dynamic> update) {
     return Notes(
       id: update[DumbData.id] as int? ?? id,
       dataType: update[DumbData.dataType] != null
@@ -66,5 +110,5 @@ class Notes extends TypeBase {
     return data;
   }
 
-  String notes;
+  final String notes;
 }

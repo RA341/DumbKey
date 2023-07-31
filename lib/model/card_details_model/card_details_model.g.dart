@@ -48,19 +48,24 @@ const CardDetailsSchema = CollectionSchema(
       name: r'expirationDate',
       type: IsarType.string,
     ),
-    r'nonce': PropertySchema(
+    r'hashCode': PropertySchema(
       id: 6,
+      name: r'hashCode',
+      type: IsarType.long,
+    ),
+    r'nonce': PropertySchema(
+      id: 7,
       name: r'nonce',
       type: IsarType.string,
     ),
     r'syncStatus': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'syncStatus',
       type: IsarType.byte,
       enumMap: _CardDetailssyncStatusEnumValueMap,
     ),
     r'title': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'title',
       type: IsarType.string,
     )
@@ -106,9 +111,10 @@ void _cardDetailsSerialize(
   writer.writeByte(offsets[3], object.dataType.index);
   writer.writeDateTime(offsets[4], object.dateAdded);
   writer.writeString(offsets[5], object.expirationDate);
-  writer.writeString(offsets[6], object.nonce);
-  writer.writeByte(offsets[7], object.syncStatus.index);
-  writer.writeString(offsets[8], object.title);
+  writer.writeLong(offsets[6], object.hashCode);
+  writer.writeString(offsets[7], object.nonce);
+  writer.writeByte(offsets[8], object.syncStatus.index);
+  writer.writeString(offsets[9], object.title);
 }
 
 CardDetails _cardDetailsDeserialize(
@@ -127,11 +133,11 @@ CardDetails _cardDetailsDeserialize(
     dateAdded: reader.readDateTime(offsets[4]),
     expirationDate: reader.readString(offsets[5]),
     id: id,
-    nonce: reader.readString(offsets[6]),
+    nonce: reader.readStringOrNull(offsets[7]) ?? '',
     syncStatus:
-        _CardDetailssyncStatusValueEnumMap[reader.readByteOrNull(offsets[7])] ??
+        _CardDetailssyncStatusValueEnumMap[reader.readByteOrNull(offsets[8])] ??
             SyncStatus.notSynced,
-    title: reader.readString(offsets[8]),
+    title: reader.readString(offsets[9]),
   );
   return object;
 }
@@ -157,12 +163,14 @@ P _cardDetailsDeserializeProp<P>(
     case 5:
       return (reader.readString(offset)) as P;
     case 6:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 7:
+      return (reader.readStringOrNull(offset) ?? '') as P;
+    case 8:
       return (_CardDetailssyncStatusValueEnumMap[
               reader.readByteOrNull(offset)] ??
           SyncStatus.notSynced) as P;
-    case 8:
+    case 9:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -199,9 +207,7 @@ List<IsarLinkBase<dynamic>> _cardDetailsGetLinks(CardDetails object) {
 }
 
 void _cardDetailsAttach(
-    IsarCollection<dynamic> col, Id id, CardDetails object) {
-  object.id = id;
-}
+    IsarCollection<dynamic> col, Id id, CardDetails object) {}
 
 extension CardDetailsQueryWhereSort
     on QueryBuilder<CardDetails, CardDetails, QWhere> {
@@ -933,6 +939,61 @@ extension CardDetailsQueryFilter
     });
   }
 
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> hashCodeEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
+      hashCodeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition>
+      hashCodeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'hashCode',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> hashCodeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'hashCode',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<CardDetails, CardDetails, QAfterFilterCondition> idEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -1389,6 +1450,18 @@ extension CardDetailsQuerySortBy
     });
   }
 
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
+    });
+  }
+
   QueryBuilder<CardDetails, CardDetails, QAfterSortBy> sortByNonce() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nonce', Sort.asc);
@@ -1502,6 +1575,18 @@ extension CardDetailsQuerySortThenBy
     });
   }
 
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenByHashCodeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hashCode', Sort.desc);
+    });
+  }
+
   QueryBuilder<CardDetails, CardDetails, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1595,6 +1680,12 @@ extension CardDetailsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<CardDetails, CardDetails, QDistinct> distinctByHashCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hashCode');
+    });
+  }
+
   QueryBuilder<CardDetails, CardDetails, QDistinct> distinctByNonce(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1657,6 +1748,12 @@ extension CardDetailsQueryProperty
   QueryBuilder<CardDetails, String, QQueryOperations> expirationDateProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'expirationDate');
+    });
+  }
+
+  QueryBuilder<CardDetails, int, QQueryOperations> hashCodeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hashCode');
     });
   }
 

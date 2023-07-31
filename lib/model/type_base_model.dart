@@ -1,12 +1,13 @@
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
+import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
 
 ///flutter pub run build_runner build -d
 ///run this command to generate the files
-
+@immutable
 class TypeBase {
-  TypeBase({
+  const TypeBase({
     required this.id,
     required this.dataType,
     required this.title,
@@ -26,6 +27,45 @@ class TypeBase {
     );
   }
 
+  TypeBase copyWith({
+    int? id,
+    DataType? dataType,
+    String? title,
+    DateTime? dateAdded,
+    SyncStatus? syncStatus,
+    String? nonce,
+  }) {
+    return TypeBase(
+      id: id ?? this.id,
+      dataType: dataType ?? this.dataType,
+      title: title ?? this.title,
+      dateAdded: dateAdded ?? this.dateAdded,
+      syncStatus: syncStatus ?? this.syncStatus,
+      nonce: nonce ?? this.nonce,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TypeBase &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          dataType == other.dataType &&
+          title == other.title &&
+          dateAdded == other.dateAdded &&
+          syncStatus == other.syncStatus &&
+          nonce == other.nonce;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      dataType.hashCode ^
+      title.hashCode ^
+      dateAdded.hashCode ^
+      syncStatus.hashCode ^
+      nonce.hashCode;
+
   static DateTime getDateTime(String isoString) => DateTime.parse(isoString);
 
   static DataType getDataType(String dataIndex) => DataType.values[int.parse(dataIndex)];
@@ -41,7 +81,7 @@ class TypeBase {
         DumbData.dateAdded: dateAdded.toIso8601String(),
       };
 
-  TypeBase copyWith(Map<String, dynamic> update) {
+  TypeBase copyWithFromMap(Map<String, dynamic> update) {
     return TypeBase(
       id: (update[DumbData.id] as int?) ?? id,
       dataType: update[DumbData.dataType] == null
@@ -78,14 +118,14 @@ class TypeBase {
     return data;
   }
 
-  Id id;
+  final Id id;
   @enumerated
-  DataType dataType;
+  final DataType dataType;
   @enumerated
-  SyncStatus syncStatus;
-  String title;
-  DateTime dateAdded;
-  String nonce;
+  final SyncStatus syncStatus;
+  final String title;
+  final DateTime dateAdded;
+  final String nonce;
 }
 
 enum DataType {

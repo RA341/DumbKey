@@ -185,7 +185,7 @@ class _AddCardState extends State<AddCard> {
   Future<void> updateCard() async {
     final updateData = retrieveData()..addAll(widget.savedCard!.defaultUpdateMap());
 
-    final updatedModel = widget.savedCard!.copyWith(updateData);
+    final updatedModel = widget.savedCard!.copyWithFromMap(updateData);
     updateData.removeWhere((key, value) => value == null || value == '');
 
     try {
