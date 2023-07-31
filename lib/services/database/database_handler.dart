@@ -11,6 +11,7 @@ import 'package:dumbkey/services/database/local/isar_mixin.dart';
 import 'package:dumbkey/services/database/remote/dart_firestore.dart';
 import 'package:dumbkey/services/encryption_handler.dart';
 import 'package:dumbkey/utils/logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 
@@ -20,6 +21,7 @@ class DatabaseHandler with IsarDbMixin {
     encryptor = GetIt.I.get<IDataEncryptor>();
     fireListener = _listenToChangesFromFireBase();
     connectivityListener = _listenToConnectionState();
+    initCacheManager();
   }
 
   late final IDataEncryptor encryptor;
@@ -33,12 +35,34 @@ class DatabaseHandler with IsarDbMixin {
   /// bug here on logout and then login again osOnline is always false
   bool get isOnline => connectionState != ConnectivityResult.none;
 
+  // caching stuff
+  final passwordCache = ValueNotifier<List<Password>>([]);
+  final notesCache = ValueNotifier<List<Notes>>([]);
+  final cardDetailsCache = ValueNotifier<List<CardDetails>>([]);
+
   Future<void> dispose() async {
     await fireListener.cancel();
     await connectivityListener.cancel();
+    passwordCache.dispose();
+    notesCache.dispose();
+    cardDetailsCache.dispose();
   }
 
-  // crud functions
+  void initCacheManager() {
+    fetchAllPassKeys().listen((event) {
+      passwordCache.value = event;
+    });
+
+    fetchAllNotes().listen((event) {
+      notesCache.value = event;
+    });
+
+    fetchAllCardDetails().listen((event) {
+      cardDetailsCache.value = event;
+    });
+  }
+
+// crud functions
   Future<void> createData(TypeBase data) async {
     logger.w('Creating Data ${data.id}');
 
@@ -119,7 +143,7 @@ class DatabaseHandler with IsarDbMixin {
     await isarDelete(data.id, data.dataType);
   }
 
-  // sync functions
+// sync functions
   StreamSubscription<List<TypeBase>> _listenToChangesFromFireBase() {
     return firestore.fetchAllData().listen(
       (documents) async {
@@ -179,7 +203,7 @@ class DatabaseHandler with IsarDbMixin {
     await _checkForId(allNotes, remoteId, DataType.notes);
   }
 
-  // sync de-synchronized data functions
+// sync de-synchronized data functions
 
   StreamSubscription<ConnectivityResult> _listenToConnectionState() {
     return Connectivity().onConnectivityChanged.distinct().listen(
