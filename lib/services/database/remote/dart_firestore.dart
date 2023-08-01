@@ -58,12 +58,23 @@ class DartFireStore {
   }
 
   /// this stream will got to local storage
-  Stream<List<TypeBase>> fetchAllData() =>
-      getDataCollection.stream.map((docs) => docs.map(decryptForLocal).toList());
+  Stream<Map<int, TypeBase>> fetchAllData() => getDataCollection.stream.map(
+        (docs) => docs.map(decryptForLocal).fold(
+          {},
+          (prevMap, element) {
+            prevMap[element.id] = element;
+            return prevMap;
+          },
+        ),
+      );
 
-  Future<List<TypeBase>> getAllDocs() async {
+  Future<Map<int, TypeBase>> getAllDocs() async {
     final docs = await getDataCollection.get();
-    return docs.map(decryptForLocal).toList();
+    final data = docs.map(decryptForLocal).fold(
+      <int, TypeBase>{},
+      (prevMap, element) => prevMap..addAll({element.id: element}),
+    );
+    return data;
   }
 
   TypeBase decryptForLocal(Document doc) {
