@@ -105,8 +105,14 @@ class AuthController {
       await initDatabaseHandlers(signup: false);
 
       if (!context.mounted) return;
-      Navigator.of(context).popUntil((route) => false);
-      unawaited(Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HomePage())));
+      // Navigator.of(context).popUntil((route) => false);
+      unawaited(
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => const HomePage(),
+          ),
+        ),
+      );
 
       displaySnackBar(context, 'Successfully signed in');
     } catch (e) {
@@ -132,8 +138,13 @@ class AuthController {
 
       if (!context.mounted) return;
 
-      Navigator.of(context).popUntil((route) => false);
-      unawaited(Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HomePage())));
+      unawaited(
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => const HomePage(),
+          ),
+        ),
+      );
 
       displaySnackBar(context, 'Successfully signed up');
     } on AuthException catch (e) {
@@ -165,8 +176,14 @@ class AuthController {
       displaySnackBar(context, 'Failed to sign out\n$e');
     } finally {
       isLoading.value = false;
-      Navigator.of(context).popUntil((route) => false);
-      unawaited(Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LoginScreen())));
+      unawaited(
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => const LoginScreen(),
+          ),
+          (route) => false,
+        ),
+      );
     }
   }
 }
