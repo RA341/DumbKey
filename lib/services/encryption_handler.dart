@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:dumbkey/services/database/user_data_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:dumbkey/utils/logger.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 import 'package:sodium_libs/sodium_libs.dart';
 
 Map<String, dynamic> cryptMap(
@@ -63,7 +63,7 @@ class SodiumEncryptor implements IDataEncryptor {
   late final Sodium sodium;
 
   static Future<SodiumEncryptor> create({required bool signup}) async {
-    final encKey = await GetIt.I.get<UserDataHandler>().getUserData(key: DumbData.encryptionKey);
+    final encKey = await dep.get<UserDataHandler>().getUserData(key: DumbData.encryptionKey);
     if (encKey == null) throw Exception('No  key found');
 
     final Uint8List salt;
@@ -72,12 +72,12 @@ class SodiumEncryptor implements IDataEncryptor {
     if (signup) {
       // generate new salt and save it
       salt = sodium.randombytes.buf(16);
-      await GetIt.I.get<UserDataHandler>().addUserData(
+      await dep.get<UserDataHandler>().addUserData(
             key: DumbData.salt,
             value: base64Encode(String.fromCharCodes(salt).codeUnits),
           );
     } else {
-      final g = await GetIt.I.get<UserDataHandler>().getUserData(key: DumbData.salt);
+      final g = await dep.get<UserDataHandler>().getUserData(key: DumbData.salt);
       if (g == null) throw Exception('salt not found');
       salt = Uint8List.fromList(base64Decode(g));
     }

@@ -14,11 +14,11 @@ import 'package:get_it/get_it.dart';
 
 class DartFireStore {
   DartFireStore() {
-    database = GetIt.I.get<Firestore>();
+    database = dep.get<Firestore>();
     uuid = getUuid();
   }
 
-  final encryptor = GetIt.I.get<IDataEncryptor>();
+  final encryptor = dep.get<IDataEncryptor>();
   late final String uuid;
   late final Firestore database;
 

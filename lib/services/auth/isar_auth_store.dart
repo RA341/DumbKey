@@ -1,4 +1,5 @@
 import 'package:dumbkey/services/settings_handler.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:firedart/auth/token_store.dart';
 import 'package:firedart/firedart.dart';
 import 'package:get_it/get_it.dart';
@@ -11,26 +12,26 @@ class AuthLocalStore extends TokenStore {
 
   @override
   void delete() {
-    GetIt.I.get<SettingsHandler>().settingsInst
+    dep.get<SettingsHandler>().settingsInst
       ..userId = null
       ..idToken = null
       ..refreshToken = null
       ..expiry = null;
 
-    GetIt.I.get<SettingsHandler>().refreshSettings();
+    dep.get<SettingsHandler>().refreshSettings();
   }
 
   @override
   Token? read() {
-    if (GetIt.I.get<SettingsHandler>().settingsInst.userId == null ||
-        GetIt.I.get<SettingsHandler>().settingsInst.idToken == null ||
-        GetIt.I.get<SettingsHandler>().settingsInst.refreshToken == null ||
-        GetIt.I.get<SettingsHandler>().settingsInst.expiry == null) return null;
+    if (dep.get<SettingsHandler>().settingsInst.userId == null ||
+        dep.get<SettingsHandler>().settingsInst.idToken == null ||
+        dep.get<SettingsHandler>().settingsInst.refreshToken == null ||
+        dep.get<SettingsHandler>().settingsInst.expiry == null) return null;
 
-    final userId = GetIt.I.get<SettingsHandler>().settingsInst.userId;
-    final idToken = GetIt.I.get<SettingsHandler>().settingsInst.idToken;
-    final refreshToken = GetIt.I.get<SettingsHandler>().settingsInst.refreshToken;
-    final expiry = DateTime.parse(GetIt.I.get<SettingsHandler>().settingsInst.expiry!);
+    final userId = dep.get<SettingsHandler>().settingsInst.userId;
+    final idToken = dep.get<SettingsHandler>().settingsInst.idToken;
+    final refreshToken = dep.get<SettingsHandler>().settingsInst.refreshToken;
+    final expiry = DateTime.parse(dep.get<SettingsHandler>().settingsInst.expiry!);
 
     return Token(userId, idToken!, refreshToken!, expiry);
   }
@@ -40,12 +41,12 @@ class AuthLocalStore extends TokenStore {
     if (token == null) return;
     final data = token.toMap();
 
-    GetIt.I.get<SettingsHandler>().settingsInst
+    dep.get<SettingsHandler>().settingsInst
       ..userId = data[userIdKey] as String
       ..idToken = data[idTokenKey] as String
       ..refreshToken = data[refreshTokenKey] as String
       ..expiry = data[expiryKey] as String;
 
-    GetIt.I.get<SettingsHandler>().refreshSettings();
+    dep.get<SettingsHandler>().refreshSettings();
   }
 }

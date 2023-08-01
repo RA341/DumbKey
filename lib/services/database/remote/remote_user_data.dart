@@ -1,4 +1,5 @@
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:firedart/firedart.dart';
 import 'package:get_it/get_it.dart';
 
@@ -16,7 +17,7 @@ abstract class IRemoteUserDb {
 
 class FirebaseUser implements IRemoteUserDb {
   FirebaseUser() {
-    userDb = GetIt.I.get<Firestore>();
+    userDb = dep.get<Firestore>();
   }
 
   late final Firestore userDb;

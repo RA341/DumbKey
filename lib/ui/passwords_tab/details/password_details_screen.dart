@@ -5,8 +5,9 @@ import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/ui/passwords_tab/form/password_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
+
+import '../../../utils/helper_func.dart';
 
 class PasswordDetailsScreen extends StatefulWidget {
   const PasswordDetailsScreen({required this.passkey, super.key});
@@ -50,7 +51,7 @@ class _PasswordDetailsScreenState extends State<PasswordDetailsScreen> {
                       builder: (context) => AddUpdatePassword(savedKey: _passkey),
                     ),
                   );
-                  _passkey = (await GetIt.I.get<Isar>().passwords.get(_passkey.id))!;
+                  _passkey = (await dep.get<Isar>().passwords.get(_passkey.id))!;
                   setState(() {});
                 },
                 icon: const Icon(
@@ -78,7 +79,7 @@ class _PasswordDetailsScreenState extends State<PasswordDetailsScreen> {
                       ),
                       TextButton(
                         onPressed: () async {
-                          await GetIt.I.get<DatabaseHandler>().deleteData(_passkey);
+                          await dep.get<DatabaseHandler>().deleteData(_passkey);
                           Navigator.of(context).pop(true); // for the dialog
                           Navigator.of(context).pop(); // for the screen
                         },

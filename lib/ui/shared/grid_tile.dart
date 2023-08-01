@@ -10,7 +10,8 @@ import 'package:dumbkey/ui/notes_tab/notes_details_page.dart';
 import 'package:dumbkey/ui/passwords_tab/details/password_details_screen.dart';
 import 'package:dumbkey/ui/passwords_tab/form/password_input.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+
+import '../../utils/helper_func.dart';
 
 class SharedCardTile extends StatelessWidget {
   const SharedCardTile({
@@ -54,7 +55,7 @@ class SharedCardTile extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () async {
-                          await GetIt.I.get<DatabaseHandler>().deleteData(data);
+                          await dep.get<DatabaseHandler>().deleteData(data);
                           Navigator.of(context).pop(true);
                         },
                         child: const Text('Yes'),

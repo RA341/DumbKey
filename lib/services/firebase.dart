@@ -1,5 +1,6 @@
 import 'package:dumbkey/services/auth/isar_auth_store.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:firedart/firedart.dart';
 import 'package:firedart/firestore/token_authenticator.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -31,7 +32,7 @@ void initFireStore() {
   final authenticator = TokenAuthenticator.from(FirebaseAuth.instance)?.authenticate;
   final inst = Firestore(projId, authenticator: authenticator);
 
-  GetIt.I.registerSingleton<Firestore>(inst);
+  dep.registerSingleton<Firestore>(inst);
 }
 
 void initFireAuth() {

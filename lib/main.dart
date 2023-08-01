@@ -9,9 +9,9 @@ import 'package:dumbkey/services/firebase.dart';
 import 'package:dumbkey/services/settings_handler.dart';
 import 'package:dumbkey/ui/auth_page/auth_page.dart';
 import 'package:dumbkey/ui/home.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -22,15 +22,15 @@ Future<void> initServices() async {
     directory: dir.path,
   );
 
-  GetIt.I
+  dep
     ..registerLazySingleton(SecureStorageHandler.new)
     ..registerLazySingleton<Isar>(() => isar)
     ..registerSingleton<SettingsHandler>(await SettingsHandler.initSettings(isar));
 
   initFirebaseServices();
-  GetIt.I.registerSingleton<DatabaseAuth>(DatabaseAuth());
+  dep.registerSingleton<DatabaseAuth>(DatabaseAuth());
 
-  if (GetIt.I.get<DatabaseAuth>().isSignedIn) {
+  if (dep.get<DatabaseAuth>().isSignedIn) {
     await initDatabaseHandlers(signup: false);
   }
 }
@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: SafeArea(
-        child: GetIt.I.get<DatabaseAuth>().isSignedIn ? const HomePage() : const LoginScreen(),
+        child: dep.get<DatabaseAuth>().isSignedIn ? const HomePage() : const LoginScreen(),
       ),
     );
   }

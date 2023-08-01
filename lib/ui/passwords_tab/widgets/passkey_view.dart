@@ -3,8 +3,9 @@ import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/services/settings_handler.dart';
 import 'package:dumbkey/ui/passwords_tab/widgets/passkey_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:string_extensions/string_extensions.dart';
+
+import '../../../utils/helper_func.dart';
 
 class PasskeyView extends StatelessWidget {
   const PasskeyView({
@@ -44,7 +45,7 @@ class PasskeyView extends StatelessWidget {
   }
 
   List<Password> filterList(List<Password> sortedBySyncStatus) {
-    final settings = GetIt.I.get<SettingsHandler>();
+    final settings = dep.get<SettingsHandler>();
 
     // TODO(filterList): add config if user wants to search through passwords
     const searchThroughPasswords = false;

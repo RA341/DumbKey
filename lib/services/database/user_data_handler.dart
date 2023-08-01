@@ -57,13 +57,13 @@ class UserDataHandler {
   Future<void> deleteUserData({required String key}) async {
     await local.deleteData(key: key);
 
-    final uuid = await GetIt.I.get<SecureStorageHandler>().readData(key: AuthLocalStore.userIdKey);
+    final uuid = await dep.get<SecureStorageHandler>().readData(key: AuthLocalStore.userIdKey);
     throwIf(uuid == null, 'uuid not found');
 
     await remote.deleteUserData(docId: uuid!);
   }
 
   Future<String?> getUserData({required String key}) async {
-    return GetIt.I.get<SecureStorageHandler>().readData(key: key);
+    return dep.get<SecureStorageHandler>().readData(key: key);
   }
 }

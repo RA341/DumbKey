@@ -4,7 +4,8 @@ import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+
+import '../utils/helper_func.dart';
 
 class DataCrudController {
   final isLoading = ValueNotifier(false);
@@ -33,7 +34,7 @@ class DataCrudController {
     final newPasskey = createDataFromMap<T>(data);
 
     try {
-      await GetIt.I<DatabaseHandler>().createData(newPasskey);
+      await dep<DatabaseHandler>().createData(newPasskey);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -54,7 +55,7 @@ class DataCrudController {
     updateData.removeWhere((key, value) => value == null || value == '');
 
     try {
-      await GetIt.I<DatabaseHandler>().updateData(updateData, updatedPasskey);
+      await dep<DatabaseHandler>().updateData(updateData, updatedPasskey);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

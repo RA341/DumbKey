@@ -1,4 +1,5 @@
 import 'package:dumbkey/services/settings_handler.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -14,7 +15,7 @@ class CategoryField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settings = GetIt.I.get<SettingsHandler>();
+    final settings = dep.get<SettingsHandler>();
     print(settings.settingsInst.categories);
 
     return Autocomplete<String>(

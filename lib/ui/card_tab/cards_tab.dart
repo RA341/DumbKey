@@ -1,7 +1,8 @@
 import 'package:dumbkey/services/database/database_handler.dart';
 import 'package:dumbkey/ui/card_tab/widgets/card_view.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+
+import '../../utils/helper_func.dart';
 
 class CardsTab extends StatelessWidget {
   const CardsTab({super.key});
@@ -9,7 +10,7 @@ class CardsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: GetIt.I.get<DatabaseHandler>().cardDetailsCache,
+      valueListenable: dep.get<DatabaseHandler>().cardDetailsCache,
       builder: (context, value, child) {
         print('rebuild');
         return CardDetailsView(cardsList: value);

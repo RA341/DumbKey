@@ -7,7 +7,8 @@ import 'package:dumbkey/ui/passwords_tab/details/password_details_screen.dart';
 import 'package:dumbkey/ui/passwords_tab/form/password_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
+
+import '../../../utils/helper_func.dart';
 
 class PasskeyTitle extends StatelessWidget {
   const PasskeyTitle({
@@ -49,7 +50,7 @@ class PasskeyTitle extends StatelessWidget {
             ),
           ),
         ),
-        onDismissed: (direction) async => await GetIt.I.get<DatabaseHandler>().deleteData(passkey),
+        onDismissed: (direction) async => await dep.get<DatabaseHandler>().deleteData(passkey),
         confirmDismiss: (direction) => showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(

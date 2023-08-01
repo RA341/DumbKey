@@ -10,7 +10,8 @@ import 'package:dumbkey/ui/card_tab/widgets/form_widgets/mock_card.dart';
 import 'package:dumbkey/ui/shared/title_input.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+
+import '../../utils/helper_func.dart';
 
 class AddCard extends StatefulWidget {
   const AddCard({
@@ -172,7 +173,7 @@ class _AddCardState extends State<AddCard> {
       ..addAll(TypeBase.defaultMap(DataType.card)); // adds default required values for typebase
 
     try {
-      await GetIt.I.get<DatabaseHandler>().createData(CardDetails.fromMap(data));
+      await dep.get<DatabaseHandler>().createData(CardDetails.fromMap(data));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -189,7 +190,7 @@ class _AddCardState extends State<AddCard> {
     updateData.removeWhere((key, value) => value == null || value == '');
 
     try {
-      await GetIt.I.get<DatabaseHandler>().updateData(updateData, updatedModel);
+      await dep.get<DatabaseHandler>().updateData(updateData, updatedModel);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

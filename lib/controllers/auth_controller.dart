@@ -14,52 +14,52 @@ import 'package:dumbkey/ui/auth_page/auth_page.dart';
 import 'package:dumbkey/ui/home.dart';
 import 'package:dumbkey/ui/shared/util.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:dumbkey/utils/logger.dart';
 import 'package:firedart/auth/exceptions.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 
 /// functions to handle cleanup on error or sign-out
 Future<void> cleanUpOnSignOut() async {
-  await GetIt.I.get<SecureStorageHandler>().deleteData(key: DumbData.salt);
-  await GetIt.I.get<SecureStorageHandler>().deleteData(key: DumbData.encryptionKey);
-  GetIt.I.get<SettingsHandler>().clearSettings();
+  await dep.get<SecureStorageHandler>().deleteData(key: DumbData.salt);
+  await dep.get<SecureStorageHandler>().deleteData(key: DumbData.encryptionKey);
+  dep.get<SettingsHandler>().clearSettings();
   removeDatabaseHandlers();
   await deleteLocalCache();
 }
 
 Future<void> initDatabaseHandlers({required bool signup}) async {
-  if (GetIt.I.isRegistered<Firestore>() == false) {
+  if (dep.isRegistered<Firestore>() == false) {
     initFireStore();
   }
 
-  if (GetIt.I.isRegistered<UserDataHandler>() == false) {
-    GetIt.I.registerSingleton(UserDataHandler());
+  if (dep.isRegistered<UserDataHandler>() == false) {
+    dep.registerSingleton(UserDataHandler());
   }
-  if (signup == false) await GetIt.I.get<UserDataHandler>().syncUserData();
+  if (signup == false) await dep.get<UserDataHandler>().syncUserData();
 
-  if (GetIt.I.isRegistered<IDataEncryptor>() == false) {
-    GetIt.I.registerSingleton<IDataEncryptor>(await SodiumEncryptor.create(signup: signup));
+  if (dep.isRegistered<IDataEncryptor>() == false) {
+    dep.registerSingleton<IDataEncryptor>(await SodiumEncryptor.create(signup: signup));
   }
 
-  if (GetIt.I.isRegistered<DatabaseHandler>() == false) {
-    GetIt.I.registerSingleton<DatabaseHandler>(DatabaseHandler());
+  if (dep.isRegistered<DatabaseHandler>() == false) {
+    dep.registerSingleton<DatabaseHandler>(DatabaseHandler());
   }
 }
 
 void removeDatabaseHandlers() {
-  if (GetIt.I.isRegistered<UserDataHandler>()) GetIt.I.unregister<UserDataHandler>();
-  if (GetIt.I.isRegistered<IDataEncryptor>()) GetIt.I.unregister<IDataEncryptor>();
-  if (GetIt.I.isRegistered<DatabaseHandler>()) {
-    GetIt.I.unregister<DatabaseHandler>(disposingFunction: (db) => db.dispose());
+  if (dep.isRegistered<UserDataHandler>()) dep.unregister<UserDataHandler>();
+  if (dep.isRegistered<IDataEncryptor>()) dep.unregister<IDataEncryptor>();
+  if (dep.isRegistered<DatabaseHandler>()) {
+    dep.unregister<DatabaseHandler>(disposingFunction: (db) => db.dispose());
   }
-  if (GetIt.I.isRegistered<Firestore>()) GetIt.I.unregister<Firestore>();
+  if (dep.isRegistered<Firestore>()) dep.unregister<Firestore>();
 }
 
 Future<void> deleteLocalCache() async {
-  final isar = GetIt.I.get<Isar>();
+  final isar = dep.get<Isar>();
 
   final passwordList = await isar.passwords.where().build().findAll();
   final cardsList = await isar.cardDetails.where().build().findAll();
@@ -85,7 +85,7 @@ Future<void> deleteLocalCache() async {
 }
 
 class AuthController {
-  final auth = GetIt.I.get<DatabaseAuth>();
+  final auth = dep.get<DatabaseAuth>();
 
   static final AuthController inst = AuthController();
 
@@ -96,9 +96,9 @@ class AuthController {
 
     isLoading.value = true;
     try {
-      GetIt.I.get<SettingsHandler>().clearSettings();
+      dep.get<SettingsHandler>().clearSettings();
       await auth.signIn(email, password);
-      await GetIt.I
+      await dep
           .get<SecureStorageHandler>()
           .writeData(key: DumbData.encryptionKey, value: password); // set encryption key
 
@@ -131,7 +131,7 @@ class AuthController {
     isLoading.value = true;
     try {
       await auth.signUp(email, password);
-      await GetIt.I
+      await dep
           .get<SecureStorageHandler>()
           .writeData(key: DumbData.encryptionKey, value: password); // set encryption key
       await initDatabaseHandlers(signup: true);

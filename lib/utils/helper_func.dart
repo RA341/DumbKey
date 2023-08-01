@@ -4,6 +4,8 @@ import 'package:dumbkey/services/settings_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+final dep = GetIt.instance;
+
 int idGenerator({int length = 15}) {
   final rnd = Random();
 
@@ -59,7 +61,7 @@ enum PasswordStrength {
 }
 
 String getUuid() {
-  final uuid = GetIt.I.get<SettingsHandler>().settingsInst.userId;
+  final uuid = dep.get<SettingsHandler>().settingsInst.userId;
   throwIf(uuid == null, 'uuid not found');
   return uuid!;
 }

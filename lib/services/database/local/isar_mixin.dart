@@ -3,12 +3,12 @@ import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/services/encryption_handler.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:dumbkey/utils/logger.dart';
-import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 
 mixin IsarDbMixin {
-  final Isar isarDb = GetIt.I.get<Isar>();
+  final Isar isarDb = dep.get<Isar>();
 
   Future<void> isarCreateOrUpdateAll(List<TypeBase> remote) async {
     for (final datum in remote) {
@@ -73,7 +73,7 @@ mixin IsarDbMixin {
   }
 
   T decryptLocalStream<T>(TypeBase e) {
-    final decrypted = cryptMap(e.toJson(), GetIt.I.get<IDataEncryptor>().decryptMap);
+    final decrypted = cryptMap(e.toJson(), dep.get<IDataEncryptor>().decryptMap);
     return e.copyWithFromMap(decrypted) as T;
   }
 
