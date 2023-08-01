@@ -11,6 +11,7 @@ import 'package:dumbkey/services/database/local/isar_mixin.dart';
 import 'package:dumbkey/services/database/remote/dart_firestore.dart';
 import 'package:dumbkey/services/encryption_handler.dart';
 import 'package:dumbkey/utils/logger.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
@@ -26,13 +27,12 @@ class DatabaseHandler with IsarDbMixin {
 
   late final IDataEncryptor encryptor;
   late final DartFireStore firestore;
-  late final StreamSubscription<List<TypeBase>> fireListener;
+  late final StreamSubscription<Map<int, TypeBase>> fireListener;
   late final StreamSubscription<ConnectivityResult> connectivityListener;
 
-  // conncection stuff
+  // connection stuff
   ConnectivityResult connectionState = ConnectivityResult.none;
 
-  /// bug here on logout and then login again osOnline is always false
   bool get isOnline => connectionState != ConnectivityResult.none;
 
   // caching stuff
@@ -43,9 +43,11 @@ class DatabaseHandler with IsarDbMixin {
   Future<void> dispose() async {
     await fireListener.cancel();
     await connectivityListener.cancel();
-    passwordCache.dispose();
-    notesCache.dispose();
-    cardDetailsCache.dispose();
+    // fix this in future
+    // currently when logging out it will throw error because of this
+    // passwordCache.dispose();
+    // notesCache.dispose();
+    // cardDetailsCache.dispose();
   }
 
   void initCacheManager() {
@@ -67,10 +69,10 @@ class DatabaseHandler with IsarDbMixin {
     logger.w('Creating Data ${data.id}');
 
     final encryptedLocal = cryptMap(data.toJson(), encryptor.encryptMap);
-    final enc = data.copyWith(encryptedLocal);
+    final enc = data.copyWithFromMap(encryptedLocal);
 
     if (isOnline == false) {
-      enc.syncStatus = SyncStatus.notSynced;
+      enc.copyWith(syncStatus: SyncStatus.notSynced);
       await isarCreateOrUpdate(enc);
       logger.w('data created offline ${data.id}');
       return;
@@ -82,7 +84,7 @@ class DatabaseHandler with IsarDbMixin {
       logger
         ..e('Error adding Data to firebase', e)
         ..d('data to be locally stored ${data.id}');
-      enc.syncStatus = SyncStatus.notSynced;
+      enc.copyWith(syncStatus: SyncStatus.notSynced);
     }
     await isarCreateOrUpdate(enc);
   }
@@ -96,10 +98,10 @@ class DatabaseHandler with IsarDbMixin {
     );
 
     final encryptedLocal = cryptMap(updatedModel.toJson(), encryptor.encryptMap);
-    final encModel = updatedModel.copyWith(encryptedLocal);
+    final encModel = updatedModel.copyWithFromMap(encryptedLocal);
 
     if (isOnline == false) {
-      encModel.syncStatus = SyncStatus.notSynced;
+      encModel.copyWith(syncStatus: SyncStatus.notSynced);
       await isarCreateOrUpdate(encModel);
       logger.w('data updated offline', updatedModel.id);
       return;
@@ -115,7 +117,7 @@ class DatabaseHandler with IsarDbMixin {
       logger.i('Updated Data', remote);
     } catch (e) {
       logger.e('Error updating Data to firebase', e);
-      encModel.syncStatus = SyncStatus.notSynced;
+      encModel.copyWith(syncStatus: SyncStatus.notSynced);
     }
 
     await isarCreateOrUpdate(encModel);
@@ -125,7 +127,9 @@ class DatabaseHandler with IsarDbMixin {
     logger.w('Deleting Data ${data.id}');
 
     if (isOnline == false) {
-      data.syncStatus = SyncStatus.deleted; // temp status until device gets online and deletes
+      data.copyWith(
+        syncStatus: SyncStatus.deleted,
+      ); // temp status until device gets online and deletes
       await isarCreateOrUpdate(data);
       return;
     }
@@ -135,7 +139,8 @@ class DatabaseHandler with IsarDbMixin {
       logger.i('Deleted Data ${data.id}');
     } catch (e) {
       logger.e('Error deleting Data from firebase', e);
-      data.syncStatus = SyncStatus.deleted; // temp status until device gets online and deletes
+      data.copyWith(
+          syncStatus: SyncStatus.deleted); // temp status until device gets online and deletes
       await isarCreateOrUpdate(data);
       return;
     }
@@ -144,7 +149,7 @@ class DatabaseHandler with IsarDbMixin {
   }
 
 // sync functions
-  StreamSubscription<List<TypeBase>> _listenToChangesFromFireBase() {
+  StreamSubscription<Map<Id, TypeBase>> _listenToChangesFromFireBase() {
     return firestore.fetchAllData().listen(
       (documents) async {
         logger.wtf('documents:${documents.length}');
@@ -157,7 +162,7 @@ class DatabaseHandler with IsarDbMixin {
           deleteLocalNotInRemote(documents).then((value) async {
             // updates local data from remote
             unawaited(
-              isarCreateOrUpdateAll(documents).whenComplete(() => null),
+              isarCreateOrUpdateAll(documents.values.toList()).whenComplete(() => null),
             );
           }),
         );
@@ -176,31 +181,35 @@ class DatabaseHandler with IsarDbMixin {
     );
   }
 
-  Future<void> _checkForId(List<int> ids, List<int> remoteIds, DataType type) async {
-    for (final id in ids) {
-      if (remoteIds.contains(id) == false) {
-        await isarDelete(id, type);
+  Future<void> _checkForId(Map<int, TypeBase> localData, Map<int, TypeBase> remoteIds) async {
+    for (final id in localData.keys.toList()) {
+      if (remoteIds.containsKey(id) == false) {
+        await isarDelete(id, localData[id]!.dataType);
       }
     }
   }
 
-  Future<void> deleteLocalNotInRemote(List<TypeBase> remoteData) async {
-    final remoteId = remoteData.map((e) => e.id).toList();
+  Future<Map<int, TypeBase>> deleteLocalNotInRemote(Map<int, TypeBase> remoteData) async {
+    final localDataMap = <int, TypeBase>{};
 
+    // add all passwords
     final allPassKeys =
-        await isarDb.passwords.filter().syncStatusEqualTo(SyncStatus.synced).idProperty().findAll();
-    await _checkForId(allPassKeys, remoteId, DataType.password);
+        await isarDb.passwords.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
+    allPassKeys.fold(localDataMap, (curMap, element) => curMap..addAll({element.id: element}));
 
-    final allCards = await isarDb.cardDetails
-        .filter()
-        .syncStatusEqualTo(SyncStatus.synced)
-        .idProperty()
-        .findAll();
-    await _checkForId(allCards, remoteId, DataType.card);
+    // add all cards
+    final allCards =
+        await isarDb.cardDetails.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
+    allCards.fold(localDataMap, (curMap, element) => curMap..addAll({element.id: element}));
 
-    final allNotes =
-        await isarDb.notes.filter().syncStatusEqualTo(SyncStatus.synced).idProperty().findAll();
-    await _checkForId(allNotes, remoteId, DataType.notes);
+    // add all notes
+    final allNotes = await isarDb.notes.filter().syncStatusEqualTo(SyncStatus.synced).findAll();
+    allNotes.fold(localDataMap, (curMap, element) => curMap..addAll({element.id: element}));
+
+    // remove files not in remote
+    await _checkForId(localDataMap, remoteData);
+
+    return localDataMap;
   }
 
 // sync de-synchronized data functions
@@ -299,7 +308,7 @@ class DatabaseHandler with IsarDbMixin {
   void _createDataAsync(TypeBase data) {
     logger.i('adding to remote ${data.id}');
 
-    data.syncStatus = SyncStatus.synced;
+    data.copyWith(syncStatus: SyncStatus.synced);
     final remote = cryptValue(data.toJson(), encryptor.encrypt);
 
     firestore.createData(remote).then((value) {
