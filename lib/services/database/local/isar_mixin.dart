@@ -10,9 +10,16 @@ import 'package:isar/isar.dart';
 mixin IsarDbMixin {
   final Isar isarDb = GetIt.I.get<Isar>();
 
-  Future<void> isarCreateOrUpdateAll(List<TypeBase> data) async {
-    for (final datum in data) {
-      await isarCreateOrUpdate(datum);
+  Future<void> isarCreateOrUpdateAll(List<TypeBase> remote) async {
+    for (final datum in remote) {
+      // if data is not present in local or data is changed
+      final stuff = await collectionSwitcher(datum.dataType).get(datum.id);
+      final dataChanged = stuff == null || stuff != datum;
+
+      if (dataChanged) {
+        await isarCreateOrUpdate(datum);
+        logger.v('data changed updating ${datum.id}');
+      }
     }
   }
 
@@ -67,7 +74,7 @@ mixin IsarDbMixin {
 
   T decryptLocalStream<T>(TypeBase e) {
     final decrypted = cryptMap(e.toJson(), GetIt.I.get<IDataEncryptor>().decryptMap);
-    return e.copyWith(decrypted) as T;
+    return e.copyWithFromMap(decrypted) as T;
   }
 
   Stream<List<Password>> fetchAllPassKeys() => isarDb.passwords
