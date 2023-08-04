@@ -10,16 +10,16 @@ import 'package:dumbkey/model/type_base_model.dart';
 import 'package:dumbkey/services/database/local/isar_mixin.dart';
 import 'package:dumbkey/services/database/remote/dart_firestore.dart';
 import 'package:dumbkey/services/encryption_handler.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:dumbkey/utils/logger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 
 class DatabaseHandler with IsarDbMixin {
   DatabaseHandler() {
     firestore = DartFireStore();
-    encryptor = GetIt.I.get<IDataEncryptor>();
+    encryptor = dep.get<IDataEncryptor>();
     fireListener = _listenToChangesFromFireBase();
     connectivityListener = _listenToConnectionState();
     initCacheManager();
