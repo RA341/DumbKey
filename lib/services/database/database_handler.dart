@@ -30,6 +30,10 @@ class DatabaseHandler with IsarDbMixin {
   late final StreamSubscription<Map<int, TypeBase>> fireListener;
   late final StreamSubscription<ConnectivityResult> connectivityListener;
 
+  late final StreamSubscription<List<Password>> passwordStream;
+  late final StreamSubscription<List<Notes>> notesStream;
+  late final StreamSubscription<List<CardDetails>> cardDetailStream;
+
   // connection stuff
   ConnectivityResult connectionState = ConnectivityResult.none;
 
@@ -43,23 +47,30 @@ class DatabaseHandler with IsarDbMixin {
   Future<void> dispose() async {
     await fireListener.cancel();
     await connectivityListener.cancel();
+
+    // disposing local db listeners
+    await passwordStream.cancel();
+    await notesStream.cancel();
+    await cardDetailStream.cancel();
     // fix this in future
-    // currently when logging out it will throw error because of this
-    // passwordCache.dispose();
-    // notesCache.dispose();
-    // cardDetailsCache.dispose();
+    // currently when logging out
+    // if cache value notifier is disposed it will throw error
+    // therefore we empty the cache so it doesn't take memory until GC takes care of it
+    passwordCache.value = List.empty();
+    notesCache.value = List.empty();
+    cardDetailsCache.value = List.empty();
   }
 
   void initCacheManager() {
-    fetchAllPassKeys().listen((event) {
+    passwordStream = fetchAllPassKeys().listen((event) {
       passwordCache.value = event;
     });
 
-    fetchAllNotes().listen((event) {
+    notesStream = fetchAllNotes().listen((event) {
       notesCache.value = event;
     });
 
-    fetchAllCardDetails().listen((event) {
+    cardDetailStream = fetchAllCardDetails().listen((event) {
       cardDetailsCache.value = event;
     });
   }
