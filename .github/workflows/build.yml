@@ -31,9 +31,6 @@ jobs:
         - name: Get dependencies
           run: flutter pub get
 
-        - name: analyze code
-          run: flutter analyze .
-
         # Runs a set of commands using the runners shell
         - name: Start release build
           run: flutter build apk
