@@ -9,9 +9,8 @@ import 'package:dumbkey/ui/card_tab/widgets/form_widgets/expiry_input.dart';
 import 'package:dumbkey/ui/card_tab/widgets/form_widgets/mock_card.dart';
 import 'package:dumbkey/ui/shared/title_input.dart';
 import 'package:dumbkey/utils/constants.dart';
+import 'package:dumbkey/utils/helper_func.dart';
 import 'package:flutter/material.dart';
-
-import '../../utils/helper_func.dart';
 
 class AddCard extends StatefulWidget {
   const AddCard({
