@@ -43,6 +43,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /.env
-/.github/*
 /lib/ui/shared/test_homoe.dart
 /lib/test/
