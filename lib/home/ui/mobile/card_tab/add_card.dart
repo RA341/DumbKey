@@ -1,10 +1,10 @@
 import 'package:dumbkey/home/controllers/data_crud_controller.dart';
 import 'package:dumbkey/home/logic/database/database_handler.dart';
-import 'package:dumbkey/home/ui/mobile/card_tab/widgets/form_widgets/card_holder_input.dart';
-import 'package:dumbkey/home/ui/mobile/card_tab/widgets/form_widgets/card_number.dart';
-import 'package:dumbkey/home/ui/mobile/card_tab/widgets/form_widgets/cvv_input.dart';
-import 'package:dumbkey/home/ui/mobile/card_tab/widgets/form_widgets/expiry_input.dart';
-import 'package:dumbkey/home/ui/mobile/card_tab/widgets/form_widgets/mock_card.dart';
+import 'package:dumbkey/home/ui/mobile/card_tab/widgets/form/card_holder_input.dart';
+import 'package:dumbkey/home/ui/mobile/card_tab/widgets/form/card_number.dart';
+import 'package:dumbkey/home/ui/mobile/card_tab/widgets/form/cvv_input.dart';
+import 'package:dumbkey/home/ui/mobile/card_tab/widgets/form/expiry_input.dart';
+import 'package:dumbkey/home/ui/mobile/card_tab/widgets/form/mock_card.dart';
 import 'package:dumbkey/home/ui/shared/title_input.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:dumbkey/model/type_base_model.dart';

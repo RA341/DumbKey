@@ -1,6 +1,6 @@
 import 'package:dumbkey/auth/controllers/auth_controller.dart';
-import 'package:dumbkey/home/ui/mobile/passwords_tab/form/fields/email_input.dart';
-import 'package:dumbkey/home/ui/mobile/passwords_tab/form/fields/password_input.dart';
+import 'package:dumbkey/home/ui/mobile/passwords_tab/widgets/form/email_input.dart';
+import 'package:dumbkey/home/ui/mobile/passwords_tab/widgets/form/password_input.dart';
 import 'package:flutter/material.dart';
 
 class SignUpPage extends StatefulWidget {

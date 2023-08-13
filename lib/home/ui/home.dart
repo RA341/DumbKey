@@ -2,7 +2,7 @@ import 'package:dumbkey/home/ui/mobile/card_tab/add_card.dart';
 import 'package:dumbkey/home/ui/mobile/card_tab/cards_tab.dart';
 import 'package:dumbkey/home/ui/mobile/notes_tab/add_notes.dart';
 import 'package:dumbkey/home/ui/mobile/notes_tab/notes_tab.dart';
-import 'package:dumbkey/home/ui/mobile/passwords_tab/form/password_input.dart';
+import 'package:dumbkey/home/ui/mobile/passwords_tab/add_password.dart';
 import 'package:dumbkey/home/ui/mobile/passwords_tab/password_tab.dart';
 import 'package:dumbkey/settings/ui/settings.dart';
 import 'package:flutter/material.dart';

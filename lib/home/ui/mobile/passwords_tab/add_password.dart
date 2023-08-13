@@ -1,9 +1,9 @@
 import 'package:dumbkey/home/controllers/data_crud_controller.dart';
-import 'package:dumbkey/home/ui/mobile/passwords_tab/form/fields/category_input.dart';
-import 'package:dumbkey/home/ui/mobile/passwords_tab/form/fields/description_input.dart';
-import 'package:dumbkey/home/ui/mobile/passwords_tab/form/fields/email_input.dart';
-import 'package:dumbkey/home/ui/mobile/passwords_tab/form/fields/password_input.dart';
-import 'package:dumbkey/home/ui/mobile/passwords_tab/form/fields/username_input.dart';
+import 'package:dumbkey/home/ui/mobile/passwords_tab/widgets/form/category_input.dart';
+import 'package:dumbkey/home/ui/mobile/passwords_tab/widgets/form/description_input.dart';
+import 'package:dumbkey/home/ui/mobile/passwords_tab/widgets/form/email_input.dart';
+import 'package:dumbkey/home/ui/mobile/passwords_tab/widgets/form/password_input.dart';
+import 'package:dumbkey/home/ui/mobile/passwords_tab/widgets/form/username_input.dart';
 import 'package:dumbkey/home/ui/shared/title_input.dart';
 import 'package:dumbkey/model/password_model/password_model.dart';
 import 'package:dumbkey/utils/constants.dart';
