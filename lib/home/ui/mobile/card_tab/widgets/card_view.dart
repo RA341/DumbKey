@@ -1,5 +1,3 @@
-// ignore_for_file: inference_failure_on_instance_creation
-
 import 'package:dumbkey/home/ui/shared/grid_tile.dart';
 import 'package:dumbkey/model/card_details_model/card_details_model.dart';
 import 'package:flutter/material.dart';
