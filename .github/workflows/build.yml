@@ -20,6 +20,7 @@ jobs:
         - name: setup env file
           uses: SpicyPizza/create-envfile@v2.0
           with:
+            envkey_DEBUG: false
             envkey_FIREBASE_APIKEY : $ {{ secrets.FIREBASE_APIKEY }}
             envkey_FIREBASE_PROJECTID : ${{ secrets.FIREBASE_PROJECTID }}
             file_name: .env
