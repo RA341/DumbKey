@@ -22,7 +22,9 @@ jobs:
           with:
             envkey_FIREBASE_APIKEY : $ {{ secrets.FIREBASE_APIKEY }}
             envkey_FIREBASE_PROJECTID : ${{ secrets.FIREBASE_PROJECTID }}
-
+            file_name: .env
+            fail_on_empty: false
+            sort_keys: false
         - uses: subosito/flutter-action@v2
           with:
             flutter-version: "3.10.6"
