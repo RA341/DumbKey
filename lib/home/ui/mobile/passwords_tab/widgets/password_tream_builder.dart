@@ -1,0 +1,24 @@
+import 'package:dumbkey/home/logic/database/database_handler.dart';
+import 'package:dumbkey/home/ui/mobile/passwords_tab/widgets/passkey_view.dart';
+import 'package:dumbkey/utils/helper_func.dart';
+import 'package:flutter/material.dart';
+
+class PasswordStreamBuilder extends StatelessWidget {
+  const PasswordStreamBuilder({
+    required this.valueListenable,
+    super.key,
+  });
+
+  final ValueNotifier<String> valueListenable;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: dep.get<DatabaseHandler>().passwordCache,
+      builder: (context, value, child) => PasskeyView(
+        passkeyList: value,
+        query: valueListenable,
+      ),
+    );
+  }
+}

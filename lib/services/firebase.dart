@@ -1,10 +1,9 @@
-import 'package:dumbkey/services/auth/isar_auth_store.dart';
+import 'package:dumbkey/auth/logic/isar_auth_store.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
 import 'package:firedart/firedart.dart';
 import 'package:firedart/firestore/token_authenticator.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:get_it/get_it.dart';
 
 // reference:
 // Firestore(

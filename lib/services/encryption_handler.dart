@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dumbkey/services/database/user_data_handler.dart';
+import 'package:dumbkey/home/logic/database/user_data_handler.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:dumbkey/utils/helper_func.dart';
 import 'package:dumbkey/utils/logger.dart';
