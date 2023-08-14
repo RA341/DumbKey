@@ -11,66 +11,33 @@ w@w.app
 
 # Currently working on
 
-# Note
-- On login and signup ui freezes because of pwhash memlimit and opslimit
+## UI
 
-## Features
-- [ ] lazy load isar results
-- [ ] encrypted index and searching
-- [ ] fix caching issues in database handler
-- [ ] break up database handler into smaller parts
-- [ ] look into putting offline syncing into a isolate
-- [x] add syncing user data with firestore
-- [x]  add authentication
+fix ui
 
 ## Quality of life
-- centralize the CRUD operation for the ui
 - add password generator in input screen
+- [setup ci/cd](https://github.com/vykes-mac/flutter_env/blob/dev/.github/workflows/ci.yml)
 
-## UI stuff
+## Searching stuff
 
+- add searching
 - add filtering, sorting, tagging
 - add tags to sort by movies/banks/etc or categories
 - desktop ui
 - add ui to show device is offline or online
-
-## Bugs
-- there is weird bug that causes listview to shuffle on delete
-- bug in emulator that prevents firestore from working version 33
 
 # possible uis
 mobile
 - https://www.figma.com/community/file/1120231988229292951
 - https://www.figma.com/community/file/1030246241062284627
 
-
-
-# Roadmap
-[setup ci/cd](https://github.com/vykes-mac/flutter_env/blob/dev/.github/workflows/ci.yml)
+# Maybe If don't feel lazy
 
 add password leak check from [haveibeenpwned](https://haveibeenpwned.com/Passwords)
 
-may be add a date field to model and remind user to update password in a set interval
-
-# done
-
-~~readme update~~
-
-~~added details screen~~
-
-~~added good enough searching~~
-
-~~figure how delete works in offline mode~~
-
-~~add offline queue that syncs with firestore~~
-
-~~add connectivity checks and insert into a persistence queue through isar disable buttons if offline~~
-
-~~add logging~~
-
-~~add desktop grpc/rest api for firestore interface~~
-
-~~add persistence layer for desktop not supported by firedart~~
+may be add a date field to model and remind user to update password in a
+set interval
 
 # windows build steps
 
