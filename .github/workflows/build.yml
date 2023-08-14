@@ -1,10 +1,5 @@
 name: 'build-app'
 
-on: # 2
-  push:
-
-
-
 jobs:
     build_android:
       runs-on: ubuntu-latest
