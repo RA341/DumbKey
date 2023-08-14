@@ -80,10 +80,10 @@ class DatabaseHandler with IsarDbMixin {
     logger.w('Creating Data ${data.id}');
 
     final encryptedLocal = cryptMap(data.toJson(), encryptor.encryptMap);
-    final enc = data.copyWithFromMap(encryptedLocal);
+    var enc = data.copyWithFromMap(encryptedLocal);
 
     if (isOnline == false) {
-      enc.copyWith(syncStatus: SyncStatus.notSynced);
+      enc = enc.copyWith(syncStatus: SyncStatus.notSynced);
       await isarCreateOrUpdate(enc);
       logger.w('data created offline ${data.id}');
       return;
@@ -95,7 +95,7 @@ class DatabaseHandler with IsarDbMixin {
       logger
         ..e('Error adding Data to firebase', e)
         ..d('data to be locally stored ${data.id}');
-      enc.copyWith(syncStatus: SyncStatus.notSynced);
+      enc = enc.copyWith(syncStatus: SyncStatus.notSynced);
     }
     await isarCreateOrUpdate(enc);
   }
@@ -109,10 +109,10 @@ class DatabaseHandler with IsarDbMixin {
     );
 
     final encryptedLocal = cryptMap(updatedModel.toJson(), encryptor.encryptMap);
-    final encModel = updatedModel.copyWithFromMap(encryptedLocal);
+    var encModel = updatedModel.copyWithFromMap(encryptedLocal);
 
     if (isOnline == false) {
-      encModel.copyWith(syncStatus: SyncStatus.notSynced);
+      encModel = encModel.copyWith(syncStatus: SyncStatus.notSynced);
       await isarCreateOrUpdate(encModel);
       logger.w('data updated offline', updatedModel.id);
       return;
@@ -128,7 +128,7 @@ class DatabaseHandler with IsarDbMixin {
       logger.i('Updated Data', remote);
     } catch (e) {
       logger.e('Error updating Data to firebase', e);
-      encModel.copyWith(syncStatus: SyncStatus.notSynced);
+      encModel = encModel.copyWith(syncStatus: SyncStatus.notSynced);
     }
 
     await isarCreateOrUpdate(encModel);
@@ -138,10 +138,10 @@ class DatabaseHandler with IsarDbMixin {
     logger.w('Deleting Data ${data.id}');
 
     if (isOnline == false) {
-      data.copyWith(
-        syncStatus: SyncStatus.deleted,
-      ); // temp status until device gets online and deletes
-      await isarCreateOrUpdate(data);
+      // temp status until device gets online and deletes
+      await isarCreateOrUpdate(
+        data.copyWith(syncStatus: SyncStatus.deleted),
+      );
       return;
     }
 
@@ -150,9 +150,10 @@ class DatabaseHandler with IsarDbMixin {
       logger.i('Deleted Data ${data.id}');
     } catch (e) {
       logger.e('Error deleting Data from firebase', e);
-      data.copyWith(
-          syncStatus: SyncStatus.deleted); // temp status until device gets online and deletes
-      await isarCreateOrUpdate(data);
+      // temp status until device gets online and deletes
+      await isarCreateOrUpdate(
+        data.copyWith(syncStatus: SyncStatus.deleted),
+      );
       return;
     }
 

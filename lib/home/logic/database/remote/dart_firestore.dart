@@ -10,7 +10,6 @@ import 'package:dumbkey/utils/helper_func.dart';
 import 'package:dumbkey/utils/logger.dart';
 import 'package:firedart/firestore/firestore.dart';
 import 'package:firedart/firestore/models.dart';
-import 'package:get_it/get_it.dart';
 
 class DartFireStore {
   DartFireStore() {
@@ -27,7 +26,7 @@ class DartFireStore {
 
   Future<void> createData(Map<String, dynamic> data) async {
     try {
-      await getDataCollection.document((data[DumbData.id] as int).toString()).create(data);
+      await getDataCollection.document((data[DumbData.id] as int).toString()).set(data);
       logger.i('added data to remote ${data[DumbData.id]}');
     } catch (e) {
       logger.e('failed to add data to remote ${data[DumbData.id]}');
