@@ -5,11 +5,9 @@ import 'package:flutter/material.dart';
 class CategoryField extends StatelessWidget {
   const CategoryField({
     required this.controller,
-    required this.currFocusNode,
     super.key,
   });
 
-  final FocusNode currFocusNode;
   final TextEditingController controller;
 
   @override
@@ -29,12 +27,10 @@ class CategoryField extends StatelessWidget {
       fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
         return TextFormField(
           autofillHints: settings.settingsInst.categories,
-          focusNode: currFocusNode,
           onFieldSubmitted: (_) {
             if (controller.text.isNotEmpty) {
               settings.addCategory(controller.text.toLowerCase());
             }
-            currFocusNode.unfocus();
           },
           scrollPadding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,

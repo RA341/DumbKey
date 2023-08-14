@@ -66,9 +66,14 @@ class _AddCardState extends State<AddCard> {
 
   @override
   Widget build(BuildContext context) {
+    final isUpdate = widget.savedCard != null;
+
+    final titleText = isUpdate ? 'Update Card' : 'Add a new card';
+    final submitText = isUpdate ? 'Update' : 'Submit';
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Card Input'),
+        title: Text(titleText),
       ),
       body: Container(
         padding: const EdgeInsets.all(16),
@@ -125,11 +130,7 @@ class _AddCardState extends State<AddCard> {
                               savedKey: widget.savedCard,
                             );
                           },
-                    child: value
-                        ? const CircularProgressIndicator()
-                        : widget.savedCard == null
-                            ? const Text('Submit')
-                            : const Text('Update'),
+                    child: value ? const CircularProgressIndicator() : Text(submitText),
                   );
                 },
               ),

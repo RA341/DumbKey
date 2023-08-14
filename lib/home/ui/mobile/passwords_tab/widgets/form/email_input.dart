@@ -3,24 +3,14 @@ import 'package:flutter/material.dart';
 class EmailField extends StatelessWidget {
   const EmailField({
     required this.controller,
-    this.currFocusNode,
-    this.nextFocusNode,
     super.key,
   });
 
-  final FocusNode? currFocusNode;
-  final FocusNode? nextFocusNode;
   final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      autofocus: true,
-      focusNode: currFocusNode,
-      onFieldSubmitted: (_) {
-        currFocusNode?.unfocus();
-        FocusScope.of(context).requestFocus(nextFocusNode);
-      },
       autovalidateMode: AutovalidateMode.onUserInteraction,
       scrollPadding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,

@@ -1,4 +1,5 @@
 import 'package:dumbkey/home/controllers/data_crud_controller.dart';
+import 'package:dumbkey/home/ui/shared/title_input.dart';
 import 'package:dumbkey/model/notes_model/notes_model.dart';
 import 'package:dumbkey/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +17,8 @@ class _AddNotesState extends State<AddNotes> {
   late TextEditingController _titleController;
   late TextEditingController _contentsController;
   final _formKey = GlobalKey<FormState>();
-  bool isLoading = false;
   final controller = DataCrudController();
+
   @override
   void initState() {
     super.initState();
@@ -39,9 +40,14 @@ class _AddNotesState extends State<AddNotes> {
 
   @override
   Widget build(BuildContext context) {
+    final isUpdate = widget.savedNote != null;
+
+    final titleText = isUpdate ? 'Update Note' : 'Add a new note';
+    final submitText = isUpdate ? 'Update' : 'Submit';
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Note'),
+        title: Text(titleText),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -49,12 +55,7 @@ class _AddNotesState extends State<AddNotes> {
           key: _formKey,
           child: Column(
             children: [
-              TextField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                ),
-              ),
+              TitleInput(controller: _titleController),
               const SizedBox(height: 16),
               TextField(
                 controller: _contentsController,
@@ -78,11 +79,7 @@ class _AddNotesState extends State<AddNotes> {
                               savedKey: widget.savedNote,
                             );
                           },
-                    child: value
-                        ? const CircularProgressIndicator()
-                        : widget.savedNote == null
-                            ? const Text('Submit')
-                            : const Text('Update'),
+                    child: value ? const CircularProgressIndicator() : Text(submitText),
                   );
                 },
               ),

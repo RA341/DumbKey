@@ -23,19 +23,13 @@ class AddUpdatePassword extends StatefulWidget {
 
 class _AddUpdatePasswordState extends State<AddUpdatePassword> {
   final _formKey = GlobalKey<FormState>();
+
   final passkeyController = TextEditingController();
   final emailController = TextEditingController();
   final usernameController = TextEditingController();
   final descriptionController = TextEditingController();
   final categoryController = TextEditingController();
   final titleController = TextEditingController();
-
-  final FocusNode _titleFocusNode = FocusNode();
-  final FocusNode _passkeyFocusNode = FocusNode();
-  final FocusNode _emailFocusNode = FocusNode();
-  final FocusNode _usernameFocusNode = FocusNode();
-  final FocusNode _descriptionFocusNode = FocusNode();
-  final FocusNode _categoryFocusNode = FocusNode();
 
   final controller = DataCrudController();
 
@@ -60,22 +54,20 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
     descriptionController.dispose();
     categoryController.dispose();
 
-    _titleFocusNode.dispose();
-    _passkeyFocusNode.dispose();
-    _emailFocusNode.dispose();
-    _usernameFocusNode.dispose();
-    _descriptionFocusNode.dispose();
-    _categoryFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // text on page
+    final isNew = widget.savedKey == null;
+
+    final titleText = isNew ? 'New Password' : 'Update password';
+    final submitText = isNew ? 'Submit' : 'Update';
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: const Text('Input Screen'),
-      ),
+      appBar: AppBar(title: Text(titleText)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -84,40 +76,17 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TitleInput(
-                  controller: titleController,
-                  currFocusNode: _titleFocusNode,
-                  nextFocusNode: _passkeyFocusNode,
-                ),
+                TitleInput(controller: titleController),
                 const SizedBox(height: 16),
-                EmailField(
-                  controller: emailController,
-                  currFocusNode: _emailFocusNode,
-                  nextFocusNode: _usernameFocusNode,
-                ),
+                EmailField(controller: emailController),
                 const SizedBox(height: 16),
-                UsernameField(
-                  controller: usernameController,
-                  currFocusNode: _usernameFocusNode,
-                  nextFocusNode: _passkeyFocusNode,
-                ),
+                UsernameField(controller: usernameController),
                 const SizedBox(height: 16),
-                PasskeyField(
-                  controller: passkeyController,
-                  currFocusNode: _passkeyFocusNode,
-                  nextFocusNode: _descriptionFocusNode,
-                ),
+                PasskeyField(controller: passkeyController),
                 const SizedBox(height: 16),
-                DescriptionField(
-                  controller: descriptionController,
-                  currFocusNode: _descriptionFocusNode,
-                  nextFocusNode: _categoryFocusNode,
-                ),
+                DescriptionField(controller: descriptionController),
                 const SizedBox(height: 16),
-                CategoryField(
-                  controller: categoryController,
-                  currFocusNode: _categoryFocusNode,
-                ),
+                CategoryField(controller: categoryController),
                 const SizedBox(height: 16),
                 ValueListenableBuilder(
                   valueListenable: controller.isLoading,
@@ -133,11 +102,7 @@ class _AddUpdatePasswordState extends State<AddUpdatePassword> {
                                 savedKey: widget.savedKey,
                               );
                             },
-                      child: value
-                          ? const CircularProgressIndicator()
-                          : widget.savedKey == null
-                              ? const Text('Submit')
-                              : const Text('Update'),
+                      child: value ? const CircularProgressIndicator() : Text(submitText),
                     );
                   },
                 ),
