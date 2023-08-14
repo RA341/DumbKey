@@ -41,7 +41,10 @@ Future<void> initDatabaseHandlers({required bool signup}) async {
   if (signup == false) await dep.get<UserDataHandler>().syncUserData();
 
   if (dep.isRegistered<IDataEncryptor>() == false) {
-    dep.registerSingleton<IDataEncryptor>(await SodiumEncryptor.create(signup: signup));
+    dep.registerSingleton<IDataEncryptor>(
+      await SodiumEncryptor.create(signup: signup),
+      dispose: (param) => param.dispose(),
+    );
   }
 
   if (dep.isRegistered<DatabaseHandler>() == false) {
@@ -51,7 +54,9 @@ Future<void> initDatabaseHandlers({required bool signup}) async {
 
 void removeDatabaseHandlers() {
   if (dep.isRegistered<UserDataHandler>()) dep.unregister<UserDataHandler>();
-  if (dep.isRegistered<IDataEncryptor>()) dep.unregister<IDataEncryptor>();
+  if (dep.isRegistered<IDataEncryptor>()) {
+    dep.unregister<IDataEncryptor>(disposingFunction: (inst) => inst.dispose());
+  }
   if (dep.isRegistered<DatabaseHandler>()) {
     dep.unregister<DatabaseHandler>(disposingFunction: (db) => db.dispose());
   }
