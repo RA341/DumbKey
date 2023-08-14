@@ -16,7 +16,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<void> initServices() async {
-  final dir = await getApplicationDocumentsDirectory();
+  final dir = await getApplicationSupportDirectory();
   final isar = await Isar.open(
     [SettingsSchema, PasswordSchema, NotesSchema, CardDetailsSchema],
     directory: dir.path,
