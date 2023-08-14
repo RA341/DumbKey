@@ -51,6 +51,8 @@ abstract class IDataEncryptor {
     Map<String, dynamic> data, {
     List<String> blackListedKeys = const [],
   });
+
+  Future<void> dispose();
 }
 
 class SodiumEncryptor implements IDataEncryptor {
@@ -91,14 +93,19 @@ class SodiumEncryptor implements IDataEncryptor {
         password: password.toCharArray(),
         salt: salt,
         // ignore: deprecated_member_use
-        opsLimit: sodium.crypto.pwhash.opsLimitSensitive,
+        opsLimit: sodium.crypto.pwhash.opsLimitModerate,
         // ignore: deprecated_member_use
-        memLimit: sodium.crypto.pwhash.memLimitSensitive,
+        memLimit: sodium.crypto.pwhash.memLimitModerate,
       );
       return key;
     });
 
     return SodiumEncryptor.init(sodium: sodium, encryptionKey: key);
+  }
+
+  @override
+  Future<void> dispose() async {
+    encryptionKey.dispose();
   }
 
   /// convert data to bytes for sodium encryption
