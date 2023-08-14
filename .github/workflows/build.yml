@@ -2,9 +2,7 @@ name: 'build-app'
 
 on: # 2
   push:
-    branches: [ "main" ]
-    tags:
-      - 'v*' # Build on tags that start with 'v'
+
 
 
 jobs:
